@@ -1,0 +1,35 @@
+\chapter{Metropolis-Hastings algoritmus}
+
+V tejto kapitole sa budeme zaoberať Metropolis-Hastings algoritmom na generovanie bodov z ľubovoľnej distribúcie. 
+
+Majme cielenú hustotu $Q$ z ktorej chceme generovať, v našom prípade je rovnomerná vnútri polyédru a nulová mimo neho. Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom v priestore, stav určuje hustotu $Q(x^{(i)})$ závislú na $x^{(i)}$. Algoritmus vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (x^{(i)},y)$, inak to bude $x^{(i)}$.
+
+\begin{algorithm}[H]
+	\caption{Metropolis-Hastings \cite{chib_understanding_1995}}
+	\label{metropolis-hastings}
+	\begin{algorithmic}[1]
+		\State inicializuj $x^{(0)}$
+		\For {$i=0,1,\dots,N$} 
+			\State Vygeneruj bod $y$ z $Q(x^{(i)})$
+			\State Vygeneruj $u$ z $U(0,1)$.
+			\If {$u \leq \alpha(x^{(i)},y)$}
+				\State Nastav $x^{(i+1)}=y$
+			\Else
+				\State Nastav $x^{(i+1)}=x^{(i)}$
+			\EndIf
+		\EndFor
+		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$.
+	\end{algorithmic}
+\end{algorithm}
+
+Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{chib_understanding_1995} je možné dokázať, že pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$.
+
+\textbf{TODO} Ake velke N?
+
+\textbf{TODO} Vseobecnejsie Monte Carlo Markov Chain metody - Metropolis algoritmus ako specialny pripad
+
+\textbf{TODO} volba parametrov
+
+\textbf{TODO} prakticke vyuzitie
+
+\textbf{TODO} exaktny algoritmus na generovanie v polyedri

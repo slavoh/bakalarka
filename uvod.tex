@@ -1,0 +1,14 @@
+\chapter*{Úvod} % chapter* je necislovana kapitola
+\addcontentsline{toc}{chapter}{Úvod} % rucne pridanie do obsahu
+\markboth{Úvod}{Úvod} % vyriesenie hlaviciek
+
+V rámci tejto práce sa budeme zaoberať metódami na rovnomerné generovanie bodov vo veľarozmernom polyédre (konvexnom mnohostene). Našou úlohou vytvoriť generátor, ktorý bude čo najrýchlejšie generovať body vnútri polyédru rovnomerne náhodne, tj. pravdepodobnosť, že dostaneme bod vnútri ľubovoľnej oblasti polyédra je iba lineárne závislá od objemu danej časti.
+
+Ako základ náhody bude používať náš generátor bodu v polyédre používať rovnomerný generátor čísel $[0,1]$. Pomocou generátoru na $[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním $a$), alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc).
+
+Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov alebo ako sústavu lineárnych nerovníc. Obidve spomenuté reprezentácie možno previesť na tú druhú, avšak prevod medzi nimi nie je lacný. Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).
+
+
+Začneme zamietacími metódami.
+
+\textbf{TODO} prechod medzi metodami
