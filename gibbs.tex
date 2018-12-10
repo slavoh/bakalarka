@@ -1,13 +1,13 @@
-\chapter{Gibbsov generátor}
+\section{Gibbsov generátor}
 
-V tejto kapitole sa budeme zaoberať Gibbsovým generátorom, metódou generovania z triedy MCMC vhodnou na generovanie vo viacrozmernom priestore. Na Gibbsov generátor sa možno dívať ako na špeciálny prípad Metropolis-Hastings algoritmu.
+V tejto sekcii sa budeme zaoberať Gibbsovým generátorom, metódou generovania z triedy MCMC vhodnou na generovanie vo viacrozmernom priestore. Na Gibbsov generátor sa možno dívať ako na špeciálny prípad Metropolis-Hastings algoritmu.
 
 Našou úlohou je generovať z $K$-rozmernej distribúcie $Q$, pričom z $Q$ nevieme generovať priamo. Predpokladajme, že nevieme použiť priamo Metropolis-Hastings algoritmus, lebo $Q(x^{(i)})=Q(x^{(i)}_1, x^{(i)}_2, \dots, x^{(i)}_K)$ je príliš zložitá na generovanie. Taktiež predpokladajme, že ak $Q(x^{(i)})$ obmedzíme na jeden rozmer, tak v ňom vieme generovať rýchlo, tj. možno generovať rýchlo z $Q(x^{(i)}_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_K)$.
 
 Gibbsov generátor bude fungovať nasledovne:
 
 \begin{algorithm}[H]
-	\caption{Gibbsov generátor \cite{mackay_introduction_1998}}
+	\caption{Gibbsov generátor \cite{mcmc_intro_mackay}}
 	\label{gibbs}
 	\begin{algorithmic}[1]
 		\State inicializu $x^{(0)} = (x^{(0)}_1, x^{(0)}_2, \dots, x^{(0)}_K)$
@@ -17,13 +17,13 @@ Gibbsov generátor bude fungovať nasledovne:
 			\EndFor
 			\State $x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_K)$
 		\EndFor
-		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$.
+		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
 	\end{algorithmic}
 \end{algorithm}
 
-Gibbsov generátor ako špeciálny prípad Metropolis-Hastings algoritmu má podobné vlastnosti ako Metropolis-Hastings algoritmus.
+Gibbsov generátor ako špeciálny prípad Metropolis-Hastings algoritmu má podobné vlastnosti ako Metropolis-Hastings algoritmus.\\
 
-\textbf{TODO} rozdiely s MH  menej parametrov
+\textbf{TODO} specifickost oproti všeobecnému Metropolis-Hastingsu: menej parametrov
 
 \textbf{TODO} prakticke vyuzitie
 

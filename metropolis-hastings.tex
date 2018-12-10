@@ -1,11 +1,15 @@
-\chapter{Metropolis-Hastings algoritmus}
+\chapter{Metropolis-Hastings metódy}
 
-V tejto kapitole sa budeme zaoberať Metropolis-Hastings algoritmom na generovanie bodov z ľubovoľnej distribúcie. 
+V tejto kapitole sa budeme zaoberať Metropolis-Hastings algoritmom na generovanie bodov z ľubovoľnej distribúcie. Najprv sa pozrieme na všeobecný Metropolis-Hastings algoritmus, následne sa pozrieme na jeho konkrétne realizácie.
 
-Majme cielenú hustotu $Q$ z ktorej chceme generovať, v našom prípade je rovnomerná vnútri polyédru a nulová mimo neho. Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom v priestore, stav určuje hustotu $Q(x^{(i)})$ závislú na $x^{(i)}$. Algoritmus vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (x^{(i)},y)$, inak to bude $x^{(i)}$.
+\section{Všeobecný Metropolis-Hastings algoritmus}
+
+Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade generovania vnútri polyédru je rovnomerná na polyédri a nulová mimo neho.
+
+Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom v priestore, stav určuje hustotu $Q(x^{(i)})$ závislú na $x^{(i)}$. Algoritmus vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (x^{(i)},y)$, inak to bude $x^{(i)}$.
 
 \begin{algorithm}[H]
-	\caption{Metropolis-Hastings \cite{chib_understanding_1995}}
+	\caption{Všeobecný Metropolis-Hastings algoritmus \cite{metropolis-hastings_chib}}
 	\label{metropolis-hastings}
 	\begin{algorithmic}[1]
 		\State inicializuj $x^{(0)}$
@@ -22,13 +26,13 @@ Majme cielenú hustotu $Q$ z ktorej chceme generovať, v našom prípade je rovn
 	\end{algorithmic}
 \end{algorithm}
 
-Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{chib_understanding_1995} je možné dokázať, že pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$.
+Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je možné dokázať, že napriek závislosti po sebe idúcich bodov pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$.
 
 \textbf{TODO} Ake velke N?
 
 \textbf{TODO} Vseobecnejsie Monte Carlo Markov Chain metody - Metropolis algoritmus ako specialny pripad
 
-\textbf{TODO} volba parametrov
+\textbf{TODO} volba parametru $\alpha$
 
 \textbf{TODO} prakticke vyuzitie
 
