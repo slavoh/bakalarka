@@ -1,0 +1,29 @@
+\section{Hit-and-Run generátor}
+
+Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza do úvahy Hit-and-Run generátor. Algoritmus je analogický s algoritmom Metropolis-Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou s náhodným smerom cez bod $x^{(i)}$.
+
+\begin{algorithm}[H]
+	\caption{Hit-and-Run generátor \cite{hit-and-run_chen}}
+	\label{hit-and-run}
+	\begin{algorithmic}[1]
+		\State Inicializuj $x^{(0)}$
+		\For {$n=0,\dots,N-1$}
+			\State Vygeneruj smer $d_n$ z distribúcie $D$ na povrchu sféry
+			\State Nájdi množinu $S_n(d_n,x^{(n)}=\{\lambda \in \mathbb{R}; x^{(n)} + \lambda d_n \in S \} $
+			\State Zvoľ $y=x^{(n)}+\lambda_n d_n$
+			\State Vygeneruj $u$ z $U(0,1)$.
+			\If {$u \leq \alpha_n(y|x^{(n)}$}
+				\State Nastav $x^{(i+1)}=y$
+			\Else
+				\State Nastav $x^{(i+1)}=x^{(i)}$
+			\EndIf
+		\EndFor
+		\State Vráť $x^{(1)},x^{(2)},\dots,x^{(N)}$.
+	\end{algorithmic}
+\end{algorithm}
+
+\textbf{TODO} Vplyv volby distribucie $D$
+
+\textbf{TODO} Dokaz konvergentnosti, rychlost \cite{hit-and-run_chen}
+
+\textbf{TODO} vyuzitie pri polyedroch
