@@ -9,10 +9,10 @@ Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza d
 		\State Inicializuj $x^{(0)}$
 		\For {$n=0,\dots,N-1$}
 			\State Vygeneruj smer $d_n$ z distribúcie $D$ na povrchu sféry
-			\State Nájdi množinu $S_n(d_n,x^{(n)}=\{\lambda \in \mathbb{R}; x^{(n)} + \lambda d_n \in S \} $
+			\State Nájdi množinu $S_n(d_n,x^{(n)})=\{\lambda \in \mathbb{R}; x^{(n)} + \lambda d_n \in S \} $
 			\State Zvoľ $y=x^{(n)}+\lambda_n d_n$
 			\State Vygeneruj $u$ z $U(0,1)$.
-			\If {$u \leq \alpha_n(y|x^{(n)}$}
+			\If {$u \leq \alpha_n(y|x^{(n)})$}
 				\State Nastav $x^{(i+1)}=y$
 			\Else
 				\State Nastav $x^{(i+1)}=x^{(i)}$

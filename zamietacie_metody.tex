@@ -9,9 +9,11 @@ Náš generátor $G_z$ bude pracovať nasledovne:
 	\caption{Zamietacia metóda}
 	\label{zamietanie:basic}
 	\begin{algorithmic}[1]
-		\Repeat Vygeneruj bod $x \in S$ rovnomerne náhodne
-		\Until {$x \in X$}
-		\State Vráť bod $x$ ako vygenerovaný bod
+		\For {$n=0,\dots,N-1$}
+			\Repeat Vygeneruj bod $x^{(n)} \in S$ rovnomerne náhodne
+			\Until {$x^{(n)} \in X$}
+		\EndFor
+		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
 	\end{algorithmic}
 \end{algorithm}
 Generátor $G_z$ vygeneruje bod $x \in S$, ak je ten bod aj z $X$, tak ho vráti ako výstup, inak vygeneruje nový bod $x \in S$.\\
@@ -28,7 +30,7 @@ Zamyslime sa nad tým, ako by sme vedeli použiť túto metódu na generovanie b
 
 Žiaľ pre takúto množinu $S$ môže byť podiel $\frac{|X|}{|S|}$ byť ľubovoľne malý. Ak bude $X$ kváder s obsahom $k$ pozdĺž diagonály kocky $[0,1]^n$, dotýkajúci sa každej steny kocky $[0,1]^n$, tak najmenšia množina $S$ (kváder so stranami rovnobežnými s osami) je kocka $[0,1]^n$, ktorá má obsah $1$. Platí $\frac{|X|}{|S|}=k$. Keďže vieme nájsť kváder taký, že $k$ je ľubovoľne malé, tak očakávaná dĺžka generovania touto metódou (pre danú množinu $S$) je ľubovovoľne veľká.\\
 
-V rámci tejto práce budeme skúmať použitie problému obalenia polyédru elipsoidom s najmenším obsahom (Minimum Volume Enclosing Elipsoid, ďalej MVEE). Ako množinu $S$ zvolíme nájdený elipsoid. Generovať body v ňom rovnomerne náhodne vieme ľahko \textbf{TODO zdôvodniť}.
+V rámci tejto práce budeme skúmať použitie problému obalenia polyédru elipsoidom s najmenším obsahom (Minimum Volume Enclosing Elipsoid, ďalej MVEE). Ako množinu $S$ zvolíme nájdený elipsoid. Generovať body v ňom rovnomerne náhodne vieme ľahko pomocou REX algoritmu, s ktorým sa oboznámime neskôr.
 
 Taktiež sa pokúsime pomocou hlavných osí MVEE elipsoidu obaliť polyéder kvádrom s najmenším obsahom (jeho strany nemusia byť rovnobežné s osami sústavi). Ako množinu $S$ môžeme zvoliť daný kváder.
 
