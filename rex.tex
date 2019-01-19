@@ -1,7 +1,7 @@
 \chapter{Randomized exchange algorithm}
 
 V tejto kapitole si predstavíme Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie optimal design problému \textbf{TODO preložiť}. Taktiež, vďaka ekvivalencii optimal design problému a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman}, sa dá využiť aj na riešenie MVEE problému.
-Vzhľadom na dôležitosť algoritmu pre túto prácu \textbf{TODO ešte si to premyslieť} a kvôli lepšiemu pochopopeniu algoritmu sa najprv pozrime na metódy riešenia optimal design problému.
+Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopopeniu algoritmu sa najprv pozrime na metódy riešenia optimal design problému.
 
 \section{Metódy na riešenie optimal design point problému}
 
@@ -14,7 +14,7 @@ Najprv si predstavíme metódu SAM ako všeobecnú iteratívnu metódu na rieše
 		\State Zvoľ regulárny m-point design $w^{(0)}$
 		\While {$w^{(k)}$ nespĺňa podmienky zastavenia}
 			\State Zvoľ podmnožinu bodov $S_k \subset X$
-			\State Nájdi aktívny podpriestor $\Xi$ ako $\Xi_k \leftarrow \{ w \in \Xi : w_x = w_x^k for x \not \in S_k \}$
+			\State Nájdi aktívny podpriestor $\Xi$ ako $\Xi_k \leftarrow \{ w \in \Xi : w_x = w_x^k, x \not \in S_k \}$
 			\State Vypočítaj $w^{k+1}$ ako riešenie $\max_{w \in \Xi_k} \Phi(M(w))$ spĺňajúce $\Phi(M(w^{k+1})) \geq \Phi(M(w^k))$
 			\State Set $k \leftarrow k+1$
 		\EndWhile
@@ -22,7 +22,7 @@ Najprv si predstavíme metódu SAM ako všeobecnú iteratívnu metódu na rieše
 	\end{algorithmic}
 \end{algorithm}
 
-\textbf{TODO obkec okolo LBE}
+\textbf{TODO vysvetlit LBE}
 
 \begin{algorithm}[H]
 	\caption{VEM algoritmus \cite{rex_harman}}

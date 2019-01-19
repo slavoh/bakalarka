@@ -2,12 +2,20 @@
 \addcontentsline{toc}{chapter}{Úvod} % rucne pridanie do obsahu
 \markboth{Úvod}{Úvod} % vyriesenie hlaviciek
 
-V rámci tejto práce sa budeme zaoberať metódami na rovnomerné generovanie bodov vo veľarozmernom polyédre (konvexnom mnohostene). Našou úlohou vytvoriť generátor, ktorý bude čo najrýchlejšie generovať body vnútri polyédru rovnomerne náhodne, tj. pravdepodobnosť, že dostaneme bod vnútri ľubovoľnej oblasti polyédra je iba lineárne závislá od objemu danej časti.
+V rámci tejto práce sa budeme zaoberať metódami na rovnomerné generovanie bodov vo veľarozmernom polyédre (konvexnom mnohostene). Našou úlohou vytvoriť generátor, ktorý bude čo najrýchlejšie generovať body vnútri polyédru rovnomerne náhodne, tj. pravdepodobnosť, že dostaneme bod vnútri ľubovoľnej oblasti polyédra je lineárne závislá iba od objemu danej časti.
 
-Ako základ náhody bude používať náš generátor bodu v polyédre používať rovnomerný generátor čísel $[0,1]$. Pomocou generátoru na $[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním $a$), alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc). \textbf{TODO doplnit, co budeme pouzivat}
+Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov (V-reprezentácia) alebo ako sústavu lineárnych nerovníc (H reprezentáca). Obidve spomenuté reprezentácie možno v prípade potreby previesť na tú druhú. Prevod medzi nimi síce nie je lacný \textbf{TODO doplnit cenu a mozno sposob}, no daný výpočet je nutné spraviť len raz pred začatím generovania. Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).
 
-Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov alebo ako sústavu lineárnych nerovníc. Obidve spomenuté reprezentácie možno previesť na tú druhú, avšak prevod medzi nimi nie je lacný \textbf{TODO doplnit cenu}. Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).\\
+Rovnomerné generovanie bodu v polyédre je problém s prirodzeným uplatnením v praxi. Mnoho algoritmov, napríklad z triedy Monte Carlo alebo z triedy znáhodnených optimalizačných metódach, je závislých na rovnomernom generovaní bodov splňujúcich určité požiadavky.
+Generovanie bodov v polyédre predstavuje generovanie bodov, ktoré spľňajú sústavu lineárnych obmedzení (viď H-reprezentácia polyédru).
+
+Ako základ náhody bude náš generátor bodu v polyédre používať rovnomerný generátor čísel $[0,1]$. Pomocou generátoru na $[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním konštanty $a$, alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc). \textbf{TODO doplnit, co budeme pouzivat}
+
+Cieľom tejto práce je jednak poskytnúť prehľad metód na rovnomerné generovanie v polyédroch a taktiež implementovať čo najefektívnejší generátor.
+V prvej kapitole sa budeme zaoberať Metropolis-Hastings metódami (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať komplexné distribúcie priamim výberom. To možno použiť aj v našom prípade, keď je cielená distribúcia uniformná.
+V druhej kapitole sa budeme zaoberať zamietacími metódami, ktoré namiesto generovania bodov na množine priamo vygeneruju bod jednoduchšej nadmnožine polyédra rovnomerne náhodne. Po vygenerovaní bodu overia, či leží v polyédre. Ak nie, tak generujú znovu.
+Tretia kapitola je venovaná algoritmu Randomized Exchange Algorithm, pomocou ktorého možno nájsť elipsoid s minimálnym objemom obaľujúci zadaný polyéder. Tento elipsoid možno jednak priamo použiť ako nadmnožinu pri zamietacej metóde, no taktiež možno jeho osi využiť na zistenie natočenia polyédra a obalenie polyédra kvádrom s malým objemom.
 
 \textbf{TODO} prechod medzi metodami
 
-\textbf{TODO} ujednotit notaciu v texte a algoritmoch
+\textbf{TODO} motivacia za problemom - pseudonahody, vyhybanie sa zlym prikladom,
