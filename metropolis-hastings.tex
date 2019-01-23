@@ -4,7 +4,7 @@ V tejto kapitole sa budeme zaoberať Metropolis-Hastings algoritmom na generovan
 
 \section{Všeobecný Metropolis-Hastings algoritmus}
 
-Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade generovania vnútri polyédru je rovnomerná na polyédri a nulová mimo neho.
+Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédru je rovnomerná v polyédri a nulová mimo neho.
 
 Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom v priestore, stav určuje hustotu $Q(x^{(i)})$ závislú na $x^{(i)}$. Algoritmus vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (x^{(i)},y)$, inak to bude $x^{(i)}$.
 
@@ -28,8 +28,10 @@ Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom 
 
 Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je možné dokázať, že napriek závislosti po sebe idúcich bodov pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$.
 
-\textbf{TODO} Ake velke N?
+Potrebná veľkosť $N$ sa nazýva burn-in period. \textbf{TODO} Ake velke N?
 
 \textbf{TODO} Vseobecnejsie Monte Carlo Markov Chain metody - Metropolis algoritmus ako specialny pripad
 
 \textbf{TODO} volba parametru $\alpha$
+\\
+V ďalších sekciách si ukážeme niekoľko konkrétnych realizácii Metropolis-Hastings algoritmu. Každá z tých metód obsahuje určité predpoklady na distribúciu, z ktorej chceme generovať, no dá použiť aj na rovnomerné generovanie bodov v polyédri.

@@ -2,7 +2,7 @@
 
 V tejto sekcii sa budeme zaoberať Gibbsovým generátorom, metódou generovania z triedy MCMC vhodnou na generovanie vo viacrozmernom priestore. Na Gibbsov generátor sa možno dívať ako na špeciálny prípad Metropolis-Hastings algoritmu.
 
-Našou úlohou je generovať z $K$-rozmernej distribúcie $Q$, pričom z $Q$ nevieme generovať priamo. Predpokladajme, že nevieme použiť priamo Metropolis-Hastings algoritmus, lebo $Q(x^{(i)})=Q(x^{(i)}_1, x^{(i)}_2, \dots, x^{(i)}_K)$ je príliš zložitá na generovanie. Taktiež predpokladajme, že ak $Q(x^{(i)})$ obmedzíme na jeden rozmer, tak v ňom vieme generovať rýchlo, tj. možno generovať rýchlo z $Q(x^{(i)}_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_K)$.
+Našou úlohou je generovať z $n$-rozmernej distribúcie $Q$, pričom z $Q$ nevieme generovať priamo. Predpokladajme, že nevieme použiť priamo Metropolis-Hastings algoritmus, lebo $Q(x^{(i)})=Q(x^{(i)}_1, x^{(i)}_2, \dots, x^{(i)}_n)$ je príliš zložitá na generovanie. Taktiež predpokladajme, že ak $Q(x^{(i)})$ obmedzíme na jeden rozmer, tak v ňom vieme generovať rýchlo, tj. možno generovať rýchlo z $Q(x^{(i)}_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_n)$.
 
 Gibbsov generátor bude fungovať nasledovne:
 
@@ -10,20 +10,18 @@ Gibbsov generátor bude fungovať nasledovne:
 	\caption{Gibbsov generátor \cite{mcmc_intro_mackay}}
 	\label{gibbs}
 	\begin{algorithmic}[1]
-		\State inicializu $x^{(0)} = (x^{(0)}_1, x^{(0)}_2, \dots, x^{(0)}_K)$
+		\State inicializu $x^{(0)} = (x^{(0)}_1, x^{(0)}_2, \dots, x^{(0)}_n)$
 		\For {$i=1,\dots,N$}
-			\For {$j=0,1,\dots,K$}
-				\State $x^{(i)}_j \sim Q(x_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_K)$
+			\For {$j=0,1,\dots,n$}
+				\State $x^{(i)}_j \sim Q(x_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_n)$
 			\EndFor
-			\State $x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_K)$
+			\State $x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_n)$
 		\EndFor
-		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
+		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$.
 	\end{algorithmic}
 \end{algorithm}
 
-Gibbsov generátor ako špeciálny prípad Metropolis-Hastings algoritmu má podobné vlastnosti ako Metropolis-Hastings algoritmus.\\
-
-\textbf{TODO} specifickost oproti všeobecnému Metropolis-Hastingsu: menej parametrov
+Gibbsov generátor ako špeciálny prípad Metropolis-Hastings algoritmu má podobné vlastnosti ako Metropolis-Hastings algoritmus. Hlavnou výhodou Gibbsovho generátora oproti generátoru používajúci všeobecný Metropolis-Hastings algoritmus je, že má menej parametrov. 
 
 \textbf{TODO} prakticke vyuzitie
 

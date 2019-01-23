@@ -13,7 +13,7 @@ Ako základ náhody bude náš generátor bodu v polyédre používať rovnomern
 
 Cieľom tejto práce je jednak poskytnúť prehľad metód na rovnomerné generovanie v polyédroch a taktiež implementovať čo najefektívnejší generátor.
 V prvej kapitole sa budeme zaoberať Metropolis-Hastings metódami (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať komplexné distribúcie priamim výberom. To možno použiť aj v našom prípade, keď je cielená distribúcia uniformná.
-V druhej kapitole sa budeme zaoberať zamietacími metódami, ktoré namiesto generovania bodov na množine priamo vygeneruju bod jednoduchšej nadmnožine polyédra rovnomerne náhodne. Po vygenerovaní bodu overia, či leží v polyédre. Ak nie, tak generujú znovu.
+V druhej kapitole sa budeme zaoberať zamietacími metódami, ktoré namiesto generovania bodov priamo v polyédri vygeneruju bod na jednoduchšej nadmnožine polyédra rovnomerne náhodne. Po vygenerovaní bodu overia, či leží v polyédre. Ak nie, tak generujú znovu.
 Tretia kapitola je venovaná algoritmu Randomized Exchange Algorithm, pomocou ktorého možno nájsť elipsoid s minimálnym objemom obaľujúci zadaný polyéder. Tento elipsoid možno jednak priamo použiť ako nadmnožinu pri zamietacej metóde, no taktiež možno jeho osi využiť na zistenie natočenia polyédra a obalenie polyédra kvádrom s malým objemom.
 
 \textbf{TODO} prechod medzi metodami

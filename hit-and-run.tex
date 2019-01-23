@@ -7,12 +7,12 @@ Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza d
 	\label{hit-and-run}
 	\begin{algorithmic}[1]
 		\State Inicializuj $x^{(0)}$
-		\For {$n=0,\dots,N-1$}
-			\State Vygeneruj smer $d_n$ z distribúcie $D$ na povrchu sféry
-			\State Nájdi množinu $S_n(d_n,x^{(n)})=\{\lambda \in \mathbb{R}; x^{(n)} + \lambda d_n \in S \} $
-			\State Zvoľ $y=x^{(n)}+\lambda_n d_n$
+		\For {$i=0,\dots,N-1$}
+			\State Vygeneruj smer $d_i$ z distribúcie $D$ na povrchu sféry
+			\State Nájdi množinu $S_i(d_i,x^{(i)})=\{\lambda \in \mathbb{R}; x^{(i)} + \lambda d_i \in S \} $
+			\State Zvoľ $y=x^{(i)}+\lambda_i d_i$
 			\State Vygeneruj $u$ z $U(0,1)$.
-			\If {$u \leq \alpha_n(y|x^{(n)})$}
+			\If {$u \leq \alpha_i(y|x^{(i)})$}
 				\State Nastav $x^{(i+1)}=y$
 			\Else
 				\State Nastav $x^{(i+1)}=x^{(i)}$
@@ -21,6 +21,8 @@ Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza d
 		\State Vráť $x^{(1)},x^{(2)},\dots,x^{(N)}$.
 	\end{algorithmic}
 \end{algorithm}
+
+Nevýhodou tejto metódy je, že obsahuje pomerne veľa parametrov. Pri implementácii je potrebné vhodne zvoliť distribúciu $D$ a parametre $\lambda_i$ aj $\alpha_i$.
 
 \textbf{TODO} Vplyv volby distribucie $D$
 

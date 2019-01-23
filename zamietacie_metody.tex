@@ -9,9 +9,9 @@ Náš generátor $G_S$ bude pracovať nasledovne:
 	\caption{Zamietacia metóda}
 	\label{zamietanie:basic}
 	\begin{algorithmic}[1]
-		\For {$n=0,\dots,N-1$}
-			\Repeat Vygeneruj bod $x^{(n)} \in S$ rovnomerne náhodne
-			\Until {$x^{(n)} \in X$}
+		\For {$i=0,\dots,N-1$}
+			\Repeat Vygeneruj bod $x^{(i)} \in S$ rovnomerne náhodne
+			\Until {$x^{(i)} \in X$}
 		\EndFor
 		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
 	\end{algorithmic}
@@ -20,9 +20,7 @@ Generátor $G_S$ vygeneruje bod $x \in S$, ak je ten bod aj z $X$, tak ho vráti
 
 Generátor $G_S$ generuje na $X$ rovnomerne náhodne. Očakávaná rýchlosť generovania závisí od toho, koľkokrát $G_S$ vygeneruje bod mimo $X$. Z rovnomernosti $G_S$ je tá pravdepodobnosť rovná $\frac{|S-X|}{|S|} = 1-\frac{|X|}{|S|}$. Označme si $p_k$ pravdepodobnosť, že $G_S$ vygeneruje bod z $X$ na $k$-ty pokus, t.j. najprv $k-1$ krát vygeneruje bod mimo $X$ a potom vygeruje bod z $X$. Platí $p_k= (1-\frac{|X|}{|S|})^{k-1}\frac{|X|}{|S|}$. Očakávý počet generovaní $G_S$ je $E(G_S)=\sum^{\infty}_{0}kp_k=\frac{|X|}{|S|} \sum^{\infty}_{0}k(1-\frac{|X|}{|S|})^{k-1}=\frac{|X|}{|S|} \frac{1}{((1-\frac{|X|}{|S|})-1)^2} = \frac{|S|}{|X|}$.
 
-Táto metóda generovania je vhodná, ak $\frac{|S|}{|X|}$ nie je veľké, t.j. ak je obal $S$ polyédru $X$ dostatočne malý. Ak je $\frac{|S|}{|X|} \sim \infty$, tak je táto metóda nepoužiteľná.\\
-
-\textbf{TODO citovat}
+Táto metóda generovania je vhodná, ak $\frac{|S|}{|X|}$ nie je veľké, t.j. ak je obal $S$ polyédru $X$ dostatočne malý. Ak je $\frac{|S|}{|X|} \sim \infty$, tak je táto metóda nepoužiteľná.
 
 \section{Použitie na generovanie bodu vnútri polyédru}
 
