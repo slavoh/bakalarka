@@ -1,12 +1,12 @@
-\section{Slice sampling}
+\subsection{Slice sampling}
 
 Slice sampling je metóda generovania z triedy Metropolis-Hastings algoritmov, ktorá je vhodná na generovanie pre distribúcie s určitou štruktúrou.
-Majme $n$ rozmernú hustotu $\pi: \mathbb{R}^n \rightarrow [0,\infty)$, pričom $\pi(x) = \Pi^K_{j=0}f_j(x)$ pre nejaké $f_j: \mathbb{R}^n \rightarrow [0,\infty)$.
+Majme $n$ rozmernú hustotu $Q(x): \mathbb{R}^n \rightarrow [0,\infty)$, pričom $\pi(x) = \Pi^K_{j=0}f_j(x)$ pre nejaké $f_j: \mathbb{R}^n \rightarrow [0,\infty)$.
 
 Slice sampler bude pracovať nasledovne. Začne s bodom $x^{(0)}$, na vygenerovanie bodu $x^{(i)}$ z $x^{(i-1)}$ najprv vygeneruje nezávislé náhodné premenné $y_{i,j}$ v závislosti od $f_j(x^{(i-1)})$. Následne pomocou $y_{i,j}$ vygeneruje bod $x^{(i)}$.
 
 \begin{algorithm}[H]
-	\caption{Slice sampling algoritmus \cite{slice_convergence_roberts}}
+	\caption{Slice sampling generátor \cite{slice_convergence_roberts}}
 	\label{slice}
 	\begin{algorithmic}[1]
 		\State inicializuj $x^{(0)}$
@@ -22,10 +22,6 @@ Slice sampler bude pracovať nasledovne. Začne s bodom $x^{(0)}$, na vygenerova
 	\end{algorithmic}
 \end{algorithm}
 
-Daný algoritmus je závislý jedine od faktorizácie distribúcie $\pi(x)$ na $\Pi^K_{j=0}f_j(x)$. \textbf{TODO rozvinut}
+Daný algoritmus je závislý jedine od faktorizácie distribúcie $Q(x)$ na $\Pi^K_{j=0}f_j(x)$. Ak možno distribúciu $Q$ faktorizovať na niekoľko jednoduchých distribúcii, tak je daná metóda použiteľná v praxi. V prípade rovnomerného generovania na polyédroch danú metódu možno použiť (viď implementácia Slice sampling generátora).
 
-Daný algoritmus je tiež špeciálnym prípadom Metropolis-Hastings algoritmu, možno ho analyzovať rovnakým spôsobom.\\
 
-\textbf{TODO} porovnanie so vseobecnym MH a Gibbsom
-
-\textbf{TODO} vyuzitie pri polyedroch

@@ -1,6 +1,8 @@
-\section{Hit-and-Run generátor}
+\subsection{Hit-and-Run generátor}
 
 Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza do úvahy Hit-and-Run generátor. Algoritmus je analogický s algoritmom Metropolis-Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou s náhodným smerom cez bod $x^{(i)}$.
+
+Hit-and-Run generátor funguje nasledovne:
 
 \begin{algorithm}[H]
 	\caption{Hit-and-Run generátor \cite{hit-and-run_chen}}
@@ -10,9 +12,10 @@ Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza d
 		\For {$i=0,\dots,N-1$}
 			\State Vygeneruj smer $d_i$ z distribúcie $D$ na povrchu sféry
 			\State Nájdi množinu $S_i(d_i,x^{(i)})=\{\lambda \in \mathbb{R}; x^{(i)} + \lambda d_i \in S \} $
+			\State Vygeneruj $\lambda_i \in S_i$ podľa hustoty $Q_i(\lambda | d_i, x^{(i)})$
 			\State Zvoľ $y=x^{(i)}+\lambda_i d_i$
 			\State Vygeneruj $u$ z $U(0,1)$.
-			\If {$u \leq \alpha_i(y|x^{(i)})$}
+			\If {$u \leq \alpha(y|x^{(i)})$}
 				\State Nastav $x^{(i+1)}=y$
 			\Else
 				\State Nastav $x^{(i+1)}=x^{(i)}$
@@ -22,8 +25,6 @@ Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza d
 	\end{algorithmic}
 \end{algorithm}
 
-Nevýhodou tejto metódy je, že obsahuje pomerne veľa parametrov. Pri implementácii je potrebné vhodne zvoliť distribúciu $D$ a parametre $\lambda_i$ aj $\alpha_i$.
+Použiteľnosť Hit-and-Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z distribúcie $D$. Ak by distribúcia $D$ bola príliš zložitá a nevedeli by sme generovať z nej rýchlo, celý algoritmus by bol pomalý.
+Našťastie v prípade polyédrov tento problém nenastane, možno vhodne zvoliť distribúciu $D$ (viď kapitola 3, implementácia Hit-and-Run algoritmu).
 
-\textbf{TODO} Vplyv volby distribucie $D$
-
-\textbf{TODO} Dokaz konvergentnosti, rychlost \cite{hit-and-run_chen}

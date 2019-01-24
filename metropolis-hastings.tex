@@ -1,8 +1,14 @@
-\chapter{Metropolis-Hastings metódy}
+\chapter{Metódy generovania vnútri polyédru}
 
-V tejto kapitole sa budeme zaoberať Metropolis-Hastings algoritmom na generovanie bodov z ľubovoľnej distribúcie. Najprv sa pozrieme na všeobecný Metropolis-Hastings algoritmus, následne sa pozrieme na jeho konkrétne realizácie.
+V tejto kapitole sa budeme zaoberať známymi metódami na generovanie z určitej distribúcie, ktorá je v našom prípade rovnomerná vnútri polyédra a nulová mimo polyédra. V prvej sekcii sa budeme zaoberať triedou Metropolis-Hastings algoritmov, v druhej kapitole sa budeme zaoberať zamietacími metódami.
 
-\section{Všeobecný Metropolis-Hastings algoritmus}
+\section{Metropolis-Hastings metódy}
+
+V tejto sekcii si predstavíme triedu Metropolis-Hastings algoritmov na generovanie bodov z ľubovoľnej distribúcie. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis-Hastings sa dá pozerať ako na postupnosť stavov markovovských reťazcoch (Markov Chain Monte Carlo). Daným spôsobom je ich možné analyzovať a dokázať, že generujú body podľa žiadanej distribúcie (kvôli časovému obmedzeniu práce je táto časť vynechaná).
+
+Najprv sa pozrieme na všeobecný Metropolis-Hastings algoritmus, následne sa pozrieme na jeho konkrétne realizácie.
+
+\subsection{Všeobecný Metropolis-Hastings algoritmus}
 
 Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédru je rovnomerná v polyédri a nulová mimo neho.
 
@@ -16,7 +22,7 @@ Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom 
 		\For {$i=0,1,\dots,N$} 
 			\State Vygeneruj bod $y$ z $Q(x^{(i)})$
 			\State Vygeneruj $u$ z $U(0,1)$.
-			\If {$u \leq \alpha(x^{(i)},y)$}
+			\If {$u \leq \alpha(y | x^{(i)})$}
 				\State Nastav $x^{(i+1)}=y$
 			\Else
 				\State Nastav $x^{(i+1)}=x^{(i)}$
@@ -26,12 +32,6 @@ Metropolis-Hastings algoritmus je vždy v stave $x^{(i)}$ reprezentovanom bodom 
 	\end{algorithmic}
 \end{algorithm}
 
-Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je možné dokázať, že napriek závislosti po sebe idúcich bodov pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$.
+Môžeme si všimnúť, že v Metropolis-Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je možné dokázať, že napriek závislosti po sebe idúcich bodov pre dostatočne veľké $N$ budú body ${x^{(1)},x^{(2)},\dots,x^{(N)}}$ z hustoty $Q$ (potrebná veľkosť $N$ sa nazýva burn-in period).
 
-Potrebná veľkosť $N$ sa nazýva burn-in period. \textbf{TODO} Ake velke N?
-
-\textbf{TODO} Vseobecnejsie Monte Carlo Markov Chain metody - Metropolis algoritmus ako specialny pripad
-
-\textbf{TODO} volba parametru $\alpha$
-\\
 V ďalších sekciách si ukážeme niekoľko konkrétnych realizácii Metropolis-Hastings algoritmu. Každá z tých metód obsahuje určité predpoklady na distribúciu, z ktorej chceme generovať, no dá použiť aj na rovnomerné generovanie bodov v polyédri.

@@ -1,0 +1,53 @@
+\chapter{Metódy na riešenie problému optimálneho riadenia}
+
+Cieľom tejto kapitoly je predstaviť Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie problému optimálneho riadenia (optimal design problem). Vďaka ekvivalencii problému optimálneho riadenia a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman} možno REX využiť aj na riešenie MVEE problému.
+Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopeniu REX algoritmu sa najprv pozrieme na jednoduchšie metódy riešenia problému optimálneho riadenia.
+
+\section{Základné metódy na riešenie problému optimálneho riadenia}
+
+Najprv si predstavíme metódu Subspace Ascend Method (ďalej SAM) ako všeobecnú iteratívnu metódu na riešenie problému optimálneho riadenia a Vertex Exchange Method (VEM) ako jej konkrétnu realizáciu. Následne sa pozrieme na REX algoritmus ako na špeciálny prípad SAM, ktorý kombinuje VEM metódu s pažravým prístupom.
+
+Označme návrh na $X$ ako $n$-rozmerný vektor $w$ s nezápornými prvkami so súčtom $1$. Komponent $w_x$ vektoru $w$ predstavuje počet pokusov v bode $x \in X$ \textbf{TODO vysvetlit}. Označme nosnú množinu návrhu $w$ ako $supp(w)=\{x \in X| w_x>0\}$. Množina všetkých návrhov tvorí pravdepodobnostný simplex v $\mathbb{R}^n$, označme ju $\Xi$ (je kompaktná a konvexná). Označme si $M(w)$ informačnú maticu prislúchajúcu k návrhu $w$. Označme si $\Phi: S^m_+ \rightarrow \mathbb{R} \cup \{-\infty\}$, kritérium optimality, buď $D$-optimalitu $\Phi_D$ alebo $A$-optimalitu $\Phi_A$. Naším cieľom bude maximalizovať $\Phi(M(w))$, t.j. nájsť optimálny návrh $$w^* = \argmax_{w \in \Xi} \in \{\Phi(M(w))\}$$.
+
+\subsection{Subspace Ascend Method}
+
+SAM algoritmus postupuje iteratívne. V každej iterácii si vyberie podpriestor v ktorom sa bude hýbať a následne spraví optimálny krok v danom podpriestore:
+
+\begin{algorithm}[H]
+	\caption{Subspace Ascend Method (SAM) \cite{rex_harman}}
+	\label{sam}
+	\begin{algorithmic}[1]
+		\State Zvoľ regulárny $n$ rozmený návrh $w^{(0)}$
+		\While {$w^{(k)}$ nespĺňa podmienky zastavenia}
+			\State Zvoľ podmnožinu bodov $S_k \subset X$
+			\State Nájdi aktívny podpriestor $\Xi$ ako $\Xi_k \leftarrow \{ w \in \Xi | w_x = w_x^{(k)}, x \not \in S_k \}$
+			\State Vypočítaj $w^{(k+1)}$ ako riešenie $\max_{w \in \Xi_k} \Phi(M(w))$ spĺňajúce $\Phi(M(w^{(k+1)})) \geq \Phi(M(w^{(k)}))$
+			\State Set $k \leftarrow k+1$
+		\EndWhile
+		\State Vráť $w$
+	\end{algorithmic}
+\end{algorithm}
+
+SAM algoritmus sa každým krokom nezmenší funkciu $\Phi$, teda sa pohne iba smerom k optimu.
+
+\subsection{Vertex Exchange Method}
+
+VEM algoritmus každým krokom pomocou návrhu $w$ zvolí nový návrh $w'$ ako maximum návrhov $\Phi(M(w'))$ z úsečky medzi návrhom minimalizujúcom nosnú množinu a návrhom minimalizujúcim $X$.
+
+\begin{algorithm}[H]
+	\caption{Vertex Exchange Method (VEM) \cite{rex_harman}}
+	\label{vem}
+	\begin{algorithmic}[1]
+		\State Zvoľ regulárny $n$ rozmerný návrh $w$
+		\While {$w$ nespĺňa podmienky zastavenia}
+			\State Vypočítaj $k \leftarrow \argmin_{u \in supp(w)} \{ d_u(w)\}$
+			\State Vypočítaj $l \leftarrow \argmax_{v \in X} \{ d_v(w)\}$
+			\State Vypočítaj $\alpha^* \leftarrow \argmax_{\alpha \in [-w_l, w_k]} \{ \Phi_D (M(w+\alpha e_l -\alpha e_k))\}$
+			\State Nastav $w_k \leftarrow w_k - \alpha^*$
+			\State Nastav $w_l \leftarrow w_l + \alpha^*$
+		\EndWhile
+		\State Vráť $w$
+	\end{algorithmic}
+\end{algorithm}
+
+Krok VEM algoritmu sa označuje ako leading Bohning exchange (ďalej LBE). Dvojica ($k$, $l$) sa označuje ako pár LBE.

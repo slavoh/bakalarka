@@ -1,71 +1,25 @@
-\chapter{Randomized exchange algorithm}
-
-V tejto kapitole si predstavíme Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie optimal design problému \textbf{TODO preložiť}. Taktiež, vďaka ekvivalencii optimal design problému a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman}, sa dá využiť aj na riešenie MVEE problému.
-Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopopeniu algoritmu sa najprv pozrieme na metódy riešenia optimal design problému.
-
-\section{Metódy na riešenie optimal design point problému}
-
-Najprv si predstavíme metódu Subspace Ascend Method (ďalej SAM) ako všeobecnú iteratívnu metódu na riešenie optimal design problému a Vertex Exchange Method (VEM) ako jej konkrétnu realizáciu \textbf{TODO čo je na VEM špecifické}. Následne sa pozrieme na REX algoritmus ako na špeciálny prípad SAM, ktorý kombinuje VEM metódu s pažravým prístupom.\\
-
-SAM algoritmus postupuje iteratívne. V každej iterácii si vyberie podpriestor v ktorom sa bude hýbať a následne spraví optimálny krok v danom podpriestore.
-
-\begin{algorithm}[H]
-	\caption{Subspace Ascend Method (SAM) \cite{rex_harman}}
-	\label{sam}
-	\begin{algorithmic}[1]
-		\State Zvoľ regulárny m-point design $w^{(0)}$
-		\While {$w^{(k)}$ nespĺňa podmienky zastavenia}
-			\State Zvoľ podmnožinu bodov $S_k \subset X$
-			\State Nájdi aktívny podpriestor $\Xi$ ako $\Xi_k \leftarrow \{ w \in \Xi : w_x = w_x^{(k)}, x \not \in S_k \}$
-			\State Vypočítaj $w^{(k+1)}$ ako riešenie $\max_{w \in \Xi_k} \Phi(M(w))$ spĺňajúce $\Phi(M(w^{(k+1)})) \geq \Phi(M(w^{(k)}))$
-			\State Set $k \leftarrow k+1$
-		\EndWhile
-		\State Vráť $w$
-	\end{algorithmic}
-\end{algorithm}
-
-\textbf{TODO vysvetlit LBE}
-
-\begin{algorithm}[H]
-	\caption{Vertex Exchange Method (VEM) \cite{rex_harman}}
-	\label{vem}
-	\begin{algorithmic}[1]
-		\State Zvoľ regulárny m-point design $w$
-		\While {$eff.act(w) < eff and time.act < time.max$}
-			\State $k \leftarrow \argmin \{ d_u(w) : u \in supp(w)\}$
-			\State $l \leftarrow \argmax \{ d_v(w) : v \in X \}$
-			\State $\alpha^* \leftarrow \argmax \{ \Phi_D (M(w+\alpha e_l -\alpha e_k)) : \alpha \in [-w_l, w_k] \}$
-			\State $w_k \leftarrow w_k - \alpha^*$
-			\State $w_l \leftarrow w_l + \alpha^*$
-		\EndWhile
-		\State Vráť $w$
-	\end{algorithmic}
-\end{algorithm}
-
 \section {Radomized Exchange Algoritmus}
 
-V tejto sekcii popíšeme randomized exchange algoritmus (REX) predstavený v \cite{rex_harman}, dá sa na neho pozerať ako na špeciálny prípad SAM algoritmu \cite{rex_harman}.
+V tejto sekcii popíšeme randomized exchange algoritmus (REX) predstavený v \cite{rex_harman}, dá sa na neho pozerať ako na špeciálny prípad SAM algoritmu \cite{rex_harman}. REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov. Podľa \cite{rex_harman} je REX algoritmus v praxi rýchlejší ako všetky state-of-the-art algoritmy na riešenie problému optimálneho riadenia.\\
 
-Majme funkciu $g(x)$, ktorú chceme minimalizovať. T.j. nájsť $\min_x g(x)$. Hlavná myšlienka REX algoritmu je počnúc inicializovaným regulárnym bodom $w$ iteratívne vyberať niekoľko bodov (ich počet sa bude líšiť v rámci iterácii) a náhodne vykonať optimálnu výmenu váh medzi vybranými bodmi. Voľba bodov závisí na $g(w)$.
-Optimálna výmena váh je analogická kroku VEM algoritmu.
+Nech $w$ je regulárny návrh, nech $g(w)$ je $n$-rozmerný vektor s komponentami $g_x(w)$. Hlavná myšlienka REX algoritmu je počnúc inicializovaným regulárnym návrhov $w$ iteratívne vyberať niekoľko návrhov (ich počet sa bude líšiť v rámci iterácii) a náhodne vykonať optimálnu výmenu váh medzi vybranými bodmi. Optimálna výmena váh je analogická LBE kroku VEM algoritmu. Voľba návrhov závisí na $g(w)$.
 
-REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov.
 
 \begin{itemize}
-	\item \textbf{Krok LBE.} Pri danom bode $w$, vypočítaj $g(w)$ a urob LBE krok daný nasledovne: $$\alpha^* \leftarrow \argmax \{ \Phi_D (M(w+\alpha e_l -\alpha e_k)) : \alpha \in [-w_l, w_k] \},$$ kde 
-	$k \in \argmin \{ d_u(w) : u \in supp(w)\}, l \in \argmax \{ d_v(w) : v \in X \}$. Optimálny krok $\alpha^*_{k,l}(w)$ nazvime \textit{nulujúci}, ak je rovný buď $-w_l$ alebo $w_k$. To zodpovedá prípadu, keď sme sa optimálnym krokom pohli do niektorého z bodu $w_l$ alebo $w_k$ \textbf{TODO čomu to zodpovedá}
+	\item \textbf{Krok LBE.} Pri danom návrhu $w$, vypočítaj $g(w)$ a urob LBE krok daný nasledovne: $$\alpha^* \leftarrow \argmax_{\alpha \in [-w_l, w_k] \}} \{ \Phi_D (M(w+\alpha e_l -\alpha e_k)),$$ kde 
+	$k \in \argmin_{u \in supp(w)} \{ d_u(w)\}, l \in \argmax_{v \in X} \{ d_v(w)\}$. Optimálny krok $\alpha^*_{k,l}(w)$ nazvime \textit{nulujúci}, ak je rovný buď $-w_l$ alebo $w_k$. To zodpovedá prípadu, keď sme sa optimálnym krokom pohli do niektorého z návrh $w_l$ alebo $w_k$.
 
-	\item \textbf{Výber aktívneho podpriestoru.} Podpriestor $S \subset X$, v ktorom sa pohneme bude zvolený ako zjednotenie dvoch množín. Jednou vybranou pažravým procesom ($S_{greedy}$) a druhou ako nosnou množinou bodu w ($S_{support}$).
+	\item \textbf{Výber aktívneho podpriestoru.} Podpriestor $S \subset X$, v ktorom sa pohneme bude zvolený ako zjednotenie dvoch množín. Jednou vybranou pažravým procesom ($S_{greedy}$) a druhou ako nosnou množinou návrh w ($S_{support}$).
 	\begin{itemize}
-		\item \textbf{Pažravá množina.} Nech $L=\min (\gamma m, n)$ je počet bodov, ktoré vyberieme. Potom zvoľ $S_{greedy}$ ako $$S_{greedy} = \{l_1^*, \dots, l_L^* \} \subset X,$$ kde $l_i^*$ je najväčšia zložka vektoru $g(w)$.
+		\item \textbf{Pažravá množina.} Nech $L=\min (\gamma m, n)$ je počet návrhov, ktoré vyberieme. Potom zvoľ $S_{greedy}$ ako $$S_{greedy} = \{l_1^*, \dots, l_L^* \} \subset X,$$ kde $l_i^*$ je najväčšia zložka vektoru $g(w)$.
 		\item \textbf{Nosná množina.} Nastav $$S_{support}(w)=supp(w).$$ Označme $K$ veľkosť nosnej množiny $K= |supp(w)|$.
-		\item \textbf{Aktívny podpriestor.} Aktívny podpriestor $S$ je definovaný ako $$S=S_{greedy} \cup S_{support}.$$ Váhy bodov mimo aktívneho podpriestoru nebudú upravované v tejto iterácii.
+		\item \textbf{Aktívny podpriestor.} Aktívny podpriestor $S$ je definovaný ako $$S=S_{greedy} \cup S_{support}.$$ Váhy návrhov mimo aktívneho podpriestoru nebudú upravované v tejto iterácii.
 	\end{itemize}
 
-	\item \textbf{Krok v aktívnom podpriestore.} Teraz vykonáme krok v ktorom aktualizujeme hodnoty $w_v$ pre $v \in S$. Body $w_v$ pre $v \not \in S$ ostanú nezmenené.
+	\item \textbf{Krok v aktívnom podpriestore.} Teraz vykonáme krok v ktorom aktualizujeme hodnoty $w_v$ pre $v \in S$. Návrhy $w_v$ pre $v \not \in S$ ostanú nezmenené.
 	\begin{itemize}
-		\item \textbf{Tvorba párov.} Nech $(k_1, \dots, k_K)$ je uniformne náhodná premutácia $S_{support}$ a nech $(l_1, \dots, l_L)$ je uniformne náhodná pormutácia $S_{greedy}$. Potom postupnosť aktívnych bodov je $$ (k_1,l_1), (k_2, l_1), \dots, (k_1, l_L), (k_2,l_L), \dots, (k_K, l_L) $$
-		\item \textbf{Aktualizácia.} Vykonaj postupne všetky $\Phi$-optimálne kroky medzi bodmi z postupnosti \textbf{TODO odkaz sa na postupnost nad} bodov z $K \times L$ s prisluchajúcimi aktualizáciami $w$ a $M(w)$.
+		\item \textbf{Tvorba párov.} Nech $(k_1, \dots, k_K)$ je uniformne náhodná premutácia $S_{support}$ a nech $(l_1, \dots, l_L)$ je uniformne náhodná pormutácia $S_{greedy}$. Potom postupnosť aktívnych návrhov je $$ (k_1,l_1), (k_2, l_1), \dots, (k_1, l_L), (k_2,l_L), \dots, (k_K, l_L) $$
+		\item \textbf{Aktualizácia.} Vykonaj postupne všetky $\Phi$-optimálne LBE kroky medzi návrhmi z $ (k_1,l_1), \dots, (k_K, l_L)$ s prisluchajúcimi aktualizáciami $w$ a $M(w)$.
 	\end{itemize}
 \end{itemize}
 
@@ -74,8 +28,8 @@ REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov.
 	\caption{REX algoritmus \cite{rex_harman}}
 	\label{rex}
 	\begin{algorithmic}[1]
-		\State Zvoľ regulárny m-point design $w$
-		\While {$w^{(k)}$ nespĺňa podmienky zastavenia}
+		\State Zvoľ regulárny $n$-rozmerný návrh $w$
+		\While {$w$ nespĺňa podmienky zastavenia}
 			\State Urob LBE krok vo $w$
 			\State Nech $k$ je vektor zodpovedajúci náhodnej permutácii prvkov $supp(w)$
 			\State Nech $l$ je vektor zodpovedajúci náhodnej permutácii $L=\min(\gamma m, n)$ indexov prvkov $g(w)$
@@ -93,4 +47,4 @@ REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov.
 	\end{algorithmic}
 \end{algorithm}
 
-
+\textbf{Táto sekcia je nedokončená.}

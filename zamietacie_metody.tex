@@ -1,4 +1,4 @@
-\chapter{Zamietacie metódy}
+\section{Zamietacie metódy}
 
 Zamietacie metódy nám poskytujú jeden zo spôsobov rovnomerného generovania bodov na určitej množine.
 Myšlienka za nimi je nasledovná: Označme si $X$ množinu, na ktorej chceme rovnomerne náhodne generovať prvky. Predpokladajme, že nevieme priamo rovnomerne generovať body na $X$, no vieme rovnomerne generovať na množine $S$, $X \subset S$.
@@ -16,25 +16,23 @@ Náš generátor $G_S$ bude pracovať nasledovne:
 		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
 	\end{algorithmic}
 \end{algorithm}
-Generátor $G_S$ vygeneruje bod $x \in S$, ak je ten bod aj z $X$, tak ho vráti ako výstup, inak vygeneruje nový bod $x \in S$.\\
+Generátor $G_S$ vygeneruje bod $x \in S$, ak je ten bod aj z $X$, tak ho vráti ako výstup, inak vygeneruje nový bod $x \in S$. Všimnime si, že generátor $G_S$ je závislý iba od $S$, generuje na $X$ rovnomerne náhodne.
 
-Generátor $G_S$ generuje na $X$ rovnomerne náhodne. Očakávaná rýchlosť generovania závisí od toho, koľkokrát $G_S$ vygeneruje bod mimo $X$. Z rovnomernosti $G_S$ je tá pravdepodobnosť rovná $\frac{|S-X|}{|S|} = 1-\frac{|X|}{|S|}$. Označme si $p_k$ pravdepodobnosť, že $G_S$ vygeneruje bod z $X$ na $k$-ty pokus, t.j. najprv $k-1$ krát vygeneruje bod mimo $X$ a potom vygeruje bod z $X$. Platí $p_k= (1-\frac{|X|}{|S|})^{k-1}\frac{|X|}{|S|}$. Očakávý počet generovaní $G_S$ je $E(G_S)=\sum^{\infty}_{0}kp_k=\frac{|X|}{|S|} \sum^{\infty}_{0}k(1-\frac{|X|}{|S|})^{k-1}=\frac{|X|}{|S|} \frac{1}{((1-\frac{|X|}{|S|})-1)^2} = \frac{|S|}{|X|}$.
+Očakávaná rýchlosť generovania závisí od toho, koľkokrát $G_S$ vygeneruje bod mimo $X$. Z rovnomernosti $G_S$ je tá pravdepodobnosť rovná $\frac{|S-X|}{|S|} = 1-\frac{|X|}{|S|}$. Označme si $p_k$ pravdepodobnosť, že $G_S$ vygeneruje bod z $X$ na $k$-ty pokus, t.j. najprv $k-1$ krát vygeneruje bod mimo $X$ a potom vygeruje bod z $X$. Platí $p_k= (1-\frac{|X|}{|S|})^{k-1}\frac{|X|}{|S|}$. Očakávý počet generovaní $G_S$ je $E(G_S)=\sum^{\infty}_{0}kp_k=\frac{|X|}{|S|} \sum^{\infty}_{0}k(1-\frac{|X|}{|S|})^{k-1}=\frac{|X|}{|S|} \frac{1}{((1-\frac{|X|}{|S|})-1)^2} = \frac{|S|}{|X|}$.
 
-Táto metóda generovania je vhodná, ak $\frac{|S|}{|X|}$ nie je veľké, t.j. ak je obal $S$ polyédru $X$ dostatočne malý. Ak je $\frac{|S|}{|X|} \sim \infty$, tak je táto metóda nepoužiteľná.
+Táto metóda generovania je vhodná, ak je $\frac{|S|}{|X|}$ dostatočne malé, t.j. ak je obal $S$ relatíve malý oproti polyédru $X$. Ak je $\frac{|S|}{|X|} \sim \infty$, tak je táto metóda nepoužiteľná.
 
-\section{Použitie na generovanie bodu vnútri polyédru}
+\subsection{Použitie na generovanie bodu vnútri polyédru}
 
 Zamyslime sa nad tým, ako by sme vedeli použiť túto metódu na generovanie bodu vnútri polyédru. Ako množinu možných $S$, $X \subset S$ môžeme použiť najmenší kváder so stranami rovnobežnými s osami. Vypočítať súradnece kvádra je ľahké, stačí nám to spraviť raz pred (začatím generovania) pomocou lineárneho programovanie.
 
-Žiaľ, pre takúto množinu $S$ môže byť podiel $\frac{|S|}{|X|}$ byť ľubovoľne veľký. Ako príklad na množinu $X$ uveďme kváder s obsahom $k$ pozdĺž diagonály kocky $[0,1]^n$, dotýkajúci sa každej steny kocky $[0,1]^n$. Zrejme najmenšia množina $S$ (kváder so stranami rovnobežnými s osami) obaľujúca $X$ je kocka $[0,1]^n$, ktorá má obsah $1$. Platí $\frac{|S|}{|X|}=\frac{1}{k}$. Keďže vieme nájsť kváder taký, že sa dotýka stien kocky $[0,1]^n$ a $k$ je ľubovoľne malé, tak očakávaná dĺžka generovania touto metódou (pre danú množinu $S$) je ľubovovoľne veľká.\\
+Žiaľ, pre takúto množinu $S$ môže byť podiel $\frac{|S|}{|X|}$ byť ľubovoľne veľký. Ako príklad na takú množinu $X$ uveďme kváder s obsahom $k$ pozdĺž diagonály kocky $[0,1]^n$, dotýkajúci sa každej steny kocky $[0,1]^n$. Zrejme najmenšia množina $S$ (kváder so stranami rovnobežnými s osami) obaľujúca $X$ je kocka $[0,1]^n$, ktorá má obsah $1$. Platí $\frac{|S|}{|X|}=\frac{1}{k}$. Keďže vieme nájsť kváder taký, že sa dotýka stien kocky $[0,1]^n$ a $k$ je ľubovoľne malé, tak očakávaná dĺžka generovania touto metódou (pre danú množinu $S$) je ľubovovoľne veľká.\\
 
-Ako ďalšia možná množina $S$ prichádza do úvady elipsoid obaľujúci polyéder. Keďže chceme, aby bol podiel $\frac{|S|}{|X|}$ čo najmenší, budeme skúmať elipsoid s najmenším obsahom obaľujúci polyéder - Minumum Volume Enclosing Elipsoid (ďalej MVEE). Nájsť daný elipsoid a generovať body v ňom vieme pomocou REX algoritmu, s ktorým sa oboznámime v ďalšej kapitole.
+Ako ďalšia možná množina $S$ prichádza do úvady elipsoid obaľujúci polyéder. Keďže chceme, aby bol podiel $\frac{|S|}{|X|}$ čo najmenší, budeme skúmať elipsoid s najmenším obsahom obaľujúci polyéder - Minumum Volume Enclosing Elipsoid (ďalej MVEE). Nájsť daný elipsoid a generovať body v ňom vieme pomocou REX algoritmu, ktorému je venovaná ďalšia kapitola.
 
 Môžeme si všimnúť, že MVEE elipsoid obsahuje veľa informácie o tom, ako vyzerá polyéder. Keďže nedegenerovaný elipsoid je jednotková guľa zobrazená regulárnou lineárnou transformáciou, vieme pomocou inverznej transformácie zobraziť elipsoid na jednotkovú guľu. Dané zobrazenie možno vypočítať pomocou osí MVEE elipsoidu.\\
 
-Keďže najjednoduchšia množina $S$, v ktorej vieme generovať je kváder, v \textbf{TODO doplnit cislo sekcie} sa pozrieme na prípad, keď za $S$ zvolíme kváder, ktorého osi budú zhodné s osami MVEE elipsoidu. Na daný kváder sa dá pozerať ako na kváder s najmenším objemom obaľujúcim MVEE elipsoid. Tiež pre neho platí, že je obrazom kocky $[0,1]^n$ v zobrazení, ktoré zobrazí jednotkovú guľu na MVEE elipsoid. Taktiež daný kváder je kváder obaľujúci MVEE elipsoid s najmenším objemom. Pre daný kváder možno spraviť odhad veľkosti:
-\textbf{TODO odhad velkosti}
+Keďže najjednoduchšia množina $S$, v ktorej vieme generovať je kváder, v $3.$ kapitole sa pozrieme na prípad, keď za $S$ zvolíme kváder, ktorého osi budú zhodné s osami MVEE elipsoidu. Na daný kváder sa dá pozerať ako na kváder s najmenším objemom obaľujúcim MVEE elipsoid. Tiež pre neho platí, že je obrazom kocky $[0,1]^n$ v zobrazení, ktoré zobrazí jednotkovú guľu na MVEE elipsoid. Okrem iného, daný kváder je kváder obaľujúci MVEE elipsoid s najmenším objemom. Pre daný kváder možno spraviť odhad veľkosti $\frac{|S|}{|X|}$ (viď príloha).
 
-\textbf{TODO zisti, ci je to kvader s najmensim objemom obalujuci polyeder (skor nie)}
 
 
