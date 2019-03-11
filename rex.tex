@@ -1,25 +1,25 @@
 \section {Radomized Exchange Algoritmus}
 
-V tejto sekcii popíšeme randomized exchange algoritmus (REX) predstavený v \cite{rex_harman}, dá sa na neho pozerať ako na špeciálny prípad SAM algoritmu \cite{rex_harman}. REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov. Podľa \cite{rex_harman} je REX algoritmus v praxi rýchlejší ako všetky state-of-the-art algoritmy na riešenie problému optimálneho riadenia.\\
+V tejto podkapitole popíšeme randomized exchange algoritmus (REX) predstavený v \cite{rex_harman}, dá sa na neho pozerať ako na špeciálny prípad SAM algoritmu \cite{rex_harman}. REX algoritmus kombinuje kroky VEM algoritmu a pažravých algoritmov. Podľa \cite{rex_harman} je REX algoritmus v praxi rýchlejší ako všetky state--of--the--art algoritmy na riešenie problému optimálneho riadenia. Na uvedenie predstavy o rýchlosti REX algoritmu, o viacerých (empiricky pomalších) algoritmoch na riešenie problému optimálneho riadenia bolo dokázané, že konvergujú v lineárnom čase. T.j. do vzialenosti $\epsilon$ od optima dôjdu v čase \textbf{TODO bigO} $O(log(\frac{1}{\epsilon}))$ (napr. Khachiyanov algoritmus \textbf{TODO citovat})\\
 
-Nech $w$ je regulárny návrh, nech $g(w)$ je $n$-rozmerný vektor s komponentami $g_x(w)$. Hlavná myšlienka REX algoritmu je počnúc inicializovaným regulárnym návrhov $w$ iteratívne vyberať niekoľko návrhov (ich počet sa bude líšiť v rámci iterácii) a náhodne vykonať optimálnu výmenu váh medzi vybranými bodmi. Optimálna výmena váh je analogická LBE kroku VEM algoritmu. Voľba návrhov závisí na $g(w)$.
+Nech $w$ je regulárny návrh, nech $g(w)$ je $n$--rozmerný vektor s komponentami $g_x(w)$. Hlavná myšlienka REX algoritmu je počnúc inicializovaným regulárnym návrhom $w$ iteratívne vyberať niekoľko návrhov (ich počet sa bude líšiť v rámci iterácii) a náhodne vykonať optimálnu výmenu váh medzi vybranými bodmi. Optimálna výmena váh je analogická LBE kroku VEM algoritmu. Voľba návrhov závisí na $g(w)$. Algoritmus bude postupovať nasledovne:
 
 
 \begin{itemize}
 	\item \textbf{Krok LBE.} Pri danom návrhu $w$, vypočítaj $g(w)$ a urob LBE krok daný nasledovne: $$\alpha^* \leftarrow \argmax_{\alpha \in [-w_l, w_k] \}} \{ \Phi_D (M(w+\alpha e_l -\alpha e_k)),$$ kde 
 	$k \in \argmin_{u \in supp(w)} \{ d_u(w)\}, l \in \argmax_{v \in X} \{ d_v(w)\}$. Optimálny krok $\alpha^*_{k,l}(w)$ nazvime \textit{nulujúci}, ak je rovný buď $-w_l$ alebo $w_k$. To zodpovedá prípadu, keď sme sa optimálnym krokom pohli do niektorého z návrh $w_l$ alebo $w_k$.
 
-	\item \textbf{Výber aktívneho podpriestoru.} Podpriestor $S \subset X$, v ktorom sa pohneme bude zvolený ako zjednotenie dvoch množín. Jednou vybranou pažravým procesom ($S_{greedy}$) a druhou ako nosnou množinou návrh w ($S_{support}$).
+	\item \textbf{Výber aktívneho podpriestoru.} Podpriestor $S \subset X$, v ktorom sa pohneme bude zvolený ako zjednotenie dvoch množín. Jednou vybranou pažravým procesom ($S_{greedy}$) a druhou ako nosič návrhu $w$ ($S_{support}$).
 	\begin{itemize}
 		\item \textbf{Pažravá množina.} Nech $L=\min (\gamma m, n)$ je počet návrhov, ktoré vyberieme. Potom zvoľ $S_{greedy}$ ako $$S_{greedy} = \{l_1^*, \dots, l_L^* \} \subset X,$$ kde $l_i^*$ je najväčšia zložka vektoru $g(w)$.
-		\item \textbf{Nosná množina.} Nastav $$S_{support}(w)=supp(w).$$ Označme $K$ veľkosť nosnej množiny $K= |supp(w)|$.
+		\item \textbf{Nosič.} Nastav $$S_{support}(w)=supp(w).$$ Označme $K$ veľkosť nosnej množiny $K= |supp(w)|$.
 		\item \textbf{Aktívny podpriestor.} Aktívny podpriestor $S$ je definovaný ako $$S=S_{greedy} \cup S_{support}.$$ Váhy návrhov mimo aktívneho podpriestoru nebudú upravované v tejto iterácii.
 	\end{itemize}
 
-	\item \textbf{Krok v aktívnom podpriestore.} Teraz vykonáme krok v ktorom aktualizujeme hodnoty $w_v$ pre $v \in S$. Návrhy $w_v$ pre $v \not \in S$ ostanú nezmenené.
+	\item \textbf{Krok v aktívnom podpriestore.} Teraz vykonáme krok, v ktorom aktualizujeme hodnoty $w_v$ pre $v \in S$. Návrhy $w_v$ pre $v \not \in S$ ostanú nezmenené.
 	\begin{itemize}
-		\item \textbf{Tvorba párov.} Nech $(k_1, \dots, k_K)$ je uniformne náhodná premutácia $S_{support}$ a nech $(l_1, \dots, l_L)$ je uniformne náhodná pormutácia $S_{greedy}$. Potom postupnosť aktívnych návrhov je $$ (k_1,l_1), (k_2, l_1), \dots, (k_1, l_L), (k_2,l_L), \dots, (k_K, l_L) $$
-		\item \textbf{Aktualizácia.} Vykonaj postupne všetky $\Phi$-optimálne LBE kroky medzi návrhmi z $ (k_1,l_1), \dots, (k_K, l_L)$ s prisluchajúcimi aktualizáciami $w$ a $M(w)$.
+		\item \textbf{Tvorba párov.} Nech $(k_1, \dots, k_K)$ je uniformne náhodná premutácia $S_{support}$ a nech $(l_1, \dots, l_L)$ je uniformne náhodná permutácia $S_{greedy}$. Potom postupnosť aktívnych návrhov je $$ (k_1,l_1), (k_2, l_1), \dots, (k_1, l_L), (k_2,l_L), \dots, (k_K, l_L) $$.
+		\item \textbf{Aktualizácia.} Vykonaj postupne všetky $\Phi$--optimálne LBE kroky medzi návrhmi z $ (k_1,l_1), \dots, (k_K, l_L)$ s prisluchajúcimi aktualizáciami $w$ a $M(w)$.
 	\end{itemize}
 \end{itemize}
 
@@ -28,14 +28,14 @@ Nech $w$ je regulárny návrh, nech $g(w)$ je $n$-rozmerný vektor s komponentam
 	\caption{REX algoritmus \cite{rex_harman}}
 	\label{rex}
 	\begin{algorithmic}[1]
-		\State Zvoľ regulárny $n$-rozmerný návrh $w$
+		\State Zvoľ regulárny $n$--rozmerný návrh $w$
 		\While {$w$ nespĺňa podmienky zastavenia}
 			\State Urob LBE krok vo $w$
 			\State Nech $k$ je vektor zodpovedajúci náhodnej permutácii prvkov $supp(w)$
 			\State Nech $l$ je vektor zodpovedajúci náhodnej permutácii $L=\min(\gamma m, n)$ indexov prvkov $g(w)$
 			\For {$l=1 \dots L$}
 				\For {$l=1 \dots K$}
-					\State $\alpha^* \leftarrow \argmax \{ \Phi_D (M(w+\alpha e_l -\alpha e_k)) : \alpha \in [-w_l, w_k] \}$
+					\State $\alpha^* \leftarrow \argmax_{\alpha \in [-w_l, w_k]} \{ \Phi_D (M(w+\alpha e_l -\alpha e_k))\}$
 					\If {LBE krok bol nulujúci alebo $\alpha^* = -w_l$ alebo $\alpha^* = w_k$ }
 						\State $w_k \leftarrow w_k - \alpha^*$
 						\State $w_l \leftarrow w_l + \alpha^*$
@@ -47,4 +47,3 @@ Nech $w$ je regulárny návrh, nech $g(w)$ je $n$-rozmerný vektor s komponentam
 	\end{algorithmic}
 \end{algorithm}
 
-\textbf{Táto sekcia je nedokončená.}

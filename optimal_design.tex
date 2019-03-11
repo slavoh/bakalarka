@@ -1,13 +1,13 @@
-\chapter{Metódy na riešenie problému optimálneho riadenia}
+\chapter{Metódy na riešenie problému optimálneho návrhu}
 
-Cieľom tejto kapitoly je predstaviť Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie problému optimálneho riadenia (optimal design problem). Vďaka ekvivalencii problému optimálneho riadenia a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman} možno REX využiť aj na riešenie MVEE problému.
-Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopeniu REX algoritmu sa najprv pozrieme na jednoduchšie metódy riešenia problému optimálneho riadenia.
+Cieľom tejto kapitoly je predstaviť Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie problému optimálneho návrhu (optimal design problem). Vďaka ekvivalencii problému optimálneho návrhu a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman} možno REX využiť aj na riešenie MVEE problému.
+Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopeniu REX algoritmu sa najprv pozrieme na jednoduchšie metódy riešenia problému optimálneho návrhu.
 
-\section{Základné metódy na riešenie problému optimálneho riadenia}
+\section{Základné metódy na riešenie problému optimálneho návrhu}
 
-Najprv si predstavíme metódu Subspace Ascend Method (ďalej SAM) ako všeobecnú iteratívnu metódu na riešenie problému optimálneho riadenia a Vertex Exchange Method (VEM) ako jej konkrétnu realizáciu. Následne sa pozrieme na REX algoritmus ako na špeciálny prípad SAM, ktorý kombinuje VEM metódu s pažravým prístupom.
+Najprv si predstavíme metódu Subspace Ascend Method (ďalej SAM) ako všeobecnú iteratívnu metódu na riešenie problému optimálneho návrhu a Vertex Exchange Method (VEM) ako jej konkrétnu realizáciu. Následne sa pozrieme na REX algoritmus ako na špeciálny prípad SAM, ktorý kombinuje VEM metódu s pažravým prístupom.
 
-Označme návrh na $X$ ako $n$-rozmerný vektor $w$ s nezápornými prvkami so súčtom $1$. Komponent $w_x$ vektoru $w$ predstavuje počet pokusov v bode $x \in X$ \textbf{TODO vysvetlit}. Označme nosnú množinu návrhu $w$ ako $supp(w)=\{x \in X| w_x>0\}$. Množina všetkých návrhov tvorí pravdepodobnostný simplex v $\mathbb{R}^n$, označme ju $\Xi$ (je kompaktná a konvexná). Označme si $M(w)$ informačnú maticu prislúchajúcu k návrhu $w$. Označme si $\Phi: S^m_+ \rightarrow \mathbb{R} \cup \{-\infty\}$, kritérium optimality, buď $D$-optimalitu $\Phi_D$ alebo $A$-optimalitu $\Phi_A$. Naším cieľom bude maximalizovať $\Phi(M(w))$, t.j. nájsť optimálny návrh $$w^* = \argmax_{w \in \Xi} \in \{\Phi(M(w))\}$$.
+Označme návrh na $X$ ako $n$--rozmerný vektor $w$ s nezápornými prvkami so súčtom $1$. Komponent $w_x$ vektoru $w$ predstavuje počet pokusov v bode $x \in X$ \textbf{TODO vysvetlit}. Označme nosič návrhu $w$ ako $supp(w)=\{x \in X| w_x>0\}$. Množina všetkých návrhov tvorí pravdepodobnostný simplex v $\mathbb{R}^n$, označme ju $\Xi$ (je kompaktná a konvexná). Označme si $M(w)$ informačnú maticu prislúchajúcu k návrhu $w$. Označme si $\Phi: S^m_+ \rightarrow \mathbb{R} \cup \{-\infty\}$, kritérium optimality, buď $D$--optimalitu $\Phi_D$ alebo $A$--optimalitu $\Phi_A$. Naším cieľom bude maximalizovať $\Phi(M(w))$, t.j. nájsť optimálny návrh $$w^* = \argmax_{w \in \Xi} \in \{\Phi(M(w))\}$$.
 
 \subsection{Subspace Ascend Method}
 
@@ -22,17 +22,17 @@ SAM algoritmus postupuje iteratívne. V každej iterácii si vyberie podpriestor
 			\State Zvoľ podmnožinu bodov $S_k \subset X$
 			\State Nájdi aktívny podpriestor $\Xi$ ako $\Xi_k \leftarrow \{ w \in \Xi | w_x = w_x^{(k)}, x \not \in S_k \}$
 			\State Vypočítaj $w^{(k+1)}$ ako riešenie $\max_{w \in \Xi_k} \Phi(M(w))$ spĺňajúce $\Phi(M(w^{(k+1)})) \geq \Phi(M(w^{(k)}))$
-			\State Set $k \leftarrow k+1$
+			\State Nastav $k \leftarrow k+1$
 		\EndWhile
 		\State Vráť $w$
 	\end{algorithmic}
 \end{algorithm}
 
-SAM algoritmus sa každým krokom nezmenší funkciu $\Phi$, teda sa pohne iba smerom k optimu.
+SAM algoritmus každým krokom nezmenší funkciu $\Phi$, teda sa hýbe smerom k optimu.
 
 \subsection{Vertex Exchange Method}
 
-VEM algoritmus každým krokom pomocou návrhu $w$ zvolí nový návrh $w'$ ako maximum návrhov $\Phi(M(w'))$ z úsečky medzi návrhom minimalizujúcom nosnú množinu a návrhom minimalizujúcim $X$.
+Algoritmus VEM postupuje taktiež iteratívne. V kroku z návrhu $w$ nájde návrh $k$ minimalizujúci nosič $w$, návrh $l$minimalizujúci $X$. Ako ďalší návrh $w'$ zvolí návrh z úsečky $kl$ maximalizujúci $\Phi(M(w'))$. \textbf{TODO čo je X?}
 
 \begin{algorithm}[H]
 	\caption{Vertex Exchange Method (VEM) \cite{rex_harman}}

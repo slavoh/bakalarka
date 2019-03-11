@@ -1,12 +1,12 @@
-\subsection{Hit-and-Run generátor}
+\subsection{Hit--and--Run generátor}
 
-Ako jedna z možností na realizáciu Metropolis-Hastings algoritmu prichádza do úvahy Hit-and-Run generátor. Algoritmus je analogický s algoritmom Metropolis-Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou s náhodným smerom cez bod $x^{(i)}$.
+Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou $d_i$ s náhodným smerom cez bod $x^{(i)}$. Označme si $S$ zadaný polyéder. Hustota $Q(x^{(i)})$ je rovnomerná na úsečke $S \cap d_i$ a nulová inde.
 
-Hit-and-Run generátor funguje nasledovne:
+Hit--and--Run generátor funguje nasledovne:
 
 \begin{algorithm}[H]
-	\caption{Hit-and-Run generátor \cite{hit-and-run_chen}}
-	\label{hit-and-run}
+	\caption{Hit--and--Run generátor \cite{hit-and-run_chen}}
+	\label{hit--and--run}
 	\begin{algorithmic}[1]
 		\State Inicializuj $x^{(0)}$
 		\For {$i=0,\dots,N-1$}
@@ -25,6 +25,6 @@ Hit-and-Run generátor funguje nasledovne:
 	\end{algorithmic}
 \end{algorithm}
 
-Použiteľnosť Hit-and-Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z distribúcie $D$. Ak by distribúcia $D$ bola príliš zložitá a nevedeli by sme generovať z nej rýchlo, celý algoritmus by bol pomalý.
-Našťastie v prípade polyédrov tento problém nenastane, možno vhodne zvoliť distribúciu $D$ (viď kapitola 3, implementácia Hit-and-Run algoritmu).
+Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z distribúcie $D$. Ak by distribúcia $D$ bola príliš zložitá a nevedeli by sme generovať z nej rýchlo, celý algoritmus by bol pomalý.
+Našťastie v prípade polyédrov tento problém nenastane, možno vhodne zvoliť distribúciu $D$ (viď kapitola 3, implementácia Hit--and--Run algoritmu).
 

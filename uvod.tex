@@ -2,21 +2,22 @@
 \addcontentsline{toc}{chapter}{Úvod} % rucne pridanie do obsahu
 \markboth{Úvod}{Úvod} % vyriesenie hlaviciek
 
-V rámci tejto práce sa budeme zaoberať metódami na rovnomerné generovanie bodov vo veľarozmernom polyédre (konvexnom mnohostene). Našou úlohou vytvoriť generátor, ktorý bude čo najrýchlejšie generovať body vnútri polyédru rovnomerne náhodne, tj. pravdepodobnosť, že dostaneme bod vnútri ľubovoľnej oblasti polyédra je lineárne závislá iba od objemu danej časti.
+V rámci tejto práce sa budeme zaoberať metódami na rovnomerné generovanie bodov vo veľarozmernom polyédri (konvexnom mnohostene). Našou úlohou je vytvoriť generátor, ktorý bude čo najrýchlejšie generovať body vo vnútri polyédru rovnomerne náhodne, tj. pravdepodobnosť, že dostaneme bod vnútri ľubovoľnej oblasti polyédra je lineárne závislá iba od objemu danej časti.
 
-Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov (V-reprezentácia) alebo ako sústavu lineárnych nerovníc (H reprezentáca). Obidve spomenuté reprezentácie možno v prípade potreby previesť na tú druhú. Prevod medzi nimi síce nie je lacný, no daný výpočet je nutné spraviť len raz pred začatím generovania. Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).
+Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov (V--reprezentácia) alebo ako sústavu lineárnych nerovníc (H reprezentáca). Obidve spomenuté reprezentácie možno v prípade potreby previesť na tú druhú. Prevod medzi nimi síce nie je lacný, no daný výpočet je nutné spraviť len raz pred začatím generovania. Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).
+Generovanie bodov v polyédre predstavuje generovanie bodov, ktoré spľňajú sústavu lineárnych obmedzení (viď H--reprezentácia polyédru).
 
-Rovnomerné generovanie bodu v polyédre je problém s prirodzeným uplatnením v praxi. Mnoho algoritmov, napríklad z triedy Monte Carlo alebo z triedy znáhodnených optimalizačných metódach, je závislých na rovnomernom generovaní bodov splňujúcich určité požiadavky.
-Generovanie bodov v polyédre predstavuje generovanie bodov, ktoré spľňajú sústavu lineárnych obmedzení (viď H-reprezentácia polyédru).
+Rovnomerné generovanie bodu v polyédre je problém s prirodzeným uplatnením v praxi. Mnoho algoritmov, napríklad z triedy Monte Carlo alebo z triedy znáhodnených optimalizačných metód, je závislých na rovnomernom generovaní bodov splňujúcich určité požiadavky.
 
-Ako základ náhody bude náš generátor bodu v polyédre používať rovnomerný generátor čísel $[0,1]$. Pomocou generátoru na $[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním konštanty $a$, alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc).
+Ako základ náhody bude náš generátor bodu v polyédre používať rovnomerný generátor čísel $[0,1]$. Pomocou generátoru na $[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním konštanty $a$, alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc). Generovanie na iných polyédroch, najmä v priestoroch vysokej dimenzie, je však vo všeobecnosti netriviálny problém.
+%\textbf{TODO presunut odstavec}
 
 Cieľom tejto práce je jednak poskytnúť prehľad známych metód, ktoré je možné použiť na rovnomerné generovanie v polyédroch a taktiež implementovať čo najefektívnejší generátor.
 
-V prvej kapitole sa budeme zaoberať známymi metódami, ktoré možno použiť na generovanie na polyédroch. Medzi ne patria Metropolis-Hastings metódy (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať komplexné distribúcie priamim výberom. To možno použiť aj v našom prípade, keď je cielená distribúcia uniformná.
+V prvej kapitole sa budeme zaoberať známymi metódami, ktoré možno použiť na generovanie na polyédroch. Medzi ne patria Metropolis--Hastings metódy (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať komplexné rozdelenia výberom. To možno použiť aj v našom prípade, keď je cielené rozdelenie uniformné. V triede Metropolis--Hastings metód sa špecificky zameriame na Gibbsov generátor, ktorý je možno jednoducho implementovať práve pre generovanie na mnohorozmerných polyédroch.
 Okrem toho sa budeme zaoberať aj zamietacími metódami, ktoré namiesto generovania bodov priamo v polyédri vygeneruju bod na jednoduchšej nadmnožine polyédra rovnomerne náhodne. Po vygenerovaní bodu overia, či leží v polyédre. Ak nie, tak generujú znovu.
 
-Druhá kapitola je venovaná problému optimálneho riadenia (optimal design problem), pomocou ktorého predstavíme algoritmus Randomized Exchange Algorithm. Daný algoritmus vieme použiť aj na nájdnenie elipsoidu s minimálnym objemom obaľujúci zadaný polyéder. Tento elipsoid možno jednak priamo použiť ako nadmnožinu pri zamietacej metóde, no taktiež možno jeho hlavné osi využiť na zistenie natočenia polyédra a obalenie polyédra kvádrom s malým objemom.
+Druhá kapitola je venovaná problému optimálneho návrhu experimentov (optimal design problem), pomocou ktorého predstavíme algoritmus Randomized Exchange Algorithm. Daný algoritmus vieme použiť aj na nájdnenie elipsoidu s minimálnym objemom obaľujúci zadaný polyéder. Tento elipsoid možno jednak priamo použiť ako nadmnožinu pri zamietacej metóde, no taktiež možno jeho hlavné osi využiť na zistenie natočenia polyédra a obalenie polyédra kvádrom s malým objemom.
 
 Tretia kapitola bude obsahovať porovnania algoritmov spomenutých v prvej kapitole a zdrojový kód čo najrýchlejšieho algoritmu na generovanie bodov vnútri polyédru. \\
 
