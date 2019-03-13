@@ -1,7 +1,7 @@
 using PyPlot
 
 # zatial na mensej skale
-no_setups = 3
+no_setups = 9
 setup_size = 10^3
 
 function generate_polyeder( dA, db ) # given by Ax≥b
@@ -19,11 +19,11 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
     w=w/(w'*w)
     while eff_target < eff
         # LBE step using w
-        k=argmin gw cez nosic
-        l=argmax gw cez 𝔛
-        α=argmax Φ(M( w + α2(e_l-e_k) ))
+        kk=argmin gw cez nosic
+        ll=argmax gw cez 𝔛
+        α=argmax Φ(M( w + α2(e_ll-e_kk) ))
 
-        w=w+α(e_l-e_k)
+        w=w+α(e_ll-e_kk)
 
         # set support
         supp=zeros(0)
@@ -34,7 +34,7 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
 
         # set greedy
         L=min(ceiling(Int, γ*m), n)
-        Sgreedy= L najvacsich prvkov gw
+        Sgreedy= L najvacsich prvkov gw # pouzi haldu
 
         # subspace step
         K_perm=shuffle(supp)
@@ -84,13 +84,14 @@ end
 
 times=zeros(no_setups,3)
 for setup=1:no_setups # initiate setup
-    dimension=10^(setup)
+    dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
     (A,b)=generate_polyeder(dimension, dimension) # TODO mozno ine rozmery
+    # TODO sprav H reprezentaciu
 
     # REX generate
     starttime=time()
-    P=find_MVEE(A, b)
+    P=find_MVEE(A, b )
     for i=1:setup_size
         X[i,:]=generate_in_MVEE(P)
         while (!is_in_polyhedra(A,X[i,:],b))
