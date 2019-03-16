@@ -1,0 +1,62 @@
+\subsection{Generovanie polyédrov}
+Metódy boli porovnávané na veľarozmerných polyédroch. 
+Ako vhodná množina polyédrov boli zvolené náhodne generované polyédre. Týmto sa vyhneme degenerovaným polyédrom.
+
+Na generovanie bodov pomocou Metropolis--Hastings metód potrebujeme mať polyéder zadaný v H--reprezentácii, no REX algoritmus na nájdenie MVEE elipsoidu potrebuje ako vstup polyéder vo V--reprezentácii. Preto je nutné v rámci generovania vygenerovať polyéder zároveň v H--reprezentácii aj vo V--reprezentácii. Teda potrebujeme vygenerovať polyéder v jedenej reprezentácii a previesť ho do druhej. Daný prevod bude pre každý polyéder spravený len raz, preto nie je nutné, aby bol rýchly.
+
+Kedže topologickú štruktúru polyédra možno zapísať ako planárny graf, možno jednoducho ukázať, že minimálna množina stien (nerovností) v H--reprezentácii a minimálna množina vrcholov vo V--reprezentácii sú asymptoticky rovnako veľké (až na lineárny faktor).
+Presnejšie, medzi počtom stien $F$ a počtom vrcholov $V$ v polyédri platí vzťah $F+V=E-2$ (kde $E$ je počet hrán polyédra, ktorý možno odhadnúť $E \le 3V-6$ (pre $V>2$).
+Tým pádom by v rámci porovnania metód malo byť pri rozumných transformáciach viac--menej jedno, či najprv náhodne vygenerujeme polyéder v H--reprezentácii, ktorú prevedieme do V--reprezentácie alebo či najprv vygenerujeme V--reprezentáciu, ktorú prevedieme do H--reprezentácie. V obidvoch prípadoch dostaneme asymptoticky rovnako veľké reprezentácie.
+
+Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet vrcholov vo V--reprezentácii a počet stien v H--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných informácii. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi bodmi z V--reprezentácie. Z V--reprezentácie možno odstrániť tie body, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú zrejme minimálne. \textbf{TODO Isto? Ak nie, tak s pravdepodobnostou 1 pri rozumnom provede}
+Overiť, či bod $x$ leží na nadrovine danej vektorom $a$ a konštantou $c$ je triviálne, stačí overiť rovnosť $a^Tx=c$.
+
+Ako alternatíva ku generovaniu polyédrov v jednej reprezentácii a prevádzaniu do druhej reprezentácie možno porovnávať metódy aj inak. 
+Predpokladajme, že máme generátor $G_H$ polyédrov v H--reprezentácii a generátor $G_V$ polyédrov vo V--reprezentácii, pričom $G_H$ a $G_V$ generujú z rovnakého rozdelenia polyédrov.
+Ak by sme testovali Metropolis--Hastings metódy na veľkom množstve polyédrov vygenerovaných pomocou $G_H$ a metódy využívajúce REX na veľkom množstve polyédrov vygenerovaných pomocou $G_V$, výsledky budú podobné ako keby sme spomínané metódy testovali na rovnakých polyédroch.
+Nakoľko nájdenie generátorov $G_H$ a $G_V$ s rovnakým rozdeleným polyédrov je netriviálny problém (už len zabezpečenie rovnakého rozdelenia obsahov polyédrov je netriviálne), tomuto prístupu sa z dôvodu obmedzenému časovému rámcu práce venovať nebudeme.
+
+\subsubsection{Generovanie polyédru vo H--reprezentácii}
+V rámci tejto práce je použitý algoritmus na generovanie náhodných polyédrov popísaný v \cite{may}. Výstupom algoritmu je polyéder v H--reprezentácii, taký, že každý bod má rovnakú pravdepodobnosť byť vnútri. 
+
+Algoritmus využíva prístup Monte Carlo, funguje nasledovne: Najprv náhodne zvolí $m$ nadrovín $p_1, \dots, p_m$, tie rozdeľujú priestor na niekoľko nie nutne ohraničených oblastí.
+Následne rovnomerne náhodne vygeneruje bod $c$ v priestore, ako polyéder $P_c$ zvolí oblasť vymedzenú priamkami $p_i$, v ktorej leží $c$.
+Na záver overí, či je vygenerovaný polyéder $P_c$ ohraničený vopred zvolenou hyperkockou. Ak áno, tak vráti $P_c$. Ak nie je, tak daný polyéder zahodí a generuje znovu.
+
+\begin{algorithm}[H]
+	\caption{Generátor náhodných polyédrov \cite{may}}
+	\label{generator-polyedrov}
+	\begin{algorithmic}[1]
+		\State Náhodne vyber bez návratu $n$ z $m+2n$ indexov obmedzení $i_1, i_2, \dots, i_n$
+		\State Nastav $B=[p^{i_1}, p^{i_2}, \dots, p^{i_n}]^T$, zrejme $B^{-1}$ existuje s pravdepodobnosťou 1
+		\State Nastav $V=B^{-1}[||p^{i_1}||^2, \dots, ||p^{i_n}||^2]^T$
+		\State Náhodne zvoľ $c \in \mathbb{R}^n$
+		\State Nastav $y=c^TB^{-1}$, zvoľ nerovnosti $P_c$ nasledovne:
+		\For {$i=0,1,\dots,n$} 
+			\If {$y_i>0$}
+				\State Nastav $i$--tu nerovnosť na $\ge$
+			\Else
+				\State Nastav $i$--tu nerovnosť na $\le$
+			\EndIf
+		\EndFor
+		\If {$P_c$ nie je celý v hyperkocke}
+			\State Zamietni polyéder $P_c$, vráť sa na $1$
+		\Else
+			\State Odstráň obmedzenia hyperkocky, vráť $P_c$
+		\EndIf
+	\end{algorithmic}
+\end{algorithm}
+
+Pri takomto generovaní v rámci $P_c$ získame nadroviny $p_i$, ktoré neobsahujú žiadnu stenu polyédra. Tieto nadroviny sú zrejme nadbytočné, preto ich môžeme odtiaľ odstrániť.
+Na nájdenie, ktoré nadroviny sú prebytočné možno použiť lineárne programovanie. \textbf{TODO v prípade potreby rozšír}
+
+
+\subsubsection{Prevod polyédru z H--reprezentácie do V--reprentácie}
+
+Treba
+
+\subsubsection{Prevod polyédru z V--reprezentácie do H--reprentácie}
+
+Majme množinu $V$ bodov V--reprezentácie polyédru. Pre každú trojicu bodov z $V$ sa pozrime na rovinu $r$ prechádzajúcu nimi. Daná rovina je stenou polyédru, ak všetky body z $V$ ležia v rovnakom podpriestore vymedzenom $r$.
+
+Takto zrejme vieme dostať všetky steny polyédru v čase $\mathcal{O}(|V|^3)$.
