@@ -1,7 +1,7 @@
 \section{Zamietacie metódy}
 
 Zamietacie metódy nám poskytujú jeden zo spôsobov rovnomerného generovania bodov na určitej množine.
-Myšlienka za nimi je nasledovná: Označme si $X$ množinu, na ktorej chceme rovnomerne náhodne generovať prvky. Predpokladajme, že nevieme priamo rovnomerne generovať body na $X$, no vieme rovnomerne generovať na množine $S$, $X \subset S$.
+Myšlienka za nimi je nasledovná: Označme si $X$ množinu, na ktorej chceme rovnomerne náhodne generovať prvky. Predpokladajme, že nevieme priamo rovnomerne generovať body na $X$ ($X$ je veľarozmerná alebo komplikovane zadaná), no vieme rovnomerne generovať na množine $S$, $X \subset S$.
 
 Náš generátor $G_S$ bude pracovať nasledovne:
 
@@ -16,13 +16,15 @@ Náš generátor $G_S$ bude pracovať nasledovne:
 		\State Vráť ${x^{(1)},x^{(2)},\dots,x^{(N)}}$
 	\end{algorithmic}
 \end{algorithm}
-Generátor $G_S$ vygeneruje bod $x \in S$, ak je ten bod aj z $X$, tak ho vráti ako výstup, inak vygeneruje nový bod $x \in S$. Všimnime si, že generátor $G_S$ je závislý iba od $S$, generuje na $X$ rovnomerne náhodne.
+Generátor $G_S$ vygeneruje bod $x \in S$ rovnomerne náhodne, ak je ten bod aj z $X$, tak ho vráti ako výstup, inak vygeneruje nový bod $x \in S$. Všimnime si, že generátor $G_S$ je závislý iba od $S$ a že generuje body na $X \cap S=X$ rovnomerne náhodne.
 
 Očakávaná rýchlosť generovania závisí od toho, koľkokrát $G_S$ vygeneruje bod mimo $X$. Z rovnomernosti $G_S$ je tá pravdepodobnosť rovná $\frac{|S-X|}{|S|} = 1-\frac{|X|}{|S|}$. Označme si $p_k$ pravdepodobnosť, že $G_S$ vygeneruje bod z $X$ na $k$--ty pokus, t.j. najprv $k-1$ krát vygeneruje bod mimo $X$ a potom vygeruje bod z $X$. Platí $p_k= (1-\frac{|X|}{|S|})^{k-1}\frac{|X|}{|S|}$. Očakávý počet generovaní $G_S$ je $E(G_S)=\sum^{\infty}_{0}kp_k=\frac{|X|}{|S|} \sum^{\infty}_{0}k(1-\frac{|X|}{|S|})^{k-1}=\frac{|X|}{|S|} \frac{1}{((1-\frac{|X|}{|S|})-1)^2} = \frac{|S|}{|X|}$.
 
 Táto metóda generovania je vhodná, ak je $\frac{|S|}{|X|}$ dostatočne malé, t.j. ak je obal $S$ relatíve malý oproti polyédru $X$. Ak je $\frac{|S|}{|X|} \sim \infty$, tak je táto metóda nepoužiteľná.
 
-Navyše, ak poznáme objem $S$, tak táto metóda nám ako vedľajší produkt poskytne aj štatistické intervaly spoľahlivosti pre objem $X$. \textbf{TODO rozpísať}
+Navyše, ak poznáme objem $S$, tak táto metóda nám ako vedľajší produkt poskytne aj štatistické intervaly spoľahlivosti pre objem $X$.
+
+\textbf{TODO rozpísať}
 
 \subsection{Použitie na generovanie bodu vnútri polyédru}
 
@@ -30,11 +32,22 @@ Zamyslime sa nad tým, ako by sme vedeli použiť túto metódu na generovanie b
 
 Žiaľ, pre takúto množinu $S$ môže byť podiel $\frac{|S|}{|X|}$ byť ľubovoľne veľký. Ako príklad na takú množinu $X$ uveďme kváder s obsahom $k$ pozdĺž diagonály kocky $[0,1]^n$, dotýkajúci sa každej steny kocky $[0,1]^n$. Zrejme najmenšia množina $S$ (kváder so stranami rovnobežnými s osami) obaľujúca $X$ je kocka $[0,1]^n$, ktorá má obsah $1$. Platí $\frac{|S|}{|X|}=\frac{1}{k}$. Keďže vieme nájsť kváder taký, že sa dotýka stien kocky $[0,1]^n$ a $k$ je ľubovoľne malé, tak očakávaná dĺžka generovania touto metódou (pre danú množinu $S$) je ľubovovoľne veľká.\\
 
-Ako ďalšia možná množina $S$ prichádza do úvady elipsoid obaľujúci polyéder. Keďže chceme, aby bol podiel $\frac{|S|}{|X|}$ čo najmenší, budeme skúmať elipsoid s najmenším obsahom obaľujúci polyéder --- Minumum Volume Enclosing Elipsoid (ďalej MVEE). Nájsť daný elipsoid a generovať body v ňom vieme pomocou REX algoritmu, ktorému je venovaná ďalšia kapitola.
+Ako ďalšia možná množina $S$ prichádza do úvady elipsoid obaľujúci polyéder (označme si ho $S_{MVEE}$). Keďže chceme, aby bol podiel $\frac{|S_{MVEE}|}{|X|}$ čo najmenší, budeme skúmať elipsoid s najmenším obsahom obaľujúci polyéder --- Minumum Volume Enclosing Elipsoid (ďalej MVEE). Môžeme si všimnúť, že MVEE elipsoid obsahuje veľa informácie o tom, ako vyzerá polyéder. Keďže elipsoid je jednotková guľa zobrazená lineárnou transformáciou, preto možno generovať body vnútri elipsoidu ako obrazy bodov vygenerovaných vnútri jednotkovej gule v lineárnej trasformácii. Nájsť daný elipsoid vieme pomocou REX algoritmu, ktorému je venovaná ďalšia kapitola.\\
 
-Môžeme si všimnúť, že MVEE elipsoid obsahuje veľa informácie o tom, ako vyzerá polyéder. Keďže nedegenerovaný elipsoid je jednotková guľa zobrazená regulárnou lineárnou transformáciou, vieme pomocou inverznej transformácie zobraziť elipsoid na jednotkovú guľu. Dané zobrazenie možno vypočítať pomocou osí MVEE elipsoidu.\\
+Keďže najjednoduchšia množina $S$, v ktorej vieme generovať je kváder, uvažujme prípad, keď $S$ je najmenší kváder obaľujúci MVEE elipsoid. Zrejme osi kvádra budú zhodné s osami MVEE elipsoidu. Označme si daný kváder $S_K$ a metódu generovania založenú na $S_K$ kvádrova metóda. Pre $S_K$ možno spraviť odhad veľkosti $\frac{|S_K|}{|X|}$ \textbf{TODO}. Tiež pre neho platí, že je obrazom kocky $[0,1]^n$ v zobrazení, ktoré zobrazí jednotkovú guľu na MVEE elipsoid.
 
-Keďže najjednoduchšia množina $S$, v ktorej vieme generovať je kváder, v $3.$ kapitole sa pozrieme na prípad, keď za $S$ zvolíme kváder, ktorého osi budú zhodné s osami MVEE elipsoidu. Na daný kváder sa dá pozerať ako na kváder s najmenším objemom obaľujúcim MVEE elipsoid. Tiež pre neho platí, že je obrazom kocky $[0,1]^n$ v zobrazení, ktoré zobrazí jednotkovú guľu na MVEE elipsoid. Okrem iného, daný kváder je kváder obaľujúci MVEE elipsoid s najmenším objemom. Pre daný kváder možno spraviť odhad veľkosti $\frac{|S|}{|X|}$ (viď príloha).
+Avšak, keďže tento kváder $S_K$ nie je rovnobežný s osami sústavy, ako prirodzený spôsob rovnomerného generovania vnútri tohoto kvádra možno použiť generovanie vnútri kvádra (resp. kocky) s osami rovnobežnými s osami sústavy a následne zobrazené lineárnou transformáciou.\\
+
+Tento prístup je analogický prístupu s MVEE elipsoidom. Dokonca, lineárne zobrazenia pri $S_K$ a $S_{MVEE}$ sú rovnaké. Rozdiel je jedine v tom, že pri $S_{MVEE}$ rovnomerne generujeme na $N$--rozmernej jednotkovej guli (kde $N$ je dimenzia priestoru), čo následne zobrazujeme lineárnym zobrazením. Pri $S_K$ rovnomerne generujeme na $N$--rozmernej jednotkovej kocke (obaľujúcej $N$--rozmernú jednotkovú guľu), čo zobrazujeme lineárnym zobrazením na kváder $S_K$ obaľujúci MVEE elipsoid.
+
+Ukážme si, že pri dostatočne rýchlom rovnomernom generovaní bodov v guli kvádrova metóda nie je rýchlejšia ako MVEE metóda. Porovnajme očakávaný čas týchto prístupov. Označme si $t_z$ očakávaný čas výpočtu lineárneho zobrazenia, $S_G$ $N$--rozmernú guľu a $t_G$ očakávaný čas vygenerovania bodu v nej, $S_K$ $N$--rozmernú kocku a $t_K$ očakávané čas vygenerovanie bodu v nej. Nakoniec si označme $S_P$ množinu bodov hľadaného polyédra.
+
+Očakávaný čas na vygenerovanie bodu pomocou MVEE elipsoidu je $\frac{|S_G|}{|S_P|}t_zt_G=\frac{t_z}{|S_P|}t_G|S_G|$, očakávný čas na vygenerovanie pomocou obaľujúceho kvádra $\frac{|S_K|}{|S_P|}t_zt_K=\frac{t_z}{|S_P|}t_K|S_K|$.
+Podiel očakávaných časov je $$\frac{\text{očakávaný čas kvádrovej metódy}}{\text{očakávaný čas MVEE metódy}}=\frac{\frac{|S_K|}{|S_P|}t_zt_K}{\frac{|S_G|}{|S_P|}t_zt_G}=\frac{|S_K|t_K}{|S_G|t_G}.$$ Ak použijeme metódu na rovnomerné generovanie bodov vnútri gule s očakávaným časom $t_G \le \frac{|S_K|t_K}{|S_G|}$, tak podiel očakávaných trvaní metód bude menší--rovný ako jedna, teda kvádrová metóda bude pomalšia.
+
+Môžeme si všimnúť, že zamietacia metóda na generovanie bodov v $S_G$ pomocou nadmnožiny $S_K$ má očakávaný počet generovaní rovný $\frac{|S_K|t_K}{|S_G|}$, preto očakávané trvanie vygenerovania bodu je $\frac{|S_K|t_K}{|S_G|}$.\\
+
+Týmto sme ukázali, že ak by sme pri generovali body v polyédri pomocou MVEE metódy, pričom rovnomerné generovanie bodov v $S_G$ by sme realizovali pomocou zamietaciu metódu s nadmnožinou $S_K$, dostali by sme presne rýchlosť kvádrovej metódy. Kedže existujú aj rýchlejšie metódy rovnomerného generovania vnútri gule, kvádrová metóda je pomalšia ako MVEE metóda. Ďalej sa ňou nebudeme zaoberať.\\
 
 
 

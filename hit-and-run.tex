@@ -1,6 +1,6 @@
 \subsection{Hit--and--Run generátor}
 
-Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou $d_i$ s náhodným smerom cez bod $x^{(i)}$. Označme si $S$ zadaný polyéder. Hustota $Q(x^{(i)})$ je rovnomerná na úsečke $S \cap d_i$ a nulová inde.
+Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting, pričom hustota $Q(x^{(i)})$ je určená priamkou $d_i$ s náhodným smerom cez bod $x^{(i)}$. Označme si $S$ zadaný polyéder. Hustota $Q(x^{(i)})$ je rovnomerná na úsečke $S \cap d_i$ a nulová inde. Pri danej hustote je markovovský reťazec reverzibilný, t.j. $Q(x^{(i+1)}|x^{(i)})=Q(x^{(i)}|x^{(i+1)})$ \cite{hit-and-run_chen} \textbf{TODO overit citaciu} preto je funkcia $\alpha$ konštantne $1$, t.j. algoritmus sa každým krokom pohne do iného bodu.
 
 Hit--and--Run generátor funguje nasledovne:
 
@@ -13,18 +13,12 @@ Hit--and--Run generátor funguje nasledovne:
 			\State Vygeneruj smer $d_i$ z distribúcie $D$ na povrchu sféry
 			\State Nájdi množinu $S_i(d_i,x^{(i)})=\{\lambda \in \mathbb{R}; x^{(i)} + \lambda d_i \in S \} $
 			\State Vygeneruj $\lambda_i \in S_i$ podľa hustoty $Q_i(\lambda | d_i, x^{(i)})$
-			\State Zvoľ $y=x^{(i)}+\lambda_i d_i$
-			\State Vygeneruj $u$ z $U(0,1)$.
-			\If {$u \leq \alpha(y|x^{(i)})$}
-				\State Nastav $x^{(i+1)}=y$
-			\Else
-				\State Nastav $x^{(i+1)}=x^{(i)}$
-			\EndIf
+			\State Nastav $x^{(i+1)}=x^{(i)}+\lambda_i d_i$
 		\EndFor
 		\State Vráť $x^{(1)},x^{(2)},\dots,x^{(N)}$.
 	\end{algorithmic}
 \end{algorithm}
 
-Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z distribúcie $D$. Ak by distribúcia $D$ bola príliš zložitá a nevedeli by sme generovať z nej rýchlo, celý algoritmus by bol pomalý.
-Našťastie v prípade polyédrov tento problém nenastane, možno vhodne zvoliť distribúciu $D$ (viď kapitola 3, implementácia Hit--and--Run algoritmu).
+Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z rozdelenia $D$. Ak by dimenzia priestoru bola príliš veľká, nebolo by možné generovať rýchlo z rozdelenia $D$ a preto celý algoritmus by bol pomalý.
+%Našťastie v prípade polyédrov tento problém nenastane, možno vhodne zvoliť distribúciu $D$ (viď kapitola 3, implementácia Hit--and--Run algoritmu).
 

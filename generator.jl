@@ -35,17 +35,12 @@ function generate_polyeder( dA, db ) # given by Ax≥b
             end
         end
     end
-
-
-    A=randn(dA, db)
-    b=randn(db)
-    # TODO dopisat podla clanku may1982
-
-    return (A,b)
+    return #TODO
 end
 
-function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
-    # function REX(Fx, supp.ini, ver=1, γ=4, eff=1-1e-9, it.max=Inf, t.max=30)
+# function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
+function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it.max=Inf, t.max=30)
+
     δ = 1e-14
     ϵ = 1e-24
     n = size(Fx,1)
@@ -57,7 +52,7 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
     index = [1:n]
     one = ones(m)
 
-    supp = supp.ini # TODO
+    supp = supp_ini # TODO
     K = size(supp,1)
     Fx.supp = Fx[supp, :]
     w = zeros(n)
@@ -65,13 +60,13 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
     w.supp = w[supp]
     M = (sqrt(w.supp) * Fx.supp)'*((sqrt(w.supp) * Fx.supp))
     d.fun = ((Fx * (cholfakt(pinv(M))')^2)' * one / m
-    ord = sort(d.fun) # decreasing
-    lx.vec = shuffle(tail(ord,L))
+    ord = reverse(sort(d.fun))
+    lx.vec = shuffle(ord)[1:L]
     kx.vec = shuffle(supp)
 
     while true
         n.iter = n.iter + 1
-        ord1 = which.min(d.fun[supp]) # TODO
+        ord1 = findmin(d.fun[supp],2)
         kb = supp[ord1]
         lb = ord[1]
         v = [kb, lb]
@@ -118,16 +113,14 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
             end
         end
 
-        supp = index[w > δ] # TODO
+        supp = index[x -> (x>δ), w]
         K = size(supp,1)
         w.supp = w[supp]
         d.fun = ((Fx * (cholfakt(pinv(M))')^2) * one / m
-        ord.ind = (1:n)[d.fun >= -sort(-d.fun, partial=L)[L]]
-        ord = ord.ind[order(d.fun[ord.ind], decreasing=TRUE)]
-        # The two lines above can be replaced by simpler but usually
-        # somewhat slower ord = order(d.fun, decreasing=TRUE)[1:L]
-        lx.vec = sample(ord)
-        kx.vec = sample(supp)
+        ord = reverse(sort(d.fun))[1:L]
+
+        lx.vec = shuffle(ord)
+        kx.vec = shuffle(supp)
 
         eff.act =  1 / d.fun[ord[1]]
         if ((d.fun[ord[1]] < eff.inv) || (n.iter >= it.max))
@@ -137,7 +130,6 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
 
     Phi.best = det(M)^(1/m)
     eff.best = 1/d.fun[ord[1]]
-    list(w.best=w, Phi.best=Phi.best, eff.best=eff.best, n.iter=n.iter, t.act=t.act)
 
     Z=0
     H=0
@@ -152,19 +144,9 @@ function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
 end
 
 function generate_in_MVEE( P )
-    x_sym=randn( size( P, 2) )    # TODO dat d-rozmerne normalne rozdelenie
-    x_ball=(x_sym/sqrt(x_sym'*x_sym))^(1/d)
+    x_sym=MvNormal( size( P, 2), 1 )
+    x_ball=(x_sym/norm(x_sym))^(1/d)
     return P*x_ball
-end
-
-function is_in_polyhedra(A, x, b) # check whether Ax≥b
-    c=A*x-b
-    for i=1:size(c,1)
-        if(c[i]<0)
-            return false
-        end
-    end
-    return true
 end
 
 function gibbsrD(x,j, A, b)
@@ -184,7 +166,7 @@ times=zeros(no_setups,3)
 for setup=1:no_setups # initiate setup
     dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
-    (A,b)=generate_polyeder(dimension, dimension) # TODO mozno ine rozmery
+    (A,b)=generate_polyeder(dimension, dimension) # mozno ine rozmery
     # TODO sprav H reprezentaciu
 
     # REX generate
@@ -192,7 +174,7 @@ for setup=1:no_setups # initiate setup
     P=find_MVEE(A, b )
     for i=1:setup_size
         X[i,:]=generate_in_MVEE(P)
-        while (!is_in_polyhedra(A,X[i,:],b))
+        while any(x ->(x<0), A*X[i,:]-b)
             X[i,:]=generate_in_MVEE(P)
             # print(".") # na debuggovanie
         end
@@ -208,7 +190,7 @@ for setup=1:no_setups # initiate setup
             for j=1:dimension
                 x[j]=randn(simplexmin(), simplexmax()) # TODO
             end
-            if is_in_polyhedra(A,x,b)
+            if all(x ->(x>=0),A*x-b)
                 break
         end
     end
@@ -217,7 +199,6 @@ for setup=1:no_setups # initiate setup
 
     # Gibbs generate
     starttime=time()
-    # TODO Gibbs
     ϵ=10^(-14)
     burn=100
     for i=2:(setup_size+burn)

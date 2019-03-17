@@ -6,15 +6,15 @@ V tejto kapitole sa budeme zaoberať známymi metódami na generovanie z určit�
 
 V tejto sekcii si predstavíme triedu Metropolis--Hastings algoritmov na generovanie bodov z ľubovoľného rozdelenia. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis--Hastings sa dá pozerať ako na postupnosť stavov markovovských reťazcov (Markov Chain Monte Carlo, ďalej MCMC). Daným spôsobom je ich možné analyzovať a dokázať, že generujú body podľa žiadaného rozdelenia (kvôli časovému obmedzeniu práce je táto časť vynechaná).
 
-V nasledujúcej časti sa zadefinujeme všeobecný Metropolis--Hastings algoritmus, podrobnejšie vysvetlenie viete nájsť napríklad v \cite{metropolis-hastings_chib}. V následných častiach opíšeme jeho konkrétne realizácie.
+V nasledujúcej časti predstavíme  všeobecný Metropolis--Hastings algoritmus, podrobnejšie vysvetlenie viete nájsť napríklad v \cite{metropolis-hastings_chib}. V následných častiach opíšeme jeho konkrétne realizácie.
 
 \subsection{Všeobecný Metropolis--Hastings algoritmus}
 
 Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédra je rovnomerná v polyédri a nulová mimo neho.
 
-Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} je vždy v stave $x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $Q(x^{(i)})$ závislú na $x^{(i)}$. Táto kandidátska hustota (proposal density) je volená tak, aby sa z nej bolo možné jednoducho generovať a môže byť značne odlišná od cieľovej hustoty $Q$.
+Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} sa nachádza v stave $x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $Q(x^{(i)})$ závislú na $x^{(i)}$. Táto kandidátska hustota (proposal density) je volená tak, aby sa z nej bolo možné jednoducho generovať a môže byť značne odlišná od cieľovej hustoty $Q$.
 
-Algoritmus vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (y|x^{(i)})$, inak to bude $x^{(i)}$.
+Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (y|x^{(i)})$, inak to bude $x^{(i)}$.
 
 \begin{algorithm}[H]
 	\caption{Všeobecný Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib}}

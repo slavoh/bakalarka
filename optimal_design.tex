@@ -1,6 +1,11 @@
 \chapter{Metódy na riešenie problému optimálneho návrhu}
 
-Cieľom tejto kapitoly je predstaviť Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie problému optimálneho návrhu (optimal design problem). Vďaka ekvivalencii problému optimálneho návrhu a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman} možno REX využiť aj na riešenie MVEE problému.
+Cieľom tejto kapitoly je predstaviť Randomized exchange algoritmus \cite{rex_harman} (ďalej REX) ako metódu na riešenie problému optimálneho návrhu (optimal design problem).
+
+Vďaka ekvivalencii problému $D$--optimálneho návrhu a minimum volume enclosing elipsoidu (MVEE) \cite{rex_harman} možno REX využiť aj na riešenie MVEE problému. Ak body polyédra $P$ vo V--reprezentácii stotožníme s lineárnymi regressormi v probléme $D$--optimálneho návrhu, z riešenia $D$--optimálneho návrhu pre dané regressory môženo vypočítať MVEE elipsoid prislúchajúci k polyédru $P$.
+
+Pre polyéder v H--reprezentácii zadaný bodmi $\{ z_1, \dots, z_n \}$ ($z_i \in \mathbb{R}^m$ pre $i=1,\dots, n$) je možno MVEE vypočítať ako $$P(H, Z)= \{ z \in \mathbb{R}^m | (z-Z)'H(z-Z) \le 1 \}, $$ kde $Z=\sum_{i=1}^n w_i^*z_i$, $H=\frac{1}{m} \left[ \sum_{i=1}^n w_i^*(z_i-Z)(z_i-Z)' \right]^{-1} $, pričom $w^*$ je $D$--optimálny návrh pre regressory $f_i=(1,z_i')'$ pre $i=1,\dots, n$.\\
+
 Vzhľadom na dôležitosť MVEE elipsoidu pre túto prácu a kvôli lepšiemu pochopeniu REX algoritmu sa najprv pozrieme na jednoduchšie metódy riešenia problému optimálneho návrhu.
 
 \section{Základné metódy na riešenie problému optimálneho návrhu}
