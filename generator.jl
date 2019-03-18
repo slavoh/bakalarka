@@ -39,39 +39,39 @@ function generate_polyeder( dA, db ) # given by Ax≥b
 end
 
 # function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
-function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it.max=Inf, t.max=30)
+function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30)
 
     δ = 1e-14
     ϵ = 1e-24
     n = size(Fx,1)
     m = size(Fx,2)
-    eff.inv = 1/eff
-    n.iter = 0
+    eff_inv = 1/eff
+    n_iter = 0
     L = min(n, γ*m)
-    lx.vec = zeros(L)
+    lx_vec = zeros(L)
     index = [1:n]
     one = ones(m)
 
     supp = supp_ini # TODO
     K = size(supp,1)
-    Fx.supp = Fx[supp, :]
+    Fx_supp = Fx[supp, :]
     w = zeros(n)
     w[supp] = 1 / size(supp,1)
-    w.supp = w[supp]
-    M = (sqrt(w.supp) * Fx.supp)'*((sqrt(w.supp) * Fx.supp))
-    d.fun = ((Fx * (cholfakt(pinv(M))')^2)' * one / m
-    ord = reverse(sort(d.fun))
-    lx.vec = shuffle(ord)[1:L]
-    kx.vec = shuffle(supp)
+    w_supp = w[supp]
+    M = (sqrt(w_supp) * Fx_supp)'*((sqrt(w_supp) * Fx_supp))
+    d_fun = ((Fx * (cholfakt(pinv(M)))' )^2) * one / m
+    ord = reverse(sort(d_fun))
+    lx_vec = shuffle(ord)[1:L]
+    kx_vec = shuffle(supp)
 
     while true
-        n.iter = n.iter + 1
-        ord1 = findmin(d.fun[supp],2)
+        n_iter = n_iter + 1
+        ord1 = findmin(d_fun[supp],2)
         kb = supp[ord1]
         lb = ord[1]
         v = [kb, lb]
         cv = Fx[v, :] * (M \ Fx[v, :]')
-        α = 0.5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
+        α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
         α = min(w[kb], α)
         w[kb] = w[kb] - α
         w[lb] = w[lb] + α
@@ -79,32 +79,32 @@ function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it.max=Inf, t.max=30)
 
         if ((w[kb] < δ) && (ver==1)) # LBE is nullifying and the version is 1
             for l = 1:L
-                lx = lx.vec[l]
+                lx = lx_vec[l]
                 Alx = (Fx[lx, :])*(Fx[lx, :]')
                 for k = 1:K
-                    kx = kx.vec[k]
+                    kx = kx_vec[k]
                     v = [kx, lx]
                     cv = Fx[v, :] * (M \ Fx[v, ]')
-                    α = 0.5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
+                    α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
                     α = min(w[kx], max(-w[lx], α))
-                    wkx.temp = w[kx] - α
-                    wlx.temp = w[lx] + α
-                    if ((wkx.temp < δ) || (wlx.temp < δ))
-                        w[kx] = wkx.temp
-                        w[lx] = wlx.temp
+                    wkx_temp = w[kx] - α
+                    wlx_temp = w[lx] + α
+                    if ((wkx_temp < δ) || (wlx_temp < δ))
+                        w[kx] = wkx_temp
+                        w[lx] = wlx_temp
                         M = M + α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
                     end
                 end
             end
         else # LBE is non-nullifying or the version is 0
             for l = 1:L
-                lx = lx.vec[l]
+                lx = lx_vec[l]
                 Alx = (Fx[lx, :])*(Fx[lx, :]')
                 for k = 1:K
-                    kx = kx.vec[k]
+                    kx = kx_vec[k]
                     v = [kx, lx]
                     cv = Fx[v, :] * (M \ Fx[v, :]')
-                    α = 0.5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
+                    α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
                     α = min(w[kx], max(-w[lx], α))
                     w[kx] = w[kx] - α
                     w[lx] = w[lx] + α
@@ -115,21 +115,21 @@ function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it.max=Inf, t.max=30)
 
         supp = index[x -> (x>δ), w]
         K = size(supp,1)
-        w.supp = w[supp]
-        d.fun = ((Fx * (cholfakt(pinv(M))')^2) * one / m
-        ord = reverse(sort(d.fun))[1:L]
+        w_supp = w[supp]
+        d_fun = ((Fx * (cholfakt(pinv(M)))' )^2) * one / m
+        ord = reverse(sort(d_fun))[1:L]
 
-        lx.vec = shuffle(ord)
-        kx.vec = shuffle(supp)
+        lx_vec = shuffle(ord)
+        kx_vec = shuffle(supp)
 
-        eff.act =  1 / d.fun[ord[1]]
-        if ((d.fun[ord[1]] < eff.inv) || (n.iter >= it.max))
+        eff_act =  1 / d_fun[ord[1]]
+        if ((d_fun[ord[1]] < eff_inv) || (n_iter >= it_max))
             break
         end
     end
 
-    Phi.best = det(M)^(1/m)
-    eff.best = 1/d.fun[ord[1]]
+    Phi_best = det(M)^(1/m)
+    eff_best = 1/d_fun[ord[1]]
 
     Z=0
     H=0
@@ -145,7 +145,7 @@ end
 
 function generate_in_MVEE( P )
     x_sym=MvNormal( size( P, 2), 1 )
-    x_ball=(x_sym/norm(x_sym))^(1/d)
+    x_ball=(x_sym/norm(x_sym)*Uniform(0,1))^(1/d)
     return P*x_ball
 end
 
@@ -176,7 +176,7 @@ for setup=1:no_setups # initiate setup
         X[i,:]=generate_in_MVEE(P)
         while any(x ->(x<0), A*X[i,:]-b)
             X[i,:]=generate_in_MVEE(P)
-            # print(".") # na debuggovanie
+            # print("_") # na debuggovanie
         end
     end
     endtime=time()
@@ -192,6 +192,7 @@ for setup=1:no_setups # initiate setup
             end
             if all(x ->(x>=0),A*x-b)
                 break
+            end
         end
     end
     endtime=time()
