@@ -1,46 +1,54 @@
 using PyPlot
+using Polyhedra
+using CDDLib
+using Convex
+using Distributions
+
 
 # zatial na mensej skale
 no_setups = 9
 setup_size = 10^3
 
-function generate_polyeder( dA, db ) # given by Ax≥b
-    is_bounded=false
-    while !is_bounded
-        C=randn(m+2*n, n)  #constraints matrix
-        perm=shuffle([1:m+2n])
-        B=zeros(n,n)
-        s=zeros(n)
-        for i=1:n
-            B[i,:]=C[perm[i],:]
-            s[i]=(B[i,:]')*(B[i,:])
-        end
-        Binv=pinv(B)
-        V=Binv*(s')
+function generate_polyeder( dim, no_planes ) # given by Ax≥b
+    while true
+        A=randn(no_planes, dim)
+        b=randn(no_planes)
 
-        c=randn(n)
-        y=c'*Binv
-
-        for i=1:n
-            if y[i]<0   # otoc znamienko rovnice
-                C[i,:]=-C[i,:]
+        c=randn(dim)
+        for i in range(1,dim)
+            if A[i,:]'*c < b[i]
+                A[i,:] *= -1
+                b[i] *= -1
             end
         end
+        VRep=collect(Polyhedra.points(polyhedron(hrep(A,b), CDDLibrary())))
+        if length(VRep)>0
+            # odstran zbytocne rovnice z H reprezentacie
+            # count=0
+            # bounding = zeros(no_planes)
+            # for i in range(0, no_planes)
+            #     if minimum(A*vertices[i]-b)=0
+            #         bounding[i] = 1
+            #         break
+            #     end
+            # end
+            # TODO remove bounding==0
 
-        is_bounded=true
-        for int i=1:n
-            if simplexmin[i] < -1 || simplexmax[i]>1    #TODO
-                is_bounded=false
-                break
+            vertices=randn(length(VRep), dim)
+            i=1
+            for point in VRep
+                for j in range(1,length(point))
+                    vertices[i,j]=point[j]
+                end
+                i+=1
             end
+
+            return (A,b, vertices)
         end
     end
-    return #TODO
 end
 
-# function find_MVEE( A, b, γ, eff_target ) # using REX algorithm
-function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30)
-
+function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # using REX algorithm
     δ = 1e-14
     ϵ = 1e-24
     n = size(Fx,1)
@@ -58,15 +66,18 @@ function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30)
     w = zeros(n)
     w[supp] = 1 / size(supp,1)
     w_supp = w[supp]
-    M = (sqrt(w_supp) * Fx_supp)'*((sqrt(w_supp) * Fx_supp))
-    d_fun = ((Fx * (cholfakt(pinv(M)))' )^2) * one / m
+    Q=sqrt.(w_supp)⋅Fx_supp
+    M=Q'*Q
+    # M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
+    d_fun = ((Fx * (chol(pinv(M)))' ).^2) * one / m
     ord = reverse(sort(d_fun))
     lx_vec = shuffle(ord)[1:L]
     kx_vec = shuffle(supp)
 
     while true
         n_iter = n_iter + 1
-        ord1 = findmin(d_fun[supp],2)
+        ord1 = findmin(d_fun[supp])[2]
+        # print(ord1)
         kb = supp[ord1]
         lb = ord[1]
         v = [kb, lb]
@@ -92,11 +103,11 @@ function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30)
                     if ((wkx_temp < δ) || (wlx_temp < δ))
                         w[kx] = wkx_temp
                         w[lx] = wlx_temp
-                        M = M + α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
                     end
                 end
             end
         else # LBE is non-nullifying or the version is 0
+            M = M + α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
             for l = 1:L
                 lx = lx_vec[l]
                 Alx = (Fx[lx, :])*(Fx[lx, :]')
@@ -116,7 +127,7 @@ function REX(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30)
         supp = index[x -> (x>δ), w]
         K = size(supp,1)
         w_supp = w[supp]
-        d_fun = ((Fx * (cholfakt(pinv(M)))' )^2) * one / m
+        d_fun = ((Fx * (chol(pinv(M)))' ).^2) * one / m
         ord = reverse(sort(d_fun))[1:L]
 
         lx_vec = shuffle(ord)
@@ -150,28 +161,30 @@ function generate_in_MVEE( P )
 end
 
 function gibbsrD(x,j, A, b)
-    lb=-∞
-    ub=∞
-    for i=1:size(A,1)
-        if(A[1][j]>ϵ)
-            ub=min(ub, (b[l]-sum(A[l,-j]*x[-j])) / A[l][j] )
-        elseif A[l][j] < ϵ
-            lb=min(ub, (b[l]-sum(A[l,-j]*x[-j])) / A[l][j] )
+    lb=-10^9
+    ub=10^9
+    ϵ=1e-14
+    for l=1:size(A,1)
+        if(A[1,j]>ϵ)
+            ub=min(ub, (b[l]-sum(A[l,length(x)-j]*x[length(x)-j])) / A[l,j] )
+        elseif A[l,j] < ϵ
+            lb=min(ub, (b[l]-sum(A[l,length(x)-j]*x[length(x)-j])) / A[l,j] )
         end
     end
     return rand(Uniform(lb, ub), 1, 1 )
 end
 
 times=zeros(no_setups,3)
-for setup=1:no_setups # initiate setup
+for setup=2:no_setups # initiate setup
     dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
-    (A,b)=generate_polyeder(dimension, dimension) # mozno ine rozmery
-    # TODO sprav H reprezentaciu
+    (A,b,vertices)=generate_polyeder(dimension, dimension*2)
+    # VRep=Polyhedra.points(polyhedron(SimpleHRepresentation(A,b), CDDLibrary()))
+    # VRep=collect(Polyhedra.points(polyhedron(hrep(A,b), CDDLibrary())))
 
     # REX generate
     starttime=time()
-    P=find_MVEE(A, b )
+    P=find_MVEE(vertices, [])
     for i=1:setup_size
         X[i,:]=generate_in_MVEE(P)
         while any(x ->(x<0), A*X[i,:]-b)
@@ -183,16 +196,28 @@ for setup=1:no_setups # initiate setup
     times[setup,1]=endtime-starttime
 
     # Hit-and-Run generate
+    burn=100
     starttime=time()
-    for i=1:setup_size
-        while true
-            x=zeros(dimension)
-            for j=1:dimension
-                x[j]=randn(simplexmin(), simplexmax()) # TODO
+    for i=(1-burn):setup_size
+        x=randn(dimension)
+        D= # generate U_ball TODO
+        for j=1:dimension
+            w[j]=(A[j,:]'*x-b[j])/(A[j,:]'*D)
+        end
+        for j=1:dimension
+            x_min = Variable(dimension)
+            prob_min = maximize(x_min, [x_min<0])
+            prob_max = maximize(x_max, [A*x >= b])
+            solve!(prob_min)
+            solve!(prob_max)
+            w=Uniform(prob_min.optval, prob_max.optval)
+            x += w*D
+            if i>0
+                X[i,:]=x
             end
-            if all(x ->(x>=0),A*x-b)
-                break
-            end
+        end
+        if all(λ ->(λ<=0),A*x-b)
+            break
         end
     end
     endtime=time()
@@ -200,12 +225,11 @@ for setup=1:no_setups # initiate setup
 
     # Gibbs generate
     starttime=time()
-    ϵ=10^(-14)
     burn=100
     for i=2:(setup_size+burn)
-        x[i,:] = x[i-1,:]
+        X[i,:] = X[i-1,:]
         for j=1:size(A,2)
-            x[i, j] = gibbsrD(x[i,:], j)
+            X[i, j] = gibbsrD(X[i,:], j, A, b)
         end
     end
     endtime=time()
