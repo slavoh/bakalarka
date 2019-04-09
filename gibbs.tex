@@ -11,7 +11,7 @@ Gibbsov generátor funguje nasledovne:
 	\label{gibbs}
 	\begin{algorithmic}[1]
 		\State inicializu $x^{(0)} = (x^{(0)}_1, x^{(0)}_2, \dots, x^{(0)}_n)$
-		\For {$i=1,\dots,N$}
+		\For {$i=0,\dots,N-1$}
 			\For {$j=0,1,\dots,n$}
 				\State $x^{(i)}_j \sim Q(x_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_n)$
 			\EndFor

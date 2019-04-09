@@ -1,12 +1,12 @@
 using PyPlot
 using Polyhedra
 using CDDLib
-using Convex
 using Distributions
+# using Convex
 
 
 # zatial na mensej skale
-no_setups = 9
+no_setups = 4
 setup_size = 10^3
 
 function generate_polyeder( dim, no_planes ) # given by Ax≥b
@@ -14,9 +14,9 @@ function generate_polyeder( dim, no_planes ) # given by Ax≥b
         A=randn(no_planes, dim)
         b=randn(no_planes)
 
-        c=randn(dim)
-        for i in range(1,dim)
-            if A[i,:]'*c < b[i]
+        x0=randn(dim)
+        for i in range(1,no_planes)
+            if A[i,:]⋅x0 < b[i]
                 A[i,:] *= -1
                 b[i] *= -1
             end
@@ -34,7 +34,7 @@ function generate_polyeder( dim, no_planes ) # given by Ax≥b
             # end
             # TODO remove bounding==0
 
-            vertices=randn(length(VRep), dim)
+            vertices=zeros(length(VRep), dim)
             i=1
             for point in VRep
                 for j in range(1,length(point))
@@ -43,7 +43,7 @@ function generate_polyeder( dim, no_planes ) # given by Ax≥b
                 i+=1
             end
 
-            return (A,b, vertices)
+            return (A,b, vertices, x0)
         end
     end
 end
@@ -154,70 +154,84 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
     return (H,Z)
 end
 
+function generate_on_sphere( dim )
+    x_sym = rand( Normal(), dim )
+    return (x_sym/norm(x_sym))
+end
+
 function generate_in_MVEE( P )
-    x_sym=MvNormal( size( P, 2), 1 )
-    x_ball=(x_sym/norm(x_sym)*Uniform(0,1))^(1/d)
+    return P*( ( generate_on_sphere(size(P,2))*Uniform(0,1) )^(1/d) )
+end
+
+function generate_in_MVEE( P )
+    x_sym = rand( Normal(), size(P,2) )
+    x_ball = (x_sym/norm(x_sym)*Uniform(0,1))^(1/d)
     return P*x_ball
 end
 
-function gibbsrD(x,j, A, b)
-    lb=-10^9
-    ub=10^9
+function gibbs(x, A, b)
     ϵ=1e-14
-    for l=1:size(A,1)
-        if(A[1,j]>ϵ)
-            ub=min(ub, (b[l]-sum(A[l,length(x)-j]*x[length(x)-j])) / A[l,j] )
-        elseif A[l,j] < ϵ
-            lb=min(ub, (b[l]-sum(A[l,length(x)-j]*x[length(x)-j])) / A[l,j] )
+    for j = 1:size(A,2)
+        lb = -10^14
+        ub = 10^14
+        for l=1:size(A,1)
+            if A[l,j] > ϵ
+                s = (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j]
+                lb = max(lb, s)
+            elseif A[l,j] < -ϵ
+                s = (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j]
+                ub=min(ub, s)
+            end
+        end
+        x[j] = rand(Uniform(lb, ub))
+        if any(y->(y<-ϵ), A*x-b) #if not in polyhedra
+            @show A*x-b
+            error()
         end
     end
-    return rand(Uniform(lb, ub), 1, 1 )
+    return x
 end
 
 times=zeros(no_setups,3)
 for setup=2:no_setups # initiate setup
     dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
-    (A,b,vertices)=generate_polyeder(dimension, dimension*2)
-    # VRep=Polyhedra.points(polyhedron(SimpleHRepresentation(A,b), CDDLibrary()))
-    # VRep=collect(Polyhedra.points(polyhedron(hrep(A,b), CDDLibrary())))
+    (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
+    print("Polyhedra generated\n")
 
-    # REX generate
-    starttime=time()
-    P=find_MVEE(vertices, [])
-    for i=1:setup_size
-        X[i,:]=generate_in_MVEE(P)
-        while any(x ->(x<0), A*X[i,:]-b)
-            X[i,:]=generate_in_MVEE(P)
-            # print("_") # na debuggovanie
-        end
-    end
-    endtime=time()
-    times[setup,1]=endtime-starttime
+    # # REX generate
+    # starttime=time()
+    # P=find_MVEE(vertices, [])
+    # for i=1:setup_size
+    #     X[i,:]=generate_in_MVEE(P)
+    #     while any(x ->(x<0), A*X[i,:]-b)
+    #         X[i,:]=generate_in_MVEE(P)
+    #         # print("_") # na debuggovanie
+    #     end
+    # end
+    # endtime=time()
+    # times[setup,1]=endtime-starttime
 
     # Hit-and-Run generate
     burn=100
     starttime=time()
+    w=zeros(size(A,1))
+    x=deepcopy(x0)
     for i=(1-burn):setup_size
-        x=randn(dimension)
-        D= # generate U_ball TODO
-        for j=1:dimension
-            w[j]=(A[j,:]'*x-b[j])/(A[j,:]'*D)
+        D = generate_on_sphere(size(A,2))
+
+        for j=1:size(A,1)
+            w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
         end
-        for j=1:dimension
-            x_min = Variable(dimension)
-            prob_min = maximize(x_min, [x_min<0])
-            prob_max = maximize(x_max, [A*x >= b])
-            solve!(prob_min)
-            solve!(prob_max)
-            w=Uniform(prob_min.optval, prob_max.optval)
-            x += w*D
-            if i>0
-                X[i,:]=x
-            end
-        end
-        if all(λ ->(λ<=0),A*x-b)
-            break
+
+        lb = maximum(filter(y->(y<0), w))
+        ub = minimum(filter(y->(y>0), w))
+        dist=rand(Uniform(lb,ub))
+
+        x += dist*D
+
+        if i>0
+            X[i,:]=x
         end
     end
     endtime=time()
@@ -226,10 +240,12 @@ for setup=2:no_setups # initiate setup
     # Gibbs generate
     starttime=time()
     burn=100
-    for i=2:(setup_size+burn)
-        X[i,:] = X[i-1,:]
-        for j=1:size(A,2)
-            X[i, j] = gibbsrD(X[i,:], j, A, b)
+    x_next=deepcopy(x0)
+    for i=(1-burn):setup_size
+        x=x_next
+        x_next = gibbs(x, A, b)
+        if i>0
+            X[i,:]=x
         end
     end
     endtime=time()
@@ -244,3 +260,4 @@ scatter([1:no_setups], times[:,3], label="Gibbs")
 xlabel("log dimension")
 ylabel("time runned")
 legend()
+# close()
