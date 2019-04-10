@@ -1,20 +1,21 @@
 \chapter{Metódy generovania vnútri polyédru}
 
-V tejto kapitole sa budeme zaoberať známymi metódami na generovanie z určitého rozdelenia, ktorá je v našom prípade rovnomerná vnútri polyédra a nulová mimo polyédra. V prvej podkapitole sa budeme zaoberať triedou Metropolis--Hastings algoritmov, v druhej podkapitole sa budeme zaoberať zamietacími metódami.
+V tejto kapitole sa budeme zaoberať známymi metódami na generovanie z určitého rozdelenia, ktoré je v našom prípade rovnomerné vnútri polyédra a nulové mimo polyédra. V prvej podkapitole sa budeme zaoberať triedou Metropolis--Hastings algoritmov, v druhej podkapitole sa budeme zaoberať zamietacími metódami.
 
 \section{Metropolis--Hastings metódy}
 
-V tejto sekcii si predstavíme triedu Metropolis--Hastings algoritmov na generovanie bodov z ľubovoľného rozdelenia. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis--Hastings sa dá pozerať ako na postupnosť stavov markovovských reťazcov (Markov Chain Monte Carlo, ďalej MCMC). Daným spôsobom je ich možné analyzovať a dokázať, že generujú body podľa žiadaného rozdelenia (kvôli časovému obmedzeniu práce je táto časť vynechaná).
+V tejto sekcii si predstavíme triedu Metropolis--Hastings algoritmov na generovanie bodov z ľubovoľného rozdelenia. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis--Hastings sa dá pozerať ako na postupnosť stavov markovovských reťazcov (Markov Chain Monte Carlo, ďalej MCMC). Pri nich je možné dokázať, že pri vhodnom nastavení parametrov algoritmu bude s rastúcim počtom vygenerovaných bodov rozdelenie vygenerovaných bodov konvergovať ku žiadanému rozdelenia. Avšak, kvôli časovému obmedzeniu práce je táto časť vynechaná. \textbf{TODO citovať MCMC}.
 
-V nasledujúcej časti predstavíme  všeobecný Metropolis--Hastings algoritmus, podrobnejšie vysvetlenie viete nájsť napríklad v \cite{metropolis-hastings_chib}. V následných častiach opíšeme jeho konkrétne realizácie.
+V nasledujúcej časti stručne predstavíme všeobecný (abstraktný) Metropolis--Hastings algoritmus, podrobnejšie vysvetlenie viete nájsť napríklad v \cite{metropolis-hastings_chib}. V následných častiach predstavíme Hit--and--Run generátor a Gibbsov generátor ako jeho konkrétne realizácie.
 
 \subsection{Všeobecný Metropolis--Hastings algoritmus}
 
 Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédra je rovnomerná v polyédri a nulová mimo neho.
 
-Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} sa nachádza v stave $x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $Q(x^{(i)})$ závislú na $x^{(i)}$. Táto kandidátska hustota (proposal density) je volená tak, aby sa z nej bolo možné jednoducho generovať a môže byť značne odlišná od cieľovej hustoty $Q$.
+Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} sa nachádza v stave $x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $Q(x^{(i)})$ závislú na $x^{(i)}$. Táto kandidátska hustota (proposal density) je volená tak, aby z nej bolo možné jednoducho generovať ďalšie body. Môže byť značne odlišná od cieľovej hustoty $Q$, avšak je nutné, aby limitné rozdelenie vygenerovaných bodov konvergovalo ku $Q$.
 
-Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (y|x^{(i)})$, inak to bude $x^{(i)}$.
+Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciálny stav $y$ podľa hustoty $Q(x^{(i)})$. Ďalší stav algoritmu $x^{(i+1)}$ bude $y$ s pravdepodobnosťou $\alpha (y|x^{(i)})$ (algoritmus sa pohne), inak to bude $x^{(i)}$ (ostane stáť).
+Pravdepodobnosť $\alpha (y|x^{(i)})$ môže byť vo všeobecnosti zložitá. V prípade, že je postupnosť stavov markovovského reťazca časovo reverzibilná, t.j. $$Q(x^{(i+1)}|x^{(i)})=Q(x^{(i)}|x^{(i+1)}),$$ tak je daná pravdepodobnosť pohybu konštante jedna, $\alpha (y|x^{(i)})=1$.
 
 \begin{algorithm}[H]
 	\caption{Všeobecný Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib}}
@@ -34,6 +35,6 @@ Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciáln
 	\end{algorithmic}
 \end{algorithm}
 
-Môžeme si všimnúť, že v Metropolis--Hastings algoritme je bod $x^{(i)}$ závislý od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je pri vhodnej voľbe kandidátskej hustoty $Q(x^{(i)})$ a pravdepodobnosti $\alpha$ možné dokázať, že napriek závislosti po sebe idúcich bodov je pre $N \rightarrow \infty$ limitné rozdelenie náhodneho vektora $x^{(N)}$ rovné $Q$. Potrebná veľkosť $N$ na dosiahnutie dostatočne presného odhadu hustoty $Q$ sa nazýva burn--in period.
+Môžeme si všimnúť, že v Metropolis--Hastings algoritmoch, je hustota bodu $x^{(i)}$ závislá od predchádzajúceho bodu $x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je pri vhodnej voľbe kandidátskej hustoty $Q(x^{(i)})$ a pravdepodobnosti $\alpha$ možné dokázať, že napriek závislosti po sebe idúcich bodov je pre $N \rightarrow \infty$ limitné rozdelenie náhodneho vektora $x^{(N)}$ rovné $Q$. Potrebná veľkosť $N$ na dosiahnutie dostatočne presného odhadu hustoty $Q$ sa nazýva burn--in period.
 
 V ďalších častiach si ukážeme niekoľko konkrétnych realizácii Metropolis--Hastings algoritmu. Každá z tých metód obsahuje určité predpoklady na distribúciu, z ktorej chceme generovať, no dá použiť aj na rovnomerné generovanie bodov v polyédri.

@@ -6,7 +6,7 @@ Nakoľko každý elipsoid je jednotková guľa zobrazená lineárnym zobrazením
 
 Na rovnomerné generovanie bodu $x$ v $d$--rozmernej jednotkovej guli so stredom v nule najprv vygenerujeme $d$--rozmerný uhol rovnomerne náhodne a následne vygenerujeme vzdialenosť bodu $x$ od nuly tak, aby mali oblasti rôzne vzdialené od $0$ rovnakú pravdepodobnosť na vygenerovanie.
 
-Na rovnomerné vygenerovanie $d$--rozmerného uhlu vygenerujeme bod v $d$--rozmernom centrálne symetrickom rozdelení (napríklad normálnom) a následne ho zobrazíme na jednotkovú sféru. Takto zrejme dostaneme rovnomerné rozdelenie na $d$--rozmernej sfére. Následne vygenerujeme vzdialenosť od nuly podľa rozdelenia daného hustotou $h:[0,1] \rightarrow [0,1]$: $$h(x)=\frac{x^d}{\int_0^1 y^d dy}$$
+Na rovnomerné vygenerovanie $d$--rozmerného uhlu vygenerujeme bod v $d$--rozmernom centrálne symetrickom rozdelenie a následne ho zobrazíme na jednotkovú sféru. Takto zrejme dostaneme rovnomerné rozdelenie na $d$--rozmernej sfére. Následne vygenerujeme vzdialenosť od nuly podľa rozdelenia daného hustotou $h:[0,1] \rightarrow [0,1]$: $$h(x)=\frac{x^d}{\int_0^1 y^d dy}$$
 Pri generovaní z danej hustoty získame rovnomerné rozdelenie na guli. Zobrazenie bodu $x$ z $d$--rozmernej sféry do $d$--rozmernej gule možno vyjadriť pomocou  ako $$f(x)=(x*\text{Unif}(0,1))^{\frac{1}{d}}$$.
 
 Pri danej funkcii má generovaný bod $x$ rovnakú pravdepodobnosť, že padne do ľubovoľne vzdialenej oblasti s rovnakým obsahom \textbf{TODO zdôvodniť}, preto je dané rozdelenie vnútri gule rovnomerné.
