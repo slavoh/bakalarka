@@ -2,10 +2,10 @@
 
 Táto kapitola bude obsahovať praktické porovnania algoritmov spomenutých v prvej kapitole a zdrojový kód čo najrýchlejšieho algoritmu na generovanie bodov vnútri polyédru.
 
-Predpokladáme, že najrýchlejší generátor bude využívať MVEE elipsoid, teda táto kapitola bude obsahovať taktiež implementáciu REX algoritmu.\\
+Pred začatím práce sme predpokladali, že najrýchlejší generátor bude využívať MVEE elipsoid, teda táto kapitola bude obsahovať taktiež implementáciu REX algoritmu.\\
 
 Pre účely tejto práce budeme pracovať s polyédrom reprezentovaným sústavou lineárnych nerovníc, riešení systému $Ax \leq b$ ($x \in X$ ak $Ax \leq b$).
 Ako základ náhody bude náš generátor bodu v polyédre používať rovnomerný generátor čísel na $[0,1]$ (ďalej $U[0,1]$). Pomocou $U[0,1]$ možno triviálne generovať bod na $[0,k]$ (prenásobením konštantou $k$), tiež možno generovať bod na $[a,b]$ (vygenerovaním bodu na $[0, -a+b]$ a pripočítaním konštanty $a$, alebo bod na $[0,1]^n$ (postupným vygenerovaním súradníc). Generovanie na iných polyédroch, najmä v priestoroch vysokej dimenzie, je však vo všeobecnosti netriviálny problém.
 
-Okrem generátora $U[0,1]$ budeme používať jednorozmerný generátor z normálneho rozdelenia $N$ s priemerom $0$ a odchýlkou $1$. Vďaka rotačnej symetrickosti normálneho rozdelenia možno generovaním po zložkách pomocou $N$ získať $d$--rozmerné viacrozmerné normálne rozdelenie.
-Kvôli centrálnej symetrickosti normálneho rozdelenia možno generovať na $d$--rozmernej sfére a guli vhodným preškálovaním. 
+Okrem generátora $U[0,1]$ budeme používať generátor z jednorozmerného normálneho rozdelenia $N(\mu, \sigma)$ s priemerom $\mu=0$ a odchýlkou $\sigma=1$. Vďaka rotačnej symetrickosti normálneho rozdelenia možno generovaním po zložkách pomocou $N(\mu, \sigma)$ získať $d$--rozmerné viacrozmerné normálne rozdelenie.
+Keďže viacrozmerné normálne rozdelenie je centrálne symetrické, možno ho použiť na generovanie na $d$--rozmernej sfére ako bolo popísané v \textbf{TODO odkáž sa}.

@@ -7,7 +7,7 @@ Gibbsov generátor určí kandidátsku hustotu $Q(x^{(i)})$ tak, že bude možn�
 Gibbsov generátor bude generovať bod $(x^{(i+1)})=(x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_n)$ postupne po súradniciach, $j$--tú súradnicu $x^{(i+1)}_j$ vygeneruje ako $$Q(x^{(i+1)}_j | x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2} \dots, x^{(i)}_n).$$
 
 Označme si cieľový polyéder $S$ a $d_{i,j}$ priamku rovnobežnú s $j$--tou osou prechádzajúcou cez bod $(x^{(i+1)}_1, \dots, x^{(i+1)}_{j}, x^{(i)}_{j+1}, \dots, x^{(i)}_n)$.
-V prípade rovnomerného generovania na polyédroch je hustota $Q(x^{(i+1)}_j | x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_n)$ je rovnomerná na úsečke $d_{i,j} \cap S$ a nulová inde.
+V prípade rovnomerného generovania na polyédroch je pre Gibbsov generátor kandidátska hustota $Q(x^{(i+1)}_j | x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_n)$ rovnomerná na úsečke $d_{i,j} \cap S$ a nulová inde.
 
 Gibbsov generátor funguje nasledovne:
 
@@ -28,7 +28,7 @@ Gibbsov generátor funguje nasledovne:
 
 Gibbsov generátor predpokladá, že možno rýchlo generovať jednotlivé súradnice z rozdelenia $Q(x^{(i+1)}_j | x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_n)$.
 
-V prípade rovnomerného generovania v polyédri je daný predpoklad splnený, vďaka linearite nerovníc pri H--reprezentácii polyédra možno ľahko rovnomerne generovať na úsečke $d_{i,j} \cap S$. Hraničné body úsečky vieme vypočítať veľmi rýchlo pomocou lineárneho programovania, čiže generovať z týchto rozdelení je obzvlášť jednoduché.
+V prípade rovnomerného generovania v polyédri je daný predpoklad splnený, vďaka linearite nerovníc pri H--reprezentácii polyédra možno ľahko generovať na úsečke $d_{i,j} \cap S$. Hraničné body úsečky vieme vypočítať veľmi rýchlo pomocou lineárneho programovania, čiže generovať z týchto rozdelení je obzvlášť jednoduché.
 
 Ako špeciálny prípad Metropolis--Hastings algoritmu má Gibbsov generátor podobné vlastnosti ako Metropolis--Hastings algoritmus. Jeho hlavnou výhodou je, že je jednoduchý a neobsahuje žiadne parametre.\\
 

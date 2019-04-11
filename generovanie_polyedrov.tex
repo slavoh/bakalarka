@@ -4,11 +4,11 @@ Ako vhodná množina polyédrov boli zvolené náhodne generované polyédre. T�
 
 Na generovanie bodov pomocou Metropolis--Hastings metód potrebujeme mať polyéder zadaný v H--reprezentácii, no REX algoritmus na nájdenie MVEE elipsoidu potrebuje ako vstup polyéder vo V--reprezentácii. Preto je nutné v rámci generovania vygenerovať polyéder zároveň v H--reprezentácii aj vo V--reprezentácii. Teda potrebujeme vygenerovať polyéder v jedenej reprezentácii a previesť ho do druhej. Daný prevod bude pre každý polyéder spravený len raz, preto nie je nutné, aby bol rýchly.
 
-Kedže topologickú štruktúru polyédra možno zapísať ako planárny graf, možno jednoducho ukázať, že minimálna množina stien (nerovností) v H--reprezentácii a minimálna množina vrcholov vo V--reprezentácii sú asymptoticky rovnako veľké (až na lineárny faktor).
+Kedže topologickú štruktúru polyédra možno zapísať ako planárny graf, možno jednoducho ukázať, že minimálna množina stien (nerovností) v H--reprezentácii a minimálna množina vrcholov vo V--reprezentácii sú asymptoticky rovnako veľké.
 Presnejšie, medzi počtom stien $F$ a počtom vrcholov $V$ v polyédri platí vzťah $F+V=E-2$ (kde $E$ je počet hrán polyédra, ktorý možno odhadnúť $E \le 3V-6$ (pre $V>2$).
 Tým pádom by v rámci porovnania metód malo byť pri rozumných transformáciach viac--menej jedno, či najprv náhodne vygenerujeme polyéder v H--reprezentácii, ktorú prevedieme do V--reprezentácie alebo či najprv vygenerujeme V--reprezentáciu, ktorú prevedieme do H--reprezentácie. V obidvoch prípadoch dostaneme asymptoticky rovnako veľké reprezentácie.
 
-Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet vrcholov vo V--reprezentácii a počet stien v H--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných informácii. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi bodmi z V--reprezentácie. Z V--reprezentácie možno odstrániť tie body, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú zrejme minimálne. \textbf{TODO Isto? Ak nie, tak s pravdepodobnostou 1 pri rozumnom provede}
+Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet vrcholov vo V--reprezentácii a počet stien v H--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných nadrovín a vrcholov. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi bodmi z V--reprezentácie. Z V--reprezentácie možno odstrániť tie body, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú minimálne.
 Overiť, či bod $x$ leží na nadrovine danej vektorom $a$ a konštantou $c$ je triviálne, stačí overiť rovnosť $a^Tx=c$.
 
 Ako alternatíva ku generovaniu polyédrov v jednej reprezentácii a prevádzaniu do druhej reprezentácie možno porovnávať metódy aj inak. 
@@ -29,7 +29,7 @@ Na záver overí, či je vygenerovaný polyéder $P_c$ ohraničený vopred zvole
 	\begin{algorithmic}[1]
 		\State Náhodne vyber bez návratu $n$ z $m+2n$ indexov obmedzení $i_1, i_2, \dots, i_n$
 		\State Nastav $B=[p^{i_1}, p^{i_2}, \dots, p^{i_n}]^T$, zrejme $B^{-1}$ existuje s pravdepodobnosťou 1
-		\State Nastav $V=B^{-1}[||p^{i_1}||^2, \dots, ||p^{i_n}||^2]^T$
+		\State Nastav $V=B^{-1}[\Vert p^{i_1}\Vert ^2, \dots, \Vert p^{i_n}\Vert ^2]^T$
 		\State Náhodne zvoľ $c \in \mathbb{R}^n$
 		\State Nastav $y=c^TB^{-1}$, zvoľ nerovnosti $P_c$ nasledovne:
 		\For {$i=0,1,\dots,n$} 
@@ -47,20 +47,4 @@ Na záver overí, či je vygenerovaný polyéder $P_c$ ohraničený vopred zvole
 	\end{algorithmic}
 \end{algorithm}
 
-Pri takomto generovaní v rámci $P_c$ získame nadroviny $p_i$, ktoré neobsahujú žiadnu stenu polyédra. Tieto nadroviny sú zrejme nadbytočné, preto ich môžeme odtiaľ odstrániť.
-Na nájdenie, ktoré nadroviny sú prebytočné možno použiť lineárne programovanie. \textbf{TODO v prípade potreby rozšír}
-
-
-\subsubsection{Prevod polyédru z H--reprezentácie do V--reprentácie}
-
-\textbf{TODO vymysliet/najst}
-
-\subsubsection{Prevod polyédru z V--reprezentácie do H--reprentácie}
-
-Majme množinu $V$ bodov V--reprezentácie polyédru. Pre každú trojicu bodov z $V$ sa pozrime na rovinu $r$ prechádzajúcu nimi. Daná rovina je stenou polyédru, ak všetky body z $V$ ležia v rovnakom podpriestore vymedzenom $r$.
-
-Takto zrejme vieme dostať všetky steny polyédru v čase $\mathcal{O}(|V|^4)$.\\
-
-\textbf{Ajajaj, toto funguje len v 3D}\\
-
-\textbf{TODO vymysliet/najst}
+Pri takomto generovaní v rámci $P_c$ získame nadroviny $p_i$, ktoré neobsahujú žiadnu stenu polyédra. Tieto nadroviny sú zrejme nadbytočné, preto ich môžeme odtiaľ odstrániť postupom popísaným vyššie.
