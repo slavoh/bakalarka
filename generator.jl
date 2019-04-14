@@ -2,55 +2,91 @@ using PyPlot
 using Polyhedra
 using CDDLib
 using Distributions
-# using Convex
+using Convex
+using SCS
 
 
 # zatial na mensej skale
-no_setups = 4
+no_setups = 3
 setup_size = 10^3
+set_default_solver(SCSSolver(verbose=0))
 
-function generate_polyeder( dim, no_planes ) # given by Ax≥b
+function generate_polyeder( dim, no_planes ) # dany Ax≥b
+    # count=0
     while true
-        A=randn(no_planes, dim)
-        b=randn(no_planes)
+        # count += 1
+        # if mod(count,1000)==0
+        #     @show count
+        # end
+        A=randn(no_planes, dim) # TODO
+        b=randn(no_planes)      # TODO prenormovat?
 
-        x0=randn(dim)
+        x0=rand(dim)*2-ones(dim)
         for i in range(1,no_planes)
             if A[i,:]⋅x0 < b[i]
                 A[i,:] *= -1
                 b[i] *= -1
             end
         end
-        VRep=collect(Polyhedra.points(polyhedron(hrep(A,b), CDDLibrary())))
-        if length(VRep)>0
-            # odstran zbytocne rovnice z H reprezentacie
-            # count=0
-            # bounding = zeros(no_planes)
-            # for i in range(0, no_planes)
-            #     if minimum(A*vertices[i]-b)=0
-            #         bounding[i] = 1
-            #         break
-            #     end
-            # end
-            # TODO remove bounding==0
 
-            vertices=zeros(length(VRep), dim)
-            i=1
-            for point in VRep
-                for j in range(1,length(point))
-                    vertices[i,j]=point[j]
-                end
-                i+=1
+        bounded = true
+        x = Variable(dim)
+        for i=1:2*dim
+            if i>dim
+                p = maximize(x[i-dim])
+            else
+                p = minimize(x[i])
             end
-
-            return (A,b, vertices, x0)
+            p.constraints += A*x >= b
+            solve!(p)
+            if !(p.status == :Optimal)
+                bounded = false
+                break
+            end
+            # if p.optval*p.optval < 1  # TODO
+            #     bounded = false
+            #     break
+            # end
         end
+
+        if !bounded
+            continue
+        end
+
+        VRep=collect(Polyhedra.points(polyhedron(hrep(-A,-b), CDDLibrary())))
+        vertices=zeros(length(VRep), dim)
+        i=1
+        for point in VRep
+            for j in range(1,length(point))
+                vertices[i,j]=point[j]
+            end
+            i+=1
+        end
+
+        # odstran zbytocne rovnice z H reprezentacie
+        bounding_set = []
+        for i=1:no_planes
+            bounds=false
+            for j=1:size(vertices, 1)
+                if (A[i,:]⋅vertices[j,:] - b[i])^2 <ϵ
+                    bounds=true
+                    break
+                end
+            end
+            if bounds
+                append!(bounding_set,i)
+            end
+        end
+        A_reduced = A[bounding_set,:]
+        b_reduced = b[bounding_set]
+
+        return (A_reduced,b_reduced, vertices, x0)
     end
 end
 
-function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # using REX algorithm
-    δ = 1e-14
-    ϵ = 1e-24
+const ϵ = 1e-24
+const δ = 1e-14
+function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzitim REX algoritmu
     n = size(Fx,1)
     m = size(Fx,2)
     eff_inv = 1/eff
@@ -60,16 +96,31 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
     index = [1:n]
     one = ones(m)
 
-    supp = supp_ini # TODO
+    supp = supp_ini
     K = size(supp,1)
+    # @show size(supp)
+    # @show size(Fx)
+    # @show Fx
+    # @show supp
+
     Fx_supp = Fx[supp, :]
     w = zeros(n)
     w[supp] = 1 / size(supp,1)
     w_supp = w[supp]
-    Q=sqrt.(w_supp)⋅Fx_supp
-    M=Q'*Q
+
+    M=zeros(size(Fx,2), size(Fx,2))
+    for i in supp
+        M += Fx[i,:]*Fx[i,:]'
+    end
+    M /= size(supp,1)
+    # @show Fx[i,:]*Fx[i,:]'
+    # Q=sqrt.(w_supp)'*Fx_supp
+    # M=Q'*Q
+
+    M_inv=inv(M)
+    # @show M_inv-M_inv'
     # M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
-    d_fun = ((Fx * (chol(pinv(M)))' ).^2) * one / m
+    d_fun = ((Fx * (chol((M_inv+M_inv')/2))' ).^2) * one / m
     ord = reverse(sort(d_fun))
     lx_vec = shuffle(ord)[1:L]
     kx_vec = shuffle(supp)
@@ -77,18 +128,28 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
     while true
         n_iter = n_iter + 1
         ord1 = findmin(d_fun[supp])[2]
-        # print(ord1)
+        # @show d_fun
+        # @show size(d_fun)
         kb = supp[ord1]
         lb = ord[1]
         v = [kb, lb]
+        # @show size(Fx[1,:])
+        # @show v
+        @show size(M)
+        @show Fx[1,:]'
+        # @show size(M \ Fx[v, :])
+        # cv = (Fx * (M \ Fx'))
+        # @show [cv[kb,kb] cv[1,2]; cv[2, 1] cv[2,2]]
+        # @show size(cv)
+        # error()
         cv = Fx[v, :] * (M \ Fx[v, :]')
         α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
         α = min(w[kb], α)
         w[kb] = w[kb] - α
         w[lb] = w[lb] + α
-        M = M + α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
+        M += α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
 
-        if ((w[kb] < δ) && (ver==1)) # LBE is nullifying and the version is 1
+        if ((w[kb] < δ) && (ver==1)) # LBE je nulujuci
             for l = 1:L
                 lx = lx_vec[l]
                 Alx = (Fx[lx, :])*(Fx[lx, :]')
@@ -106,8 +167,8 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
                     end
                 end
             end
-        else # LBE is non-nullifying or the version is 0
-            M = M + α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
+        else # LBE je nenulujuci
+            M += α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
             for l = 1:L
                 lx = lx_vec[l]
                 Alx = (Fx[lx, :])*(Fx[lx, :]')
@@ -119,7 +180,7 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
                     α = min(w[kx], max(-w[lx], α))
                     w[kx] = w[kx] - α
                     w[lx] = w[lx] + α
-                    M = M + α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
+                    M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
                 end
             end
         end
@@ -155,7 +216,7 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
 end
 
 function generate_on_sphere( dim )
-    x_sym = rand( Normal(), dim )
+    x_sym = randn( dim )
     return (x_sym/norm(x_sym))
 end
 
@@ -164,7 +225,7 @@ function generate_in_MVEE( P )
 end
 
 function generate_in_MVEE( P )
-    x_sym = rand( Normal(), size(P,2) )
+    x_sym = randn( size(P,2) )
     x_ball = (x_sym/norm(x_sym)*Uniform(0,1))^(1/d)
     return P*x_ball
 end
@@ -176,80 +237,77 @@ function gibbs(x, A, b)
         ub = 10^14
         for l=1:size(A,1)
             if A[l,j] > ϵ
-                s = (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j]
-                lb = max(lb, s)
+                lb = max(lb, (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j])
             elseif A[l,j] < -ϵ
-                s = (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j]
-                ub=min(ub, s)
+                ub = min(ub, (b[l] -sum(A[l,:]⋅x) +A[l,j]*x[j] ) /A[l,j])
             end
         end
         x[j] = rand(Uniform(lb, ub))
-        if any(y->(y<-ϵ), A*x-b) #if not in polyhedra
-            @show A*x-b
-            error()
-        end
     end
     return x
 end
 
+print("\nProgram started\n")
 times=zeros(no_setups,3)
-for setup=2:no_setups # initiate setup
+for setup=2:no_setups
+    # inicializacia testu
     dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
     (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
     print("Polyhedra generated\n")
+    @show dimension
 
-    # # REX generate
+    # REX generator
+    starttime=time()
+    P=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+2])
+    for i=1:setup_size
+        X[i,:]=generate_in_MVEE(P)
+        while any(x ->(x<0), A*X[i,:]-b)
+            X[i,:]=generate_in_MVEE(P)
+            # print("_") # na debuggovanie
+        end
+    end
+    endtime=time()
+    times[setup,1]=endtime-starttime
+
+    # Hit-and-Run generator
+    # burn=100
     # starttime=time()
-    # P=find_MVEE(vertices, [])
-    # for i=1:setup_size
-    #     X[i,:]=generate_in_MVEE(P)
-    #     while any(x ->(x<0), A*X[i,:]-b)
-    #         X[i,:]=generate_in_MVEE(P)
-    #         # print("_") # na debuggovanie
+    # w=zeros(size(A,1))
+    # x=deepcopy(x0)
+    # for i=(1-burn):setup_size
+    #     D = generate_on_sphere(size(A,2))
+    #
+    #     for j=1:size(A,1)
+    #         w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
+    #     end
+    #
+    #     lb = maximum(filter(y->(y<0), w))
+    #     ub = minimum(filter(y->(y>0), w))
+    #     dist=rand(Uniform(lb,ub))
+    #
+    #     x += dist*D
+    #
+    #     if i>0
+    #         X[i,:]=x
     #     end
     # end
     # endtime=time()
-    # times[setup,1]=endtime-starttime
-
-    # Hit-and-Run generate
-    burn=100
-    starttime=time()
-    w=zeros(size(A,1))
-    x=deepcopy(x0)
-    for i=(1-burn):setup_size
-        D = generate_on_sphere(size(A,2))
-
-        for j=1:size(A,1)
-            w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
-        end
-
-        lb = maximum(filter(y->(y<0), w))
-        ub = minimum(filter(y->(y>0), w))
-        dist=rand(Uniform(lb,ub))
-
-        x += dist*D
-
-        if i>0
-            X[i,:]=x
-        end
-    end
-    endtime=time()
-    times[setup,2]=endtime-starttime
-
-    # Gibbs generate
-    starttime=time()
-    burn=100
-    x_next=deepcopy(x0)
-    for i=(1-burn):setup_size
-        x=x_next
-        x_next = gibbs(x, A, b)
-        if i>0
-            X[i,:]=x
-        end
-    end
-    endtime=time()
-    times[setup,3]=endtime-starttime
+    # times[setup,2]=endtime-starttime
+    #
+    # # Gibbs generator
+    # starttime=time()
+    # burn=100
+    # x_next=deepcopy(x0)
+    # for i=(1-burn):setup_size
+    #     x=x_next
+    #     x_next = gibbs(x, A, b)
+    #     if i>0
+    #         X[i,:]=x
+    #     end
+    # end
+    # endtime=time()
+    # times[setup,3]=endtime-starttime
 end
 
 print("average time: ", mean(times), "\n")

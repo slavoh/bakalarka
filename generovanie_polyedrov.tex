@@ -1,30 +1,30 @@
-\subsection{Generovanie polyédrov}
+\section{Generovanie polyédrov}
 Metódy boli porovnávané na veľarozmerných polyédroch. 
-Ako vhodná množina polyédrov boli zvolené náhodne generované polyédre. Týmto sa vyhneme degenerovaným polyédrom.
+Ako vhodná množina polyédrov boli zvolené náhodne generované polyédre.
 
 Na generovanie bodov pomocou Metropolis--Hastings metód potrebujeme mať polyéder zadaný v H--reprezentácii, no REX algoritmus na nájdenie MVEE elipsoidu potrebuje ako vstup polyéder vo V--reprezentácii. Preto je nutné v rámci generovania vygenerovať polyéder zároveň v H--reprezentácii aj vo V--reprezentácii. Teda potrebujeme vygenerovať polyéder v jedenej reprezentácii a previesť ho do druhej. Daný prevod bude pre každý polyéder spravený len raz, preto nie je nutné, aby bol rýchly.
 
 Kedže topologickú štruktúru polyédra možno zapísať ako planárny graf, možno jednoducho ukázať, že minimálna množina stien (nerovností) v H--reprezentácii a minimálna množina vrcholov vo V--reprezentácii sú asymptoticky rovnako veľké.
-Presnejšie, medzi počtom stien $F$ a počtom vrcholov $V$ v polyédri platí vzťah $F+V=E-2$ (kde $E$ je počet hrán polyédra, ktorý možno odhadnúť $E \le 3V-6$ (pre $V>2$).
-Tým pádom by v rámci porovnania metód malo byť pri rozumných transformáciach viac--menej jedno, či najprv náhodne vygenerujeme polyéder v H--reprezentácii, ktorú prevedieme do V--reprezentácie alebo či najprv vygenerujeme V--reprezentáciu, ktorú prevedieme do H--reprezentácie. V obidvoch prípadoch dostaneme asymptoticky rovnako veľké reprezentácie.
-
-Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet vrcholov vo V--reprezentácii a počet stien v H--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných nadrovín a vrcholov. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi bodmi z V--reprezentácie. Z V--reprezentácie možno odstrániť tie body, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú minimálne.
-Overiť, či bod $x$ leží na nadrovine danej vektorom $a$ a konštantou $c$ je triviálne, stačí overiť rovnosť $a^Tx=c$.
+Presnejšie, medzi počtom stien $F$ a počtom vrcholov $V$ v polyédri platí vzťah $F+V=E-2$ (kde $E$ je počet hrán polyédra, ktorý možno odhadnúť $E \le 3V-6$ (pre $V>2$). \textbf{TODO odhad do opacnej strany}
+Tým pádom by v rámci porovnania metód nemalo byť podstatné, či najprv náhodne vygenerujeme polyéder v H--reprezentácii, ktorú prevedieme do V--reprezentácie alebo či najprv vygenerujeme V--reprezentáciu, ktorú prevedieme do H--reprezentácie. V obidvoch prípadoch dostaneme asymptoticky rovnako veľké reprezentácie.
 
 Ako alternatíva ku generovaniu polyédrov v jednej reprezentácii a prevádzaniu do druhej reprezentácie možno porovnávať metódy aj inak. 
 Predpokladajme, že máme generátor $G_H$ polyédrov v H--reprezentácii a generátor $G_V$ polyédrov vo V--reprezentácii, pričom $G_H$ a $G_V$ generujú z rovnakého rozdelenia polyédrov.
-Ak by sme testovali Metropolis--Hastings metódy na veľkom množstve polyédrov vygenerovaných pomocou $G_H$ a metódy využívajúce REX na veľkom množstve polyédrov vygenerovaných pomocou $G_V$, výsledky budú podobné ako keby sme spomínané metódy testovali na rovnakých polyédroch.
+Ak by sme testovali Metropolis--Hastings metódy na veľkom množstve polyédrov vygenerovaných pomocou $G_H$ a metódy využívajúce REX na veľkom množstve polyédrov vygenerovaných pomocou $G_V$, výsledky budú podobné ako keby sme spomínané metódy testovali na rovnakých polyédroch. \textbf{TODO v pripade potreby rozpisat}
 Nakoľko nájdenie generátorov $G_H$ a $G_V$ s rovnakým rozdeleným polyédrov je netriviálny problém (už len zabezpečenie rovnakého rozdelenia obsahov polyédrov je netriviálne), tomuto prístupu sa z dôvodu obmedzenému časovému rámcu práce venovať nebudeme.
+Overiť, či bod $x$ leží na nadrovine danej vektorom $a$ a konštantou $c$ je triviálne, stačí overiť rovnosť $a^Tx=c$.\\
+
+Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet vrcholov vo V--reprezentácii a počet stien v H--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných nadrovín a vrcholov. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi bodmi z V--reprezentácie. Z V--reprezentácie možno odstrániť tie body, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú zrejme s pravdepodobnosťou $1$ minimálne. \textbf{TODO v pripade potreby rozpisat}
 
 \subsubsection{Generovanie polyédru vo H--reprezentácii}
-V rámci tejto práce je použitý algoritmus na generovanie náhodných polyédrov popísaný v \cite{may}. Výstupom algoritmu je polyéder v H--reprezentácii, taký, že každý bod má rovnakú pravdepodobnosť byť vnútri. 
+V rámci tejto práce je použitý algoritmus na generovanie náhodných polyédrov popísaný v \cite{may_random}. Výstupom algoritmu je polyéder v H--reprezentácii, taký, že každý bod má rovnakú pravdepodobnosť byť vnútri. 
 
 Algoritmus využíva prístup Monte Carlo, funguje nasledovne: Najprv náhodne zvolí $m$ nadrovín $p_1, \dots, p_m$, tie rozdeľujú priestor na niekoľko nie nutne ohraničených oblastí.
 Následne rovnomerne náhodne vygeneruje bod $c$ v priestore, ako polyéder $P_c$ zvolí oblasť vymedzenú priamkami $p_i$, v ktorej leží $c$.
 Na záver overí, či je vygenerovaný polyéder $P_c$ ohraničený vopred zvolenou hyperkockou. Ak áno, tak vráti $P_c$. Ak nie je, tak daný polyéder zahodí a generuje znovu.
 
 \begin{algorithm}[H]
-	\caption{Generátor náhodných polyédrov \cite{may}}
+	\caption{Generátor náhodných polyédrov \cite{may_random}}
 	\label{generator-polyedrov}
 	\begin{algorithmic}[1]
 		\State Náhodne vyber bez návratu $n$ z $m+2n$ indexov obmedzení $i_1, i_2, \dots, i_n$
@@ -48,3 +48,17 @@ Na záver overí, či je vygenerovaný polyéder $P_c$ ohraničený vopred zvole
 \end{algorithm}
 
 Pri takomto generovaní v rámci $P_c$ získame nadroviny $p_i$, ktoré neobsahujú žiadnu stenu polyédra. Tieto nadroviny sú zrejme nadbytočné, preto ich môžeme odtiaľ odstrániť postupom popísaným vyššie.
+
+\section{Implementácia algoritmov}
+
+V tejto sekcii si podrobne rozoberieme implementáciu jednotlivých algoritmov.
+
+\subsection{REX generátor}
+
+\subsection{Hit--and--Run generátor}
+
+\subsection{Gibbsov generátor}
+
+\section{Porovnanie rýchlostí generovania}
+
+\section{Najrýchlejší generátor}

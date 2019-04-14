@@ -3,7 +3,7 @@
 V tejto podkapitole sa budeme bližšie zaoberať MVEE metódou, ako pomocou už vypočítaného MVEE elipsoidu možno rovnomerne generovať body vnútri zadaného polyédra. Budeme používať zamietaciu metódu, vygerujeme bod v elipsoide a overíme, či je daný bod tiež v polyédre.
 
 Nakoľko každý elipsoid je jednotková guľa zobrazená lineárnym zobrazením, na rovnomerné generovanie v MVEE elipsoide najprv rovnomerne vygenerujeme bod v jednotkovej guli a následne ho zobrazíme daným lineárnym zobrazením do bodu v MVEE elipsoide. Rovnomernosť generovania sa zachová \textbf{TODO prečo}.\\
-
+\label{generovanie_v_mvee}
 Na rovnomerné generovanie bodu $x$ v $d$--rozmernej jednotkovej guli so stredom v nule najprv vygenerujeme $d$--rozmerný smerový vektor rovnomerne náhodne a následne vygenerujeme vzdialenosť bodu $x$ od nuly tak, aby mali oblasti rôzne vzdialené od $0$ rovnakú pravdepodobnosť na vygenerovanie.
 
 Na rovnomerné vygenerovanie $d$--rozmerného smerového vektoru vygenerujeme bod v $d$--rozmernom centrálne symetrickom rozdelenie a následne ho zobrazíme na jednotkovú sféru. Takto zrejme dostaneme rovnomerné rozdelenie na $d$--rozmernej sfére. Následne vygenerujeme vzdialenosť od nuly podľa rozdelenia daného hustotou $h:[0,1] \rightarrow [0,1]$: $$h(x)=\frac{x^d}{\int_0^1 y^d dy}$$
