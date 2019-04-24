@@ -2,7 +2,7 @@
 
 Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting.
 
-Označme si $S$ zadaný polyéder. Kandidátska hustota $Q(x^{(i)})$ je určená priamkou $d_i$ s náhodným smerom cez bod $x^{(i)}$. Hustota $Q(x^{(i)})$ je rovnomerná na úsečke $S \cap d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $Q(x^{(i+1)}|x^{(i)})=Q(x^{(i)}|x^{(i+1)})$ \cite{hit-and-run_chen} preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do iného bodu.
+Označme si $S$ zadaný polyéder. Kandidátska hustota $Q(\mathbf x^{(i)})$ je určená priamkou $\mathbf d_i$ s náhodným smerom cez bod $\mathbf x^{(i)}$. Hustota $Q(\mathbf x^{(i)})$ je rovnomerná na úsečke $S \cap \mathbf d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $Q(\mathbf x^{(i+1)}|\mathbf x^{(i)})=Q(\mathbf x^{(i)}|\mathbf x^{(i+1)})$ \cite{hit-and-run_chen} preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do iného bodu.
 
 Hit--and--Run generátor funguje nasledovne:
 
@@ -10,17 +10,17 @@ Hit--and--Run generátor funguje nasledovne:
 	\caption{Hit--and--Run generátor \cite{hit-and-run_chen}}
 	\label{hit--and--run}
 	\begin{algorithmic}[1]
-		\State Inicializuj $x^{(0)}$
+		\State Inicializuj $\mathbf x^{(0)}$
 		\For {$i=0,\dots,N-1$}
-			\State Vygeneruj smer $d_i$ z distribúcie $D$ na povrchu sféry
-			\State Nájdi množinu $S_i(d_i,x^{(i)})=\{\lambda \in \mathbb{R}; x^{(i)} + \lambda d_i \in S \} $
-			\State Vygeneruj $\lambda_i \in S_i$ podľa hustoty $Q_i(\lambda | d_i, x^{(i)})$
-			\State Nastav $x^{(i+1)}=x^{(i)}+\lambda_i d_i$
+			\State Vygeneruj smer $\mathbf d_i$ z distribúcie $D$ na povrchu sféry
+			\State Nájdi množinu $S_i(\mathbf d_i,\mathbf x^{(i)})=\{\lambda \in \mathbb{R}; \mathbf x^{(i)} + \lambda \mathbf d_i \in S \} $
+			\State Vygeneruj $\lambda_i \in S_i$ podľa hustoty $Q_i(\lambda | \mathbf d_i, \mathbf x^{(i)})$
+			\State Nastav $\mathbf x^{(i+1)}=\mathbf x^{(i)}+\lambda_i \mathbf d_i$
 		\EndFor
-		\State Vráť $x^{(1)},x^{(2)},\dots,x^{(N)}$.
+		\State Vráť $\mathbf x^{(1)},\mathbf x^{(2)},\dots,\mathbf x^{(N)}$.
 	\end{algorithmic}
 \end{algorithm}
 
-Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $d_i$ z rozdelenia $D$. Ak by dimenzia priestoru bola príliš veľká, nebolo by možné generovať rýchlo z rozdelenia $D$ a preto celý algoritmus by bol pomalý.
+Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $\mathbf d_i$ z rozdelenia $D$. Ak by dimenzia priestoru bola príliš veľká, nebolo by možné generovať rýchlo z rozdelenia $D$ a preto celý algoritmus by bol pomalý. Avšak zložitosť vygenerovania smeru rastie len lineárne s dimenziou.
 
 

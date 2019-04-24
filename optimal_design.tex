@@ -6,9 +6,8 @@ Cieľom problému optimálneho riadenia je nájsť návrh minimalizujúci krité
 
 Vďaka ekvivalencii problému $D$--optimálneho návrhu a minimum volume enclosing elipsoidu (MVEE) možno optimálny návrh vhodného modelu experimentov využiť aj na riešenie MVEE problému. Ak vrcholy polyédra $P$ vo V--reprezentácii stotožníme s lineárnymi regressormi v probléme $D$--optimálneho návrhu, z riešenia $D$--optimálneho návrhu pre dané regressory môžno vypočítať MVEE elipsoid prislúchajúci k polyédru $P$.\\
 
-Zaveďme si označenia využívané pri probléme optimálneho riadenia. 
+Zaveďme si označenia využívané pri probléme optimálneho riadenia. Označme si množinu pozorovaných bodov návrhov $\mathfrak X$.
 Označme návrh ako $n$--rozmerný vektor $\mathbf{w}$ s nezápornými prvkami so súčtom $1$. Pri probléme optimálneho návrhu, komponent $w_x$ vektoru $\mathbf{w}$ predstavuje počet pokusov v bode $x \in \mathfrak X$.
-Označme si množinu pozorovaných bodov návrhov $\mathfrak X$.
 Označme si $\mathbf{f}(x)\in \mathbb{R}^n$ lineárny regresor prislúchajúci ku $x$. Predpokladajme, že model je nesingulárny v zmysle, že $\{ \mathbf f(x)|x \in \mathfrak X \}$ generuje $\mathbb R^n$.
 Označme nosič návrhu $\mathbf{w}$ ako $\text{supp}(\mathbf{w})=\{x \in \mathfrak{X}| w_x>0\}$. 
 Množina všetkých návrhov tvorí pravdepodobnostný simplex v $\mathbb{R}^n$, označme ju $\Xi$ (je kompaktná a konvexná).

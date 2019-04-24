@@ -1,7 +1,7 @@
 using PyPlot
 using Polyhedra
 using CDDLib
-using Distributions
+# using Distributions
 using Convex
 using SCS
 
@@ -86,115 +86,133 @@ end
 
 const ϵ = 1e-24
 const δ = 1e-14
-function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzitim REX algoritmu
+function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzitim REX algoritmu
     n = size(Fx,1)
     m = size(Fx,2)
     eff_inv = 1/eff
     n_iter = 0
     L = min(n, γ*m)
     lx_vec = zeros(L)
-    index = [1:n]
+    index = 1:n
     one = ones(m)
 
     supp = supp_ini
-    K = size(supp,1)
-    # @show size(supp)
-    # @show size(Fx)
-    # @show Fx
-    # @show supp
-
+    K = length(supp)
     Fx_supp = Fx[supp, :]
     w = zeros(n)
-    w[supp] = 1 / size(supp,1)
+    w[supp] = 1 / K
     w_supp = w[supp]
 
-    M=zeros(size(Fx,2), size(Fx,2))
-    for i in supp
-        M += Fx[i,:]*Fx[i,:]'
-    end
-    M /= size(supp,1)
-    # @show Fx[i,:]*Fx[i,:]'
-    # Q=sqrt.(w_supp)'*Fx_supp
-    # M=Q'*Q
-
+    # M=zeros(m, m)
+    # for i in supp
+    #     M += Fx[i,:]*Fx[i,:]'
+    # end
+    # M /= size(supp,1)
+    # if findmin(M'-M)[1]>10e-10
+    #     print("ERROR1")
+    # end
+    M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
     M_inv=inv(M)
+    @show rank(M)
     # @show M_inv-M_inv'
-    # M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
     d_fun = ((Fx * (chol((M_inv+M_inv')/2))' ).^2) * one / m
-    ord = reverse(sort(d_fun))
-    lx_vec = shuffle(ord)[1:L]
+    ord = reverse(sortperm(d_fun))[1:L]
+    lx_vec = shuffle(ord)
     kx_vec = shuffle(supp)
 
+    print("zaciatok cyklu\n")
     while true
-        n_iter = n_iter + 1
+        n_iter += 1
         ord1 = findmin(d_fun[supp])[2]
-        # @show d_fun
-        # @show size(d_fun)
         kb = supp[ord1]
         lb = ord[1]
-        v = [kb, lb]
-        # @show size(Fx[1,:])
-        # @show v
-        @show size(M)
-        @show Fx[1,:]'
-        # @show size(M \ Fx[v, :])
-        # cv = (Fx * (M \ Fx'))
-        # @show [cv[kb,kb] cv[1,2]; cv[2, 1] cv[2,2]]
-        # @show size(cv)
-        # error()
-        cv = Fx[v, :] * (M \ Fx[v, :]')
+        v = [kb; lb]
+        cv = Fx[v, :] * (inv(M) * Fx[v, :]')     # pre istotu
+        # cv = Fx[v, :] * (M \ Fx[v, :]')
         α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
         α = min(w[kb], α)
-        w[kb] = w[kb] - α
-        w[lb] = w[lb] + α
+        w[kb] -= α
+        w[lb] += α
         M += α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
+        if findmin(M'-M)[1]>10e-10     # pre istotu
+            print("ERROR1")
+        end
+        M = (M+M')/2    # pre istotu
 
-        if ((w[kb] < δ) && (ver==1)) # LBE je nulujuci
+
+        if (w[kb] < δ) # LBE je nulujuci
+            print("nulujuci\n")
             for l = 1:L
                 lx = lx_vec[l]
-                Alx = (Fx[lx, :])*(Fx[lx, :]')
+                Alx = Fx[lx, :]*Fx[lx, :]'
                 for k = 1:K
                     kx = kx_vec[k]
                     v = [kx, lx]
-                    cv = Fx[v, :] * (M \ Fx[v, ]')
+                    print(rank(M))
+                    # print("\n")
+
+                    cv = Fx[v, :] * (inv(M) * Fx[v, :]')     # pre istotu
+                    # cv = Fx[v, :] * (M \ Fx[v, :]')
+
                     α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
                     α = min(w[kx], max(-w[lx], α))
+                    # @show α
                     wkx_temp = w[kx] - α
                     wlx_temp = w[lx] + α
                     if ((wkx_temp < δ) || (wlx_temp < δ))
+                        # print(".\n")
                         w[kx] = wkx_temp
                         w[lx] = wlx_temp
+                        M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
+                        if findmin(M'-M)[1]>10e-10    # pre istotu
+                            print("ERROR1")
+                        end
+                        M = (M+M')/2    # pre istotu
                     end
                 end
             end
         else # LBE je nenulujuci
-            M += α * (Alx - (Fx[kx, :])*(Fx[kx, :]'))
+            print("nenulujuci\n")
             for l = 1:L
                 lx = lx_vec[l]
-                Alx = (Fx[lx, :])*(Fx[lx, :]')
+                Alx = Fx[lx, :]*Fx[lx, :]'
                 for k = 1:K
                     kx = kx_vec[k]
-                    v = [kx, lx]
-                    cv = Fx[v, :] * (M \ Fx[v, :]')
+                    v = [kx; lx]
+                    cv = Fx[v, :] * (inv(M) * Fx[v, :]')    # pre istotu
+                    # cv = Fx[v, :] * (M \ Fx[v, :]')
                     α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
                     α = min(w[kx], max(-w[lx], α))
-                    w[kx] = w[kx] - α
-                    w[lx] = w[lx] + α
+                    w[kx] -= α
+                    w[lx] += α
                     M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
+                    if findmin(M'-M)[1]>10e-10    # pre istotu
+                        print("ERROR1")
+                    end
+                    M = (M+M')/2    # pre istotu
                 end
             end
         end
-
-        supp = index[x -> (x>δ), w]
-        K = size(supp,1)
+        supp = index[find(λ -> (λ>δ), w)]
+        K = length(supp)
         w_supp = w[supp]
-        d_fun = ((Fx * (chol(pinv(M)))' ).^2) * one / m
-        ord = reverse(sort(d_fun))[1:L]
+        # print("\n")
+        # @show size(M)
+        @show rank(M)
+        M_inv=inv(M)
+        # @show rank(M_inv)
+        if findmin(M'-M)[1]>10e-10    # pre istotu
+            print("ERROR1")
+        end
+        d_fun = ((Fx * (chol( (M_inv+M_inv')/2 ))' ).^2) * one / m
+        ord = reverse(sortperm(d_fun))[1:L]
 
         lx_vec = shuffle(ord)
         kx_vec = shuffle(supp)
 
         eff_act =  1 / d_fun[ord[1]]
+        @show eff_act
+
         if ((d_fun[ord[1]] < eff_inv) || (n_iter >= it_max))
             break
         end
@@ -211,7 +229,7 @@ function find_MVEE(Fx, supp_ini, ver=1, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) 
     for i=1:n
         H=H+w[i]*(z[i]-Z)'*(z[i]-Z)
     end
-    H=pinv(H)/(m-1)
+    H=inv(H)/(m-1)
     return (H,Z)
 end
 
@@ -259,7 +277,7 @@ for setup=2:no_setups
 
     # REX generator
     starttime=time()
-    P=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+2])
+    P=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
     for i=1:setup_size
         X[i,:]=generate_in_MVEE(P)
         while any(x ->(x<0), A*X[i,:]-b)
@@ -292,6 +310,7 @@ for setup=2:no_setups
     #         X[i,:]=x
     #     end
     # end
+    # TODO shuffle(X[i,:])
     # endtime=time()
     # times[setup,2]=endtime-starttime
     #
@@ -306,6 +325,7 @@ for setup=2:no_setups
     #         X[i,:]=x
     #     end
     # end
+    # TODO shuffle(X[i,:])
     # endtime=time()
     # times[setup,3]=endtime-starttime
 end

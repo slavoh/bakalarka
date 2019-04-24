@@ -47,4 +47,7 @@ REX algoritmus vyzerá nasledovne:
 	\end{algorithmic}
 \end{algorithm}
 
-\textbf{TODO rozpisat vlastnosti REXU - ktora cast algoritmu trva dlho atd.}
+
+Poznámka: popísali sme REX algoritmus vzhľadom na kritérium $D$--optimality. Algoritmus REX funguje aj vzhľadom na $A$--optimalitu pri nahradení funkcie $d_x$ funkciou $a_x$ definovanou ako $$a_x(\mathbf w)=\mathbf {f'}(x)\mathbf M^{-2}(\mathbf w)\mathbf f(x), x \in \mathfrak X.$$ a nahradení funkcie $\Phi$ funkciou $\Phi_D$ definovanou ako $$\Phi_D(\mathbf{w})=(\text{tr}(\mathbf M)^{-1})^{-1}.$$ Pri tejto verzii problému však článok \cite{rex_harman} nedokazuje konvergenciu algoritmu. Pre účely tejto práce to nie je podstatné.
+
+\textbf{TODO prečo M ostáva regulárne?}
