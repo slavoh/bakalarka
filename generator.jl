@@ -114,7 +114,6 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
     M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
     M_inv=inv(M)
     @show rank(M)
-    # @show M_inv-M_inv'
     d_fun = ((Fx * (chol((M_inv+M_inv')/2))' ).^2) * one / m
     ord = reverse(sortperm(d_fun))[1:L]
     lx_vec = shuffle(ord)
@@ -134,9 +133,6 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
         w[kb] -= α
         w[lb] += α
         M += α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
-        if findmin(M'-M)[1]>10e-10     # pre istotu
-            print("ERROR1")
-        end
         M = (M+M')/2    # pre istotu
 
 
@@ -149,24 +145,19 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
                     kx = kx_vec[k]
                     v = [kx, lx]
                     print(rank(M))
-                    # print("\n")
 
                     cv = Fx[v, :] * (inv(M) * Fx[v, :]')     # pre istotu
                     # cv = Fx[v, :] * (M \ Fx[v, :]')
 
                     α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
                     α = min(w[kx], max(-w[lx], α))
-                    # @show α
+
                     wkx_temp = w[kx] - α
                     wlx_temp = w[lx] + α
                     if ((wkx_temp < δ) || (wlx_temp < δ))
-                        # print(".\n")
                         w[kx] = wkx_temp
                         w[lx] = wlx_temp
                         M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
-                        if findmin(M'-M)[1]>10e-10    # pre istotu
-                            print("ERROR1")
-                        end
                         M = (M+M')/2    # pre istotu
                     end
                 end
@@ -186,9 +177,6 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
                     w[kx] -= α
                     w[lx] += α
                     M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
-                    if findmin(M'-M)[1]>10e-10    # pre istotu
-                        print("ERROR1")
-                    end
                     M = (M+M')/2    # pre istotu
                 end
             end
