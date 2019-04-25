@@ -73,7 +73,7 @@ Pri takomto generovaní v rámci $P_c$ získame nadroviny $p_i$, ktoré neobsahu
 
 Prvky matice $A$ a vektoru $b$ boli generované z nezávislých normálnych rozdelení $N(0,1)$. Na získanie V--reprezentácie z H--reprezentácie použili knižničné funkcie knižníc Polyhedra a CDDLib (v jazyku Julia).\\
 
-V rámci testovania dané generovanie polyédrov trvalo príliš dlho, preto sme kvôli zrýchleniu programu namiesto overenia, či je polyéder ohraničený jednotkovou hyperkockou (riadok $11$ algoritmu) overili iba, či je polyéder ohraničený. Táto zmena spôsobuje, že náš generátor polyédrov taktiež vraca ohraničené polyédre, ktoré nie sú celé v jednotkovej hyperkocke. To spôsobuje, že bod $c$ je generovaný z rovnomerného rozdelenia na prieniku polyédra a jednotkovej hyperkocky. Týmto už nevraciame polyéder taký, že každý bod má rovnakú pravdepodobnosť byť vnútri. Túto nepresnosťou považujeme vzhľadom na problematickosť definície náhodného polyédra za nepodstatnú.\\
+V rámci testovania dané generovanie polyédrov trvalo príliš dlho, preto sme kvôli zrýchleniu programu namiesto overenia, či je polyéder ohraničený jednotkovou hyperkockou (riadok $11$ algoritmu) overili iba, či je polyéder ohraničený. Táto zmena spôsobuje, že náš generátor polyédrov taktiež vracia ohraničené polyédre, ktoré nie sú celé v jednotkovej hyperkocke. To spôsobuje, že bod $c$ je generovaný z rovnomerného rozdelenia na prieniku polyédra a jednotkovej hyperkocky. Týmto už nevraciame polyéder taký, že každý bod má rovnakú pravdepodobnosť byť vnútri. Túto nepresnosťou považujeme vzhľadom na problematickosť definície náhodného polyédra za nepodstatnú.\\
 
 
 \section{Inicializácia algoritmov}
