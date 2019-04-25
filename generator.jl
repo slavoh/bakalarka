@@ -12,14 +12,9 @@ setup_size = 10^3
 set_default_solver(SCSSolver(verbose=0))
 
 function generate_polyeder( dim, no_planes ) # dany Ax≥b
-    # count=0
     while true
-        # count += 1
-        # if mod(count,1000)==0
-        #     @show count
-        # end
-        A=randn(no_planes, dim) # TODO
-        b=randn(no_planes)      # TODO prenormovat?
+        A=randn(no_planes, dim)
+        b=randn(no_planes)
 
         x0=rand(dim)*2-ones(dim)
         for i in range(1,no_planes)
@@ -43,7 +38,7 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
                 bounded = false
                 break
             end
-            # if p.optval*p.optval < 1  # TODO
+            # if p.optval*p.optval < 1  # TODO mozno vratit spat
             #     bounded = false
             #     break
             # end
@@ -133,14 +128,9 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
         w[kb] -= α
         w[lb] += α
         M += α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
-        M = (M+M')/2    # pre istotu
 
-
-        if (w[kb] < δ) # LBE je nulujuci
-            print("nulujuci\n")
-            for l = 1:L
-                lx = lx_vec[l]
-                Alx = Fx[lx, :]*Fx[lx, :]'
+                lx = lx
+                Al
                 for k = 1:K
                     kx = kx_vec[k]
                     v = [kx, lx]
@@ -184,7 +174,6 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzi
         supp = index[find(λ -> (λ>δ), w)]
         K = length(supp)
         w_supp = w[supp]
-        # print("\n")
         # @show size(M)
         @show rank(M)
         M_inv=inv(M)
