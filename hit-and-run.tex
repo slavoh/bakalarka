@@ -2,7 +2,7 @@
 
 Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting.
 
-Označme si $S$ zadaný polyéder. Kandidátska hustota $Q(\mathbf x^{(i)})$ je určená priamkou $\mathbf d_i$ s náhodným smerom cez bod $\mathbf x^{(i)}$. Hustota $Q(\mathbf x^{(i)})$ je rovnomerná na úsečke $S \cap \mathbf d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $Q(\mathbf x^{(i+1)}|\mathbf x^{(i)})=Q(\mathbf x^{(i)}|\mathbf x^{(i+1)})$ \cite{hit-and-run_chen} preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do iného bodu.
+Označme si $S$ zadaný polyéder. Kandidátska hustota $Q_{\mathbf x^{(i)}}$ je určená priamkou $\mathbf d_i$ s náhodným smerom cez bod $\mathbf x^{(i)}$. Hustota $Q_{\mathbf x^{(i)}}$ je rovnomerná na úsečke $S \cap \mathbf d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $Q_{\mathbf x^{(i)}}(\mathbf x^{(i+1)})=Q_{\mathbf x^{(i+1)}}(\mathbf x^{(i)}),$ \cite{hit-and-run_chen} preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do ďalšieho bodu.
 
 Hit--and--Run generátor funguje nasledovne:
 
@@ -21,6 +21,8 @@ Hit--and--Run generátor funguje nasledovne:
 	\end{algorithmic}
 \end{algorithm}
 
-Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $\mathbf d_i$ z rozdelenia $D$. Ak by dimenzia priestoru bola príliš veľká, nebolo by možné generovať rýchlo z rozdelenia $D$ a preto celý algoritmus by bol pomalý. Avšak zložitosť vygenerovania smeru rastie len lineárne s dimenziou.
+Použiteľnosť Hit--and--Run generátora závisí od toho, ako rýchlo vieme generovať smery $\mathbf d_i$ z rozdelenia $D$. Ak by dimenzia priestoru bola príliš veľká, nebolo by možné generovať rýchlo z rozdelenia $D$ a preto celý algoritmus by bol pomalý. 
 
+Na rovnomerné vygenerovanie $d$--rozmerného smerového vektoru vygenerujeme bod v $d$--rozmernom centrálne symetrickom rozdelení a následne ho zobrazíme na jednotkovú sféru. Takto dostaneme rovnomerné rozdelenie na $d$--rozmernej sfére. Takto zložitosť vygenerovania smeru rastie len asymptoticky lineárne s dimenziou, preto aj rýchlosť generovania bodov rastie len lineárne s dimenziou.
 
+Podľa \cite{decompositional_harman} ako $d$--rozmerné centrálne symetrické rozdelenie možno zvoliť mnohorozmerné normálne rozdelenie so zložkami z nezávislých jednorozmerných normálnych rozdelení s priemerom $0$ a výchylkou $1$.
