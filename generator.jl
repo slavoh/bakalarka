@@ -60,7 +60,7 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
         for i=1:no_planes
             bounds=false
             for j=1:size(vertices, 1)
-                if abs(A[i,:]⋅vertices[j,:] - b[i]) <ϵ
+                if abs(A[i,:]⋅vertices[j,:] - b[i]) <δ
                     bounds=true
                     break
                 end
@@ -72,6 +72,7 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
         A_reduced = A[bounding_set,:]
         b_reduced = b[bounding_set]
 
+        # return (A,b, vertices, x0)
         return (A_reduced,b_reduced, vertices, x0)
     end
 end
@@ -171,114 +172,111 @@ function gibbs(x, A, b)
     return x
 end
 
-no_setups = 10
-setup_size = 10^5
+no_setups = 9
+no_polyhedras = 100
+no_generated_points = 10^6
 
 times=zeros(no_setups,3)
-generations=zeros(no_setups)
+no_generations=zeros(no_setups)
 print("\nProgram started\n")
-for setup=2:no_setups  # inicializacia testu
+for setup = 1:no_setups  # inicializacia testu
     dimension=setup
     # dimension=2^(setup)
-    X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
-    (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
-    print("Polyhedra generated:  ")
-    @show dimension, size(A,1), size(vertices,1)
+    @show dimension
+    X=zeros(no_generated_points, dimension) # zoznam vygenerovanych bodov - nie je nutny
+    for polyeder = 1:no_polyhedras
+        (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
+        print("Polyhedra generated:  ")
+        @show size(A,1), size(vertices,1)
 
-    # # REX generator
-    # starttime=time()
-    # ff = [ones(size(vertices,1)) vertices]
-    # qq = randperm(size(vertices,1))[1:dimension+4]
-    # (H,Z)=find_MVEE(ff, qq)
-    # # (H,Z)=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
-    # print("MVEE found\n")
-    # for i=1:setup_size
-    #     X[i,:]=generate_in_MVEE(H)
-    #     count=1
-    #     while any(x ->(x<δ), A*X[i,:]-b)
-    #         count+=1
-    #         if count==10^7
-    #             break
-    #         end
-    #         X[i,:]=generate_in_MVEE(H)
-    #     end
-    #     if count==10^7
-    #         @show setup
-    #         generations[setup] = 10^8
-    #         break
-    #     end
-    #     generations[setup] += count
-    #     # @show count
-    # end
-    # endtime=time()
-    # times[setup,1]=endtime-starttime
-    # generations[setup] /= setup_size
+        # # REX generator
+        # starttime=time()
+        # (H,Z)=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
+        # print("MVEE found\n")
+        # for i=1:no_generated_points
+        #     X[i,:]=generate_in_MVEE(H)
+        #     count=1
+        #     while any(λ ->(λ<0), A*X[i,:]-b)
+        #         count+=1
+        #         if count==10^7
+        #             break
+        #         end
+        #         X[i,:]=generate_in_MVEE(H)
+        #     end
+        #     if count==10^7
+        #         @show setup
+        #         no_generations[setup] = 10^8
+        #         break
+        #     end
+        #     no_generations[setup] += count
+        # end
+        # endtime=time()
+        # times[setup,1]=endtime-starttime
+        # no_generations[setup] /= no_generated_points
 
-    # Hit-and-Run generator
-    burn=100
-    starttime=time()
-    w=zeros(size(A,1))
-    x=deepcopy(x0)
-    error()
-    for i=(1-burn):setup_size
-        D = generate_on_sphere(size(A,2))
+        # Hit-and-Run generator
+        burn=100
+        starttime=time()
+        w=zeros(size(A,1))
+        x=deepcopy(x0)
+        for i=(1-burn):no_generated_points
+            D = generate_on_sphere(size(A,2))
 
-        for j=1:size(A,1)
-            w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
-        end
-        @show w
+            for j=1:size(A,1)
+                w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
+            end
 
-        w_neg= filter(y->(y<0), w)
-        w_pos= filter(y->(y>0), w)
-        lb=0
-        ub=0
-        if length(w_neg)>0
-            lb = maximum(w_neg)
-        end
-        if length(w_pos)>0
-            ub = minimum(w_pos)
-        end
-        if lb==ub
-            @show w
-            error()
-        end
-        dist=rand(Uniform(lb,ub))
-        x += dist*D
+            w_neg = filter(λ->(λ<-ϵ), w)
+            lb=0
+            if length(w_neg)>0
+                lb = maximum(w_neg)
+            end
+            w_pos = filter(λ->(λ>ϵ), w)
+            ub=0
+            if length(w_pos)>0
+                ub = minimum(w_pos)
+            end
 
-        if i>0
-            X[i,:]=x
+            dist=rand(Uniform(lb,ub))
+            x -= dist*D
+            if i>0
+                X[i,:] = x
+            end
         end
+        X = X[shuffle(1:end), :]
+        endtime = time()
+        times[setup,2] += endtime-starttime
+
+        # Gibbs generator
+        starttime = time()
+        burn = 100
+        x_next = deepcopy(x0)
+        for i=(1-burn):no_generated_points
+            x=x_next
+            x_next = gibbs(x, A, b)
+            if i>0
+                X[i,:]=x
+            end
+        end
+        X = X[shuffle(1:end), :]
+        endtime = time()
+        times[setup,3] += endtime-starttime
+
+        print("Polyhedra tested\n")
     end
-    # TODO shuffle(X[i,:])
-    endtime=time()
-    times[setup,2]=endtime-starttime
-
-    # Gibbs generator
-    starttime=time()
-    burn=100
-    x_next=deepcopy(x0)
-    for i=(1-burn):setup_size
-        x=x_next
-        x_next = gibbs(x, A, b)
-        if i>0
-            X[i,:]=x
-        end
-    end
-    # TODO shuffle(X[i,:])
-    endtime=time()
-    times[setup,3]=endtime-starttime
-    print("end of setup\n")
+    times[setup,:] /= no_polyhedras
+    print("Dimension done\n")
 end
 
 print("average time: ", mean(times), "\n")
 
 # scatter(1:no_setups, times[:,1], label="REX")
-scatter(1:no_setups, 1000*times[:,2], label="Hit-and-Run")
-scatter(1:no_setups, 1000*times[:,3], label="Gibbs")
-# xlabel("log dimension")
-ylabel("time runned [ms]")
+scatter(1:no_setups, 10*times[:,2], label="Hit-and-Run")
+scatter(1:no_setups, 10*times[:,3], label="Gibbs")
+xlabel("dimension")
+ylabel("time runned [ns]")
 
-# scatter(1:no_setups, generations, label="REX")
+# scatter(1:no_setups, no_generations, label="REX")
 # ylabel("pocet pokusov")
 legend()
 # close()
