@@ -47,7 +47,6 @@ REX algoritmus vyzerá nasledovne:
 	\end{algorithmic}
 \end{algorithm}
 
+V rámci jednotlivých krokoch REX algoritmu, počas LBE krokov je na výpočet ďalšieho bodu potrebné invertovať maticu $\mathbf{M(w)}$. Ako potenciálny problém by mohlo nastať, že v rámci behu programu sa algoritmus bude nachádzať v bode $\mathbf w^{(q)}$ takom, že matica  $\mathbf{M(w}^{(q)})$ bude singulárna a teda neeexistuje inverzná matica $\mathbf{M(w}^{(q)})^{-1}$. To však nastať nemôže ak pri inicializácii bude zvolený počiatočný návrh $\mathbf w^{(0)}$ tak, že matica $\mathbf{M(w}^{(0)})$ bude regulárna. Kedže $\Phi_D(\mathbf{w})=(\det(\mathbf{M})^{1/d})$ a postupnosť dosiahnutých návrhov $\mathbf w^{(0)}, \mathbf w^{(1)}, \dots$ spĺňa $ \Phi_D(\mathbf M(\mathbf w^{(0)})) \leq \Phi_D(\mathbf M(\mathbf w^{(1)})) \leq \Phi_D(\mathbf M(\mathbf w^{(2)})) \leq \dots$, postupnosť determinantov matíc $\mathbf M(\mathbf w^{(k)})$ je neklesajúca a preto sa regulárnosť matíc $\mathbf M(\mathbf w^{(k)})$ zachová.\\
 
 Poznámka: popísali sme REX algoritmus vzhľadom na kritérium $D$--optimality. Podľa \cite{rex_harman} REX algoritmus funguje aj vzhľadom na $A$--optimalitu pri nahradení funkcie $d_x$ funkciou $a_x$ definovanou ako $$a_x(\mathbf w)=\mathbf {f'}(x)\mathbf M^{-2}(\mathbf w)\mathbf f(x), x \in \mathfrak X.$$ a nahradení funkcie $\Phi_D$ funkciou $\Phi_A$ definovanou ako $$\Phi_A(\mathbf{w})=(\text{tr}(\mathbf M)^{-1})^{-1}.$$ Pri tejto verzii problému však článok \cite{rex_harman} nedokazuje konvergenciu algoritmu. Pre účely tejto práce to nie je podstatné.
-
-\textbf{TODO prečo M ostáva regulárne?}

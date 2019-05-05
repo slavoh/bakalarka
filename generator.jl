@@ -1,15 +1,13 @@
 using PyPlot
 using Polyhedra
 using CDDLib
-# using Distributions
 using Convex
 using SCS
+using Distributions
 
-
-# zatial na mensej skale
-no_setups = 3
-setup_size = 10^3
 set_default_solver(SCSSolver(verbose=0))
+const ϵ = 1e-24
+const δ = 1e-14
 
 function generate_polyeder( dim, no_planes ) # dany Ax≥b
     while true
@@ -38,12 +36,11 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
                 bounded = false
                 break
             end
-            # if p.optval*p.optval < 1  # TODO mozno vratit spat
+            # if p.optval*p.optval < 1  # TODO mozno odkomentovat
             #     bounded = false
             #     break
             # end
         end
-
         if !bounded
             continue
         end
@@ -63,7 +60,7 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
         for i=1:no_planes
             bounds=false
             for j=1:size(vertices, 1)
-                if (A[i,:]⋅vertices[j,:] - b[i])^2 <ϵ
+                if abs(A[i,:]⋅vertices[j,:] - b[i]) <ϵ
                     bounds=true
                     break
                 end
@@ -79,134 +76,72 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
     end
 end
 
-const ϵ = 1e-24
-const δ = 1e-14
-function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=Inf, t_max=30) # pouzitim REX algoritmu
+function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=10^12, t_max=30) # pouzitim REX algoritmu
     n = size(Fx,1)
     m = size(Fx,2)
-    eff_inv = 1/eff
-    n_iter = 0
     L = min(n, γ*m)
-    lx_vec = zeros(L)
-    index = 1:n
-    one = ones(m)
 
     supp = supp_ini
-    K = length(supp)
-    Fx_supp = Fx[supp, :]
     w = zeros(n)
-    w[supp] = 1 / K
-    w_supp = w[supp]
+    w[supp] = 1 / length(supp)
+    M = (sqrt.(w[supp]) .* Fx[supp,:])'*((sqrt.(w[supp]) .* Fx[supp,:]))
+    @show det(M)
+    for n_iter = 1:it_max
+        K = length(supp)
+        w_supp = w[supp]
+        M_inv=inv(M)
+        d_fun = ((Fx * (chol( (M_inv+M_inv')/2 ))' ).^2) * ones(m) / m
+        ord = reverse(sortperm(d_fun))[1:L]
+        if d_fun[ord[1]] < 1/eff
+            break
+        end
+        lx_vec = shuffle(ord)
+        kx_vec = shuffle(supp)
 
-    # M=zeros(m, m)
-    # for i in supp
-    #     M += Fx[i,:]*Fx[i,:]'
-    # end
-    # M /= size(supp,1)
-    # if findmin(M'-M)[1]>10e-10
-    #     print("ERROR1")
-    # end
-    M = (sqrt.(w_supp) .* Fx_supp)'*((sqrt.(w_supp) .* Fx_supp))
-    M_inv=inv(M)
-    @show rank(M)
-    d_fun = ((Fx * (chol((M_inv+M_inv')/2))' ).^2) * one / m
-    ord = reverse(sortperm(d_fun))[1:L]
-    lx_vec = shuffle(ord)
-    kx_vec = shuffle(supp)
-
-    print("zaciatok cyklu\n")
-    while true
         n_iter += 1
-        ord1 = findmin(d_fun[supp])[2]
-        kb = supp[ord1]
+        kb = supp[ findmin(d_fun[supp])[2] ]
         lb = ord[1]
         v = [kb; lb]
-        cv = Fx[v, :] * (inv(M) * Fx[v, :]')     # pre istotu
-        # cv = Fx[v, :] * (M \ Fx[v, :]')
-        α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
+        cv = Fx[v, :] * (M \ Fx[v, :]')
+        α = 0.5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
         α = min(w[kb], α)
         w[kb] -= α
         w[lb] += α
         M += α * ((Fx[lb,:])*(Fx[lb,:]') - (Fx[kb,:])*(Fx[kb, :]'))
-
-                lx = lx
-                Al
-                for k = 1:K
-                    kx = kx_vec[k]
-                    v = [kx, lx]
-                    print(rank(M))
-
-                    cv = Fx[v, :] * (inv(M) * Fx[v, :]')     # pre istotu
-                    # cv = Fx[v, :] * (M \ Fx[v, :]')
-
-                    α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
-                    α = min(w[kx], max(-w[lx], α))
-
-                    wkx_temp = w[kx] - α
-                    wlx_temp = w[lx] + α
-                    if ((wkx_temp < δ) || (wlx_temp < δ))
-                        w[kx] = wkx_temp
-                        w[lx] = wlx_temp
-                        M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
-                        M = (M+M')/2    # pre istotu
-                    end
-                end
-            end
-        else # LBE je nenulujuci
-            print("nenulujuci\n")
-            for l = 1:L
-                lx = lx_vec[l]
-                Alx = Fx[lx, :]*Fx[lx, :]'
-                for k = 1:K
-                    kx = kx_vec[k]
-                    v = [kx; lx]
-                    cv = Fx[v, :] * (inv(M) * Fx[v, :]')    # pre istotu
-                    # cv = Fx[v, :] * (M \ Fx[v, :]')
-                    α = 0_5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + δ)
-                    α = min(w[kx], max(-w[lx], α))
-                    w[kx] -= α
-                    w[lx] += α
+        M = (M+M')/2    # pre istotu
+        for l = 1:L
+            lx = lx_vec[l]
+            Alx = Fx[lx, :]*Fx[lx, :]'
+            for k = 1:K
+                kx = kx_vec[k]
+                v = [kx; lx]
+                cv = Fx[v, :] * (M \ Fx[v, :]')
+                α = 0.5 * (cv[2, 2] - cv[1, 1])/(cv[1, 1] * cv[2, 2] - cv[1, 2]^2 + ϵ)
+                α = min(w[kx], max(-w[lx], α))
+                wkx_temp = w[kx] - α
+                wlx_temp = w[lx] + α
+                if ((w[kb] >= δ) || (wkx_temp < δ) || (wlx_temp < δ))
+                    w[kx] = wkx_temp
+                    w[lx] = wlx_temp
                     M += α * (Alx - (Fx[kx,:])*(Fx[kx,:]'))
                     M = (M+M')/2    # pre istotu
                 end
             end
         end
-        supp = index[find(λ -> (λ>δ), w)]
-        K = length(supp)
-        w_supp = w[supp]
-        # @show size(M)
-        @show rank(M)
-        M_inv=inv(M)
-        # @show rank(M_inv)
-        if findmin(M'-M)[1]>10e-10    # pre istotu
-            print("ERROR1")
-        end
-        d_fun = ((Fx * (chol( (M_inv+M_inv')/2 ))' ).^2) * one / m
-        ord = reverse(sortperm(d_fun))[1:L]
-
-        lx_vec = shuffle(ord)
-        kx_vec = shuffle(supp)
-
-        eff_act =  1 / d_fun[ord[1]]
-        @show eff_act
-
-        if ((d_fun[ord[1]] < eff_inv) || (n_iter >= it_max))
-            break
-        end
+        supp = (1:n)[find(λ -> (λ>δ), w)]
     end
 
-    Phi_best = det(M)^(1/m)
-    eff_best = 1/d_fun[ord[1]]
-
-    Z=0
-    H=0
+    # vypocitaj MVEE
+    reg = Fx[:, 2:m]
+    Z = zeros(m-1)
+    H0 = zeros(m-1,m-1)
     for i=1:n
-        Z=Z+w[i]*z[i]
+        Z += w[i]*reg[i,:]
     end
     for i=1:n
-        H=H+w[i]*(z[i]-Z)'*(z[i]-Z)
+        H0 += w[i]*(reg[i,:]-Z)*(reg[i,:]-Z)'
     end
-    H=inv(H)/(m-1)
+    H=inv(H0)/(m-1)
     return (H,Z)
 end
 
@@ -215,14 +150,8 @@ function generate_on_sphere( dim )
     return (x_sym/norm(x_sym))
 end
 
-function generate_in_MVEE( P )
-    return P*( ( generate_on_sphere(size(P,2))*Uniform(0,1) )^(1/d) )
-end
-
-function generate_in_MVEE( P )
-    x_sym = randn( size(P,2) )
-    x_ball = (x_sym/norm(x_sym)*Uniform(0,1))^(1/d)
-    return P*x_ball
+function generate_in_MVEE( H )
+    return H*( generate_on_sphere(size(H,1))*rand(Uniform(0,1))^(1/size(H,1) ) )
 end
 
 function gibbs(x, A, b)
@@ -242,77 +171,114 @@ function gibbs(x, A, b)
     return x
 end
 
-print("\nProgram started\n")
+no_setups = 10
+setup_size = 10^5
+
 times=zeros(no_setups,3)
-for setup=2:no_setups
-    # inicializacia testu
-    dimension=2^(setup)
+generations=zeros(no_setups)
+print("\nProgram started\n")
+for setup=2:no_setups  # inicializacia testu
+    dimension=setup
+    # dimension=2^(setup)
     X=zeros(setup_size, dimension) # zoznam vygenerovanych bodov - nie je nutny
     (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
-    print("Polyhedra generated\n")
-    @show dimension
+    print("Polyhedra generated:  ")
+    @show dimension, size(A,1), size(vertices,1)
 
-    # REX generator
-    starttime=time()
-    P=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
-    for i=1:setup_size
-        X[i,:]=generate_in_MVEE(P)
-        while any(x ->(x<0), A*X[i,:]-b)
-            X[i,:]=generate_in_MVEE(P)
-            # print("_") # na debuggovanie
-        end
-    end
-    endtime=time()
-    times[setup,1]=endtime-starttime
+    # # REX generator
+    # starttime=time()
+    # ff = [ones(size(vertices,1)) vertices]
+    # qq = randperm(size(vertices,1))[1:dimension+4]
+    # (H,Z)=find_MVEE(ff, qq)
+    # # (H,Z)=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
+    # print("MVEE found\n")
+    # for i=1:setup_size
+    #     X[i,:]=generate_in_MVEE(H)
+    #     count=1
+    #     while any(x ->(x<δ), A*X[i,:]-b)
+    #         count+=1
+    #         if count==10^7
+    #             break
+    #         end
+    #         X[i,:]=generate_in_MVEE(H)
+    #     end
+    #     if count==10^7
+    #         @show setup
+    #         generations[setup] = 10^8
+    #         break
+    #     end
+    #     generations[setup] += count
+    #     # @show count
+    # end
+    # endtime=time()
+    # times[setup,1]=endtime-starttime
+    # generations[setup] /= setup_size
 
     # Hit-and-Run generator
-    # burn=100
-    # starttime=time()
-    # w=zeros(size(A,1))
-    # x=deepcopy(x0)
-    # for i=(1-burn):setup_size
-    #     D = generate_on_sphere(size(A,2))
-    #
-    #     for j=1:size(A,1)
-    #         w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
-    #     end
-    #
-    #     lb = maximum(filter(y->(y<0), w))
-    #     ub = minimum(filter(y->(y>0), w))
-    #     dist=rand(Uniform(lb,ub))
-    #
-    #     x += dist*D
-    #
-    #     if i>0
-    #         X[i,:]=x
-    #     end
-    # end
+    burn=100
+    starttime=time()
+    w=zeros(size(A,1))
+    x=deepcopy(x0)
+    error()
+    for i=(1-burn):setup_size
+        D = generate_on_sphere(size(A,2))
+
+        for j=1:size(A,1)
+            w[j]=(A[j,:]⋅x-b[j])/(A[j,:]⋅D)
+        end
+        @show w
+
+        w_neg= filter(y->(y<0), w)
+        w_pos= filter(y->(y>0), w)
+        lb=0
+        ub=0
+        if length(w_neg)>0
+            lb = maximum(w_neg)
+        end
+        if length(w_pos)>0
+            ub = minimum(w_pos)
+        end
+        if lb==ub
+            @show w
+            error()
+        end
+        dist=rand(Uniform(lb,ub))
+        x += dist*D
+
+        if i>0
+            X[i,:]=x
+        end
+    end
     # TODO shuffle(X[i,:])
-    # endtime=time()
-    # times[setup,2]=endtime-starttime
-    #
-    # # Gibbs generator
-    # starttime=time()
-    # burn=100
-    # x_next=deepcopy(x0)
-    # for i=(1-burn):setup_size
-    #     x=x_next
-    #     x_next = gibbs(x, A, b)
-    #     if i>0
-    #         X[i,:]=x
-    #     end
-    # end
+    endtime=time()
+    times[setup,2]=endtime-starttime
+
+    # Gibbs generator
+    starttime=time()
+    burn=100
+    x_next=deepcopy(x0)
+    for i=(1-burn):setup_size
+        x=x_next
+        x_next = gibbs(x, A, b)
+        if i>0
+            X[i,:]=x
+        end
+    end
     # TODO shuffle(X[i,:])
-    # endtime=time()
-    # times[setup,3]=endtime-starttime
+    endtime=time()
+    times[setup,3]=endtime-starttime
+    print("end of setup\n")
 end
 
 print("average time: ", mean(times), "\n")
 
-scatter([1:no_setups], times[:,1], label="REX")
-scatter([1:no_setups], times[:,2], label="Hit-and-Run")
-scatter([1:no_setups], times[:,3], label="Gibbs")
-xlabel("log dimension")
-ylabel("time runned")
+# scatter(1:no_setups, times[:,1], label="REX")
+scatter(1:no_setups, 1000*times[:,2], label="Hit-and-Run")
+scatter(1:no_setups, 1000*times[:,3], label="Gibbs")
+# xlabel("log dimension")
+ylabel("time runned [ms]")
+
+# scatter(1:no_setups, generations, label="REX")
+# ylabel("pocet pokusov")
 legend()
 # close()

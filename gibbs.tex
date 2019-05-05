@@ -1,13 +1,13 @@
 \subsection{Gibbsov generátor}
 
 V tejto podsekcii sa budeme zaoberať Gibbsovým generátorom, metódou generovania z triedy MCMC vhodnou na generovanie vo viacrozmernom priestore.
-Našou úlohou je generovať z $d$--rozmernej distribúcie $Q$, pričom z $Q$ nevieme generovať priamo. Predpokladajme, že nevieme použiť Hit--and--Run generátor, lebo $Q_{\mathbf x^{(i)}}=Q_{(x^{(i)}_1, x^{(i)}_2, \dots, x^{(i)}_d)}$ je kvôli veľkému rozmeru priestoru príliš zložitá na generovanie. Pred podrobným popísaním vlastností algoritmu si najprv ukážme, ako Gibbsov generátor funguje.
+Našou úlohou je generovať z $d$--rozmernej distribúcie $Q$, pričom z cielenej hustoty $Q$ nevieme generovať priamo. Predpokladajme, že nevieme použiť Hit--and--Run generátor, lebo kandidátska hustota $q(\cdot| \mathbf x^{(i)})=q(\cdot|(x^{(i)}_1, x^{(i)}_2, \dots, x^{(i)}_d))$ je kvôli veľkému rozmeru priestoru príliš zložitá na generovanie. Pred podrobným popísaním vlastností algoritmu si najprv ukážme, ako Gibbsov generátor funguje.
 
-Gibbsov generátor určí kandidátsku hustotu $Q_{\mathbf x^{(i)}}$ tak, že bude možné generovať z $Q_{\mathbf x^{(i)}}$ po súradniciach.
-Gibbsov generátor bude generovať bod $\mathbf x^{(i+1)}=(x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_d)$ postupne po súradniciach, $j$--tú súradnicu $x^{(i+1)}_j$ vygeneruje z kandidátskej hustoty $$Q_{x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2}, \dots, x^{(i)}_d}(x^{(i+1)}_j).$$
+Gibbsov generátor určí kandidátsku hustotu $q(\cdot|\mathbf x^{(i)})$ tak, že bude možné generovať z $q(\cdot|\mathbf x^{(i)})$ po súradniciach.
+Gibbsov generátor bude generovať bod $\mathbf x^{(i+1)}=(x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_d)$ postupne po súradniciach, $j$--tú súradnicu $x^{(i+1)}_j$ vygeneruje z kandidátskej hustoty $$q(x^{(i+1)}_j|x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, x^{(i)}_{j+2}, \dots, x^{(i)}_d).$$
 
 Označme si cieľový polyéder $S$ a $\mathbf d_{i,j}$ priamku rovnobežnú s $j$--tou osou prechádzajúcou cez bod $(x^{(i+1)}_1, \dots, x^{(i+1)}_{j}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$.
-V prípade rovnomerného generovania na polyédroch je pre Gibbsov generátor kandidátska hustota $Q_{x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d}(x^{(i+1)}_j)$ rovnomerná na úsečke $\mathbf d_{i,j} \cap S$ a nulová inde.
+V prípade rovnomerného generovania na polyédroch je pre Gibbsov generátor kandidátska hustota $q(x^{(i+1)}_j|x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$ rovnomerná na úsečke $\mathbf d_{i,j} \cap S$ a nulová inde.
 
 Gibbsov generátor funguje nasledovne:
 
@@ -18,7 +18,7 @@ Gibbsov generátor funguje nasledovne:
 		\State inicializuj $\mathbf x^{(0)} = (x^{(0)}_1, x^{(0)}_2, \dots, x^{(0)}_d)$
 		\For {$i=0,\dots,N-1$}
 			\For {$j=0,1,\dots,n$}
-				\State $x^{(i)}_j \sim Q_{x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d}(x^{(i+1)}_j)$
+				\State $x^{(i)}_j \sim q(x^{(i+1)}_j|x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$
 			\EndFor
 			\State $\mathbf x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_d)$
 		\EndFor
@@ -26,8 +26,8 @@ Gibbsov generátor funguje nasledovne:
 	\end{algorithmic}
 \end{algorithm}
 
-Gibbsov generátor predpokladá, že možno rýchlo generovať jednotlivé súradnice z rozdelenia $Q_{x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d}(x^{(i+1)}_j)$.
+Gibbsov generátor predpokladá, že možno rýchlo generovať jednotlivé súradnice z rozdelenia $q(x^{(i+1)}_j|x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$.
 
 V prípade rovnomerného generovania v polyédri je daný predpoklad splnený, vďaka linearite nerovníc pri H--reprezentácii polyédra možno ľahko generovať na úsečke $\mathbf d_{i,j} \cap S$. Hraničné body úsečky vieme zo systému nerovností $Ax \geq b$ vypočítať priamo bez lineárneho programovania, čiže generovať z týchto rozdelení je obzvlášť jednoduché.
 
-Ako špeciálny prípad Metropolis--Hastings algoritmu má Gibbsov generátor podobné vlastnosti ako Metropolis--Hastings algoritmus. Jeho hlavnou výhodou je, že je jednoduchý a neobsahuje žiadne parametre. Môžeme si všimnúť, že generovanie bodu z $Q_{\mathbf x}$ trvá lineárne dlho od rozmeru priestoru, preto pri zväčšovaní počtu rozmerov priestoru rastie čas potrebný na vygenerovanie bodu asymptoticky kvadraticky. Preto očakávame, že v porovnaní s Hit--and--Run generátorom bude Gibbsov generátor pomalší.
+Ako špeciálny prípad Metropolis--Hastings algoritmu má Gibbsov generátor podobné vlastnosti ako Metropolis--Hastings algoritmus. Jeho hlavnou výhodou je, že je jednoduchý a neobsahuje žiadne parametre. Môžeme si všimnúť, že generovanie bodu z $q(\cdot|\mathbf x)$ trvá lineárne dlho od rozmeru priestoru, preto pri zväčšovaní počtu rozmerov priestoru rastie čas potrebný na vygenerovanie bodu asymptoticky kvadraticky. Preto očakávame, že v porovnaní s Hit--and--Run generátorom bude Gibbsov generátor pomalší.

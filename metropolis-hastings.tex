@@ -4,26 +4,26 @@ V tejto kapitole sa budeme zaoberať známymi metódami na generovanie z určit�
 
 \section{Metropolis--Hastings metódy}
 
-V tejto sekcii si predstavíme triedu Metropolis--Hastings algoritmov na generovanie bodov z ľubovoľného rozdelenia. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis--Hastings sa dá pozerať ako na postupnosť stavov markovovských reťazcov (Markov Chain Monte Carlo, ďalej MCMC). Pri použití vhodného nastavenia parametrov algoritmu bude s rastúcim počtom vygenerovaných bodov rozdelenie vygenerovaných bodov konvergovať ku žiadanému rozdeleniu.
+V tejto sekcii si predstavíme triedu Metropolis--Hastings algoritmov na generovanie bodov z ľubovoľného rozdelenia. Na postupnosť bodov generovnaných algoritmami z triedy Metropolis--Hastings sa dá pozerať ako na postupnosť stavov markovovského reťazcu (Markov Chain Monte Carlo, ďalej MCMC). Pri danej cieľovej hustote $Q$ je Markovovský reťazec konštruovaný tak, aby mal jediné stacionárne rozdelenie, ktoré je totožné s $Q$. Pri použití vhodného nastavenia parametrov algoritmu bude s rastúcim počtom vygenerovaných bodov rozdelenie vygenerovaných bodov konvergovať ku žiadanému stacionárnemu rozdeleniu $Q$.
 
 V nasledujúcej časti stručne predstavíme všeobecný (abstraktný) Metropolis--Hastings algoritmus, podrobnejšie vysvetlenie viete nájsť napríklad v \cite{metropolis-hastings_chib}. V následných častiach predstavíme Hit--and--Run generátor a Gibbsov generátor ako jeho konkrétne realizácie.
 
 \subsection{Všeobecný Metropolis--Hastings algoritmus}
 
-Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédra je rovnomerná v polyédri a nulová mimo neho.
+Majme cieľovú hustotu $Q$ z ktorej chceme generovať, v prípade rovnomerného generovania vnútri polyédra je konštantná v polyédri a nulová mimo neho.
 
-Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} sa nachádza v stave $\mathbf x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $Q_{\mathbf x^{(i)}}$ závislú na $\mathbf x^{(i)}$. Táto kandidátska hustota (angl. ``proposal density") je volená tak, aby z nej bolo možné jednoducho generovať ďalšie body. Môže byť značne odlišná od cieľovej hustoty $Q$, avšak je nutné, aby limitné rozdelenie vygenerovaných bodov konvergovalo ku $Q$.
+Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib} sa nachádza v stave $\mathbf x^{(i)}$ reprezentovanom bodom v polyédri, stav určuje \textit{kandidátsku hustotu} $q(\cdot | \mathbf x^{(i)})$ závislú na $\mathbf x^{(i)}$. Táto kandidátska hustota (angl. ``proposal density") je volená tak, aby z nej bolo možné jednoducho generovať ďalšie body. Môže byť značne odlišná od cieľovej hustoty $Q$, avšak je nutné, aby limitné rozdelenie vygenerovaných bodov konvergovalo ku $Q$.
 
-Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciálny stav $\mathbf y$ podľa hustoty $Q_{\mathbf x^{(i)}}$. Ďalší stav algoritmu $\mathbf x^{(i+1)}$ bude $\mathbf y$ s pravdepodobnosťou $\alpha (\mathbf y|\mathbf x^{(i)})$ (algoritmus sa pohne), inak to bude $\mathbf x^{(i)}$ (ostane stáť). Funkcia $\alpha$ sa označuje ako \textit{pomer akceptovania} (angl. ``acceptance ratio"), je definované ako $$\alpha (\mathbf y|\mathbf x) = \frac {Q(\mathbf x)}{Q_{\mathbf x}(\mathbf y)}$$ 
-Pravdepodobnosť $\alpha (\mathbf y|\mathbf x^{(i)})$ môže byť vo všeobecnosti zložitá. V prípade, že je hustota $Q$ rovnomerná a postupnosť stavov markovovského reťazca časovo reverzibilná, t.j. $$Q_{\mathbf x^{(i)}}(\mathbf x^{(i+1)})=Q_{\mathbf x^{(i+1)}}(\mathbf x^{(i)}),$$ tak je daná pravdepodobnosť pohybu konštante jedna, $\alpha (\mathbf y|\mathbf x^{(i)})=1$. Tieto predpoklady budú splnené pri ďalej spomínaných algoritmoch (Hit--and--Run generátore a Gibbsovom generátore).
+Algoritmus postupuje iteratívne, v jednom kroku vygeneruje ďalší potenciálny stav $\mathbf y$ podľa hustoty $q(\cdot |\mathbf x^{(i)})$. Ďalší stav algoritmu $\mathbf x^{(i+1)}$ bude $\mathbf y$ s pravdepodobnosťou $\alpha (\mathbf y|\mathbf x^{(i)})$ (algoritmus sa pohne), inak to bude $\mathbf x^{(i)}$ (ostane stáť). Funkcia $\alpha$ sa označuje ako \textit{pomer akceptovania} (angl. ``acceptance ratio"), je definované ako $$\alpha (\mathbf y|\mathbf x) = \text{min}(\frac {Q(\mathbf y|\mathbf x)}{q(\mathbf y | \mathbf x)}, 1).$$ Pri tejto definícii platí $$Q(\mathbf y| \mathbf x)=q(\mathbf y | \mathbf x)\alpha(\mathbf y|\mathbf x).$$
+Pravdepodobnosť $\alpha (\mathbf y|\mathbf x^{(i)})$ môže byť vo všeobecnosti zložitá. V prípade, že je hustota $Q$ rovnomerná a postupnosť stavov markovovského reťazca časovo reverzibilná, t.j. $$q(\mathbf x^{(i+1)}|\mathbf x^{(i)})=q(\mathbf x^{(i)}|\mathbf x^{(i+1)}),$$ tak je daná pravdepodobnosť pohybu konštante jedna, $\alpha (\mathbf y|\mathbf x^{(i)})=1$. Tieto predpoklady budú splnené pri ďalej spomínaných algoritmoch (Hit--and--Run generátore a Gibbsovom generátore). Teda naše MCMC metódy, ktoré budeme používať pre generovanie z rovnomerného rozdelenia, sa v každom kroku ``pohnú", na rozdiel od všeobecných MCMC generátorov, ktoré často ``stoja", lebo neakceptujú kandidátov $\mathbf y$ na prechod.
 
 \begin{algorithm}[H]
 	\caption{Všeobecný Metropolis--Hastings algoritmus \cite{metropolis-hastings_chib}}
 	\label{metropolis-hastings}
 	\begin{algorithmic}[1]
 		\State inicializuj $\mathbf x^{(0)}$
-		\For {$i=0,1,\dots,N$} 
-			\State Vygeneruj bod $\mathbf y$ z $Q_{\mathbf x^{(i)}}$
+		\For {$i=0,1,\dots,N-1$} 
+			\State Vygeneruj bod $\mathbf y$ z $q(\cdot|\mathbf x^{(i)})$
 			\State Vygeneruj $u$ z $U(0,1)$.
 			\If {$u \leq \alpha(\mathbf y | \mathbf x^{(i)})$}
 				\State Nastav $\mathbf x^{(i+1)}=\mathbf y$
@@ -35,6 +35,6 @@ Pravdepodobnosť $\alpha (\mathbf y|\mathbf x^{(i)})$ môže byť vo všeobecnos
 	\end{algorithmic}
 \end{algorithm}
 
-Môžeme si všimnúť, že v Metropolis--Hastings algoritmoch, je hustota bodu $\mathbf x^{(i)}$ závislá od predchádzajúceho bodu $\mathbf x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je pri vhodnej voľbe kandidátskej hustoty $Q_{\mathbf x^{(i)}}$ a pravdepodobnosti $\alpha$ možné dokázať, že napriek závislosti po sebe idúcich bodov je pre $N \rightarrow \infty$ limitné rozdelenie náhodneho vektora $\mathbf x^{(N)}$ rovné $Q$. Potrebná veľkosť $N$ na dosiahnutie dostatočne presného odhadu hustoty $Q$ sa nazýva burn--in period.
+Môžeme si všimnúť, že v Metropolis--Hastings algoritmoch, je hustota bodu $\mathbf x^{(i)}$ závislá od predchádzajúceho bodu $\mathbf x^{(i-1)}$. Podľa \cite{metropolis-hastings_chib} je pri vhodnej voľbe kandidátskej hustoty $q(\cdot|\mathbf x^{(i)})$ a pravdepodobnosti $\alpha$ možné dokázať, že napriek závislosti po sebe idúcich bodov je pre $N \rightarrow \infty$ limitné rozdelenie náhodneho vektora $\mathbf x^{(N)}$ rovné $Q$. Potrebná veľkosť $N$ na dosiahnutie dostatočne presného odhadu hustoty $Q$ sa nazýva burn--in period.
 
 V ďalších častiach si ukážeme niekoľko konkrétnych realizácii Metropolis--Hastings algoritmu. Každá z tých metód obsahuje určité predpoklady na distribúciu, z ktorej chceme generovať, no dá použiť aj na rovnomerné generovanie bodov v polyédri.

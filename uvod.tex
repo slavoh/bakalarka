@@ -2,9 +2,9 @@
 \addcontentsline{toc}{chapter}{Úvod} % rucne pridanie do obsahu
 \markboth{Úvod}{Úvod} % vyriesenie hlaviciek
 
-V rámci tejto práce sa budeme zaoberať metódami na generovanie z rovnomerného rozdelenia vo veľarozmernom polyédri (konvexnom mnohostene). Rovnomernosť rozdelenia znamená, že pravdepodobnosť, že pri generovaní dostaneme bod vnútri ľubovoľnej oblasti polyédra je lineárne závislá iba od objemu danej časti. Predstavíme si známe algoritmy z tried Markov Chain Monte Carlo a zamietacích metód, ktoré možno použiť na rovnomerné generovanie a ako ich špeciálny prípad generovanie v polyédri. 
+V rámci tejto práce sa budeme zaoberať metódami na generovanie z rovnomerného rozdelenia vo veľarozmernom polyédri (konvexnom mnohostene). Rovnomernosť rozdelenia znamená, že pravdepodobnosť, že pri generovaní dostaneme bod vnútri ľubovoľnej oblasti polyédra je lineárne závislá iba od objemu danej oblasti. Predstavíme si známe algoritmy z tried Markov Chain Monte Carlo a zamietacích metód, ktoré možno použiť na rovnomerné generovanie a ako ich špeciálny prípad generovanie v polyédri. 
 
-Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov (V--reprezentácia) alebo ako sústavu lineárnych nerovníc (H reprezentáca). Obidve spomenuté reprezentácie možno v prípade potreby previesť na tú druhú. Prevod medzi nimi síce nie je jednoduchý, no daný výpočet je nutné spraviť len raz pred začatím generovania. 
+Vo všeobecnosti možno polyéder reprezentovať viacerými spôsobmi, napríklad ako konvexný obal bodov (V--reprezentácia) alebo ako sústavu lineárnych nerovníc (H--reprezentácia). Obidve spomenuté reprezentácie možno v prípade potreby previesť na tú druhú. Prevod medzi nimi síce nie je jednoduchý, no daný výpočet je nutné spraviť len raz pred začatím generovania. 
 
 Rovnomerné generovanie bodu v polyédre je problém s prirodzeným uplatnením v praxi. Mnoho algoritmov, napríklad z triedy Monte Carlo alebo z triedy znáhodnených optimalizačných metód, je závislých na rovnomernom generovaní bodov splňujúcich určité požiadavky.
 Generovanie bodov v polyédre možno vnímať ako generovanie bodov, ktoré spľňajú sústavu lineárnych obmedzení H--reprezentácie polyédru.
