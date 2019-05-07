@@ -194,23 +194,27 @@ end
 
 burn=100
 no_setups = 9
-no_polyhedras = 100
+no_polyhedras = 25
 no_generated_points = 10^5
+beg=4
 
-times=zeros(no_setups,4)
-no_generations=zeros(no_setups)
+times = zeros(no_setups,4)
+size_Hrep = zeros(no_setups)
+size_Vrep = zeros(no_setups)
+no_generations = zeros(no_setups)
 print("\nProgram started\n")
-for setup = 4:no_setups  # inicializacia testu
+for setup = beg:no_setups  # inicializacia testu
     dimension=setup
-    # dimension=2^(setup)
     @show dimension
     X=zeros(no_generated_points, dimension) # zoznam vygenerovanych bodov - nie je nutny
     for polyeder = 1:no_polyhedras
         (A,b,vertices,x0)=generate_polyeder(dimension, dimension*10)
         print("Polyhedra generated:  ")
-        @show size(A,1), size(vertices,1)
+        size_Hrep[setup] = size(A,1)
+        size_Vrep[setup] = size(vertices,1)
+        @show size_Hrep[setup], size_Vrep[setup]
 
-        # REX generator
+        # vypocet MVEE
         starttime = time()
         (H,Z)=find_MVEE([ones(size(vertices,1)) vertices])
         H_inv=inv(H)
@@ -218,12 +222,14 @@ for setup = 4:no_setups  # inicializacia testu
         endtime = time()
         times[setup,4] += endtime - starttime
 
+        # REX generator
         starttime = time()
         for i=1:no_generated_points
             X[i,:] = generate_in_MVEE(C)+Z
             count=1
             while any(λ ->(λ<0), A*X[i,:]-b)
                 X[i,:]=generate_in_MVEE(C)+Z
+                count += 1
             end
             no_generations[setup] += count
         end
@@ -283,16 +289,38 @@ for setup = 4:no_setups  # inicializacia testu
     print("Dimension done\n")
 end
 
-print("average time: ", mean(times), "\n")
+# ukladanie vysledkov
 
+# scatter(beg:no_setups, size_Hrep[beg:end], label="H-reprezentácia")
+# scatter(beg:no_setups, size_Vrep[beg:end], label="V-reprezentácia")
+# xlabel("rozmer priestoru")
+# ylabel("priemerná veľkosť reprezentácii")
+# legend()
+# savefig("images/velkost_rep")
+# close()
 
-# scatter(1:no_setups, no_generations, label="REX")
+# scatter(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end], label="pomer veľkostí reprezentácií")
+# xlabel("rozmer priestoru")
+# ylabel("priemerná veľkosti H-reprezentacie ku V reprezentácie")
+# legend()
+# savefig("images/pomer_rep")
+# close()
+
+# scatter(beg:no_setups, no_generations[beg:end], label="MVEE metóda")
+# xlabel("rozmer priestoru")
 # ylabel("pocet pokusov")
-scatter(1:no_setups, times[:,4], label="MVEE computation")
-scatter(1:no_setups, times[:,1], label="Rejection using MVEE")
-scatter(1:no_setups, times[:,2], label="Hit-and-Run")
-scatter(1:no_setups, times[:,3], label="Gibbs")
-xlabel("dimension")
-ylabel("time runned [ns]")
+# legend()
+# savefig("images/mvee_pokusy")
+# close()
+
+scatter(beg:no_setups, times[beg:end,4], label="výpočet MVEE - REX")
+scatter(beg:no_setups, times[beg:end,1], label="MVEE metóda")
+scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
+scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
+xlabel("rozmer priestoru")
+ylabel("priemerný čas vygenerovania bodu [ns]")
 legend()
+# savefig("images/vsetky")
+# savefig("images/mh")
+# savefig("images/mh_rex")
 # close()
