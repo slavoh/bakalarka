@@ -55,6 +55,13 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
             i+=1
         end
 
+        Fx = [ones(size(vertices,1)) vertices]
+        det_M = det( Fx'*Fx/size(Fx,1) )
+        @show det_M
+        if det_M < 1e-18
+            continue
+        end
+
         # odstran zbytocne rovnice z H reprezentacie
         bounding_set = []
         for i=1:no_planes
@@ -69,24 +76,37 @@ function generate_polyeder( dim, no_planes ) # dany Ax≥b
                 append!(bounding_set,i)
             end
         end
+        # if size(vertices,1)<size(A_reduced,1)+2
+        #     continue
+        # end
         A_reduced = A[bounding_set,:]
         b_reduced = b[bounding_set]
-
-        # return (A,b, vertices, x0)
         return (A_reduced,b_reduced, vertices, x0)
     end
 end
 
-function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=10^12, t_max=30) # pouzitim REX algoritmu
+function find_MVEE(Fx, γ=4, eff=1-1e-9, it_max=10^12, t_max=30) # pouzitim REX algoritmu
     n = size(Fx,1)
     m = size(Fx,2)
     L = min(n, γ*m)
 
-    supp = supp_ini
     w = zeros(n)
-    w[supp] = 1 / length(supp)
-    M = (sqrt.(w[supp]) .* Fx[supp,:])'*((sqrt.(w[supp]) .* Fx[supp,:]))
-    @show det(M)
+    M = zeros(m,m)
+    supp=[]
+    c=0
+    while det(M) < 1e-18
+        supp = randperm(n)[m+c:n]
+        w[supp] = 1 / length(supp)
+        M = (sqrt.(w[supp]) .* Fx[supp,:])'*((sqrt.(w[supp]) .* Fx[supp,:]))
+        if m+c==n
+            @show c, det(M)
+            @show M
+            error()
+        end
+        c+=1
+    end
+    M=(M+M')/2
+    print("det(M): "); print(det(M)); print(" -> ")
     for n_iter = 1:it_max
         K = length(supp)
         w_supp = w[supp]
@@ -131,7 +151,7 @@ function find_MVEE(Fx, supp_ini, γ=4, eff=1-1e-9, it_max=10^12, t_max=30) # pou
         end
         supp = (1:n)[find(λ -> (λ>δ), w)]
     end
-
+    print(det(M)); print(" \n")
     # vypocitaj MVEE
     reg = Fx[:, 2:m]
     Z = zeros(m-1)
@@ -151,8 +171,8 @@ function generate_on_sphere( dim )
     return (x_sym/norm(x_sym))
 end
 
-function generate_in_MVEE( H )
-    return H*( generate_on_sphere(size(H,1))*rand(Uniform(0,1))^(1/size(H,1) ) )
+function generate_in_MVEE(C)
+    return C*( generate_on_sphere(size(C,1))*rand(Uniform(0,1))^(1/size(C,1) ) )
 end
 
 function gibbs(x, A, b)
@@ -172,14 +192,15 @@ function gibbs(x, A, b)
     return x
 end
 
+burn=100
 no_setups = 9
 no_polyhedras = 100
-no_generated_points = 10^6
+no_generated_points = 10^5
 
-times=zeros(no_setups,3)
+times=zeros(no_setups,4)
 no_generations=zeros(no_setups)
 print("\nProgram started\n")
-for setup = 1:no_setups  # inicializacia testu
+for setup = 4:no_setups  # inicializacia testu
     dimension=setup
     # dimension=2^(setup)
     @show dimension
@@ -189,33 +210,28 @@ for setup = 1:no_setups  # inicializacia testu
         print("Polyhedra generated:  ")
         @show size(A,1), size(vertices,1)
 
-        # # REX generator
-        # starttime=time()
-        # (H,Z)=find_MVEE([ones(size(vertices,1)) vertices], randperm(size(vertices,1))[1:dimension+4])
-        # print("MVEE found\n")
-        # for i=1:no_generated_points
-        #     X[i,:]=generate_in_MVEE(H)
-        #     count=1
-        #     while any(λ ->(λ<0), A*X[i,:]-b)
-        #         count+=1
-        #         if count==10^7
-        #             break
-        #         end
-        #         X[i,:]=generate_in_MVEE(H)
-        #     end
-        #     if count==10^7
-        #         @show setup
-        #         no_generations[setup] = 10^8
-        #         break
-        #     end
-        #     no_generations[setup] += count
-        # end
-        # endtime=time()
-        # times[setup,1]=endtime-starttime
-        # no_generations[setup] /= no_generated_points
+        # REX generator
+        starttime = time()
+        (H,Z)=find_MVEE([ones(size(vertices,1)) vertices])
+        H_inv=inv(H)
+        C = chol((H_inv+H_inv')/2)
+        endtime = time()
+        times[setup,4] += endtime - starttime
+
+        starttime = time()
+        for i=1:no_generated_points
+            X[i,:] = generate_in_MVEE(C)+Z
+            count=1
+            while any(λ ->(λ<0), A*X[i,:]-b)
+                X[i,:]=generate_in_MVEE(C)+Z
+            end
+            no_generations[setup] += count
+        end
+        endtime=time()
+        times[setup,1] += endtime-starttime
+        no_generations[setup] /= no_generated_points
 
         # Hit-and-Run generator
-        burn=100
         starttime=time()
         w=zeros(size(A,1))
         x=deepcopy(x0)
@@ -249,7 +265,6 @@ for setup = 1:no_setups  # inicializacia testu
 
         # Gibbs generator
         starttime = time()
-        burn = 100
         x_next = deepcopy(x0)
         for i=(1-burn):no_generated_points
             x=x_next
@@ -270,13 +285,14 @@ end
 
 print("average time: ", mean(times), "\n")
 
-# scatter(1:no_setups, times[:,1], label="REX")
-scatter(1:no_setups, 10*times[:,2], label="Hit-and-Run")
-scatter(1:no_setups, 10*times[:,3], label="Gibbs")
-xlabel("dimension")
-ylabel("time runned [ns]")
 
 # scatter(1:no_setups, no_generations, label="REX")
 # ylabel("pocet pokusov")
+scatter(1:no_setups, times[:,4], label="MVEE computation")
+scatter(1:no_setups, times[:,1], label="Rejection using MVEE")
+scatter(1:no_setups, times[:,2], label="Hit-and-Run")
+scatter(1:no_setups, times[:,3], label="Gibbs")
+xlabel("dimension")
+ylabel("time runned [ns]")
 legend()
 # close()

@@ -11,11 +11,9 @@ Generovanie bodov v polyédre možno vnímať ako generovanie bodov, ktoré spľ
 
 Cieľom tejto práce je jednak poskytnúť prehľad známych metód, ktoré je možné použiť na rovnomerné generovanie v polyédroch a na základe porovnania implementovať čo najefektívnejší generátor.
 
-V prvej kapitole sa budeme zaoberať známymi metódami, ktoré možno použiť na generovanie na polyédroch. Medzi ne patria Metropolis--Hastings metódy (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať realizácie z komplexných rozdelení vhodne konštruovanou ``náhodnou prechádzkou". To možno použiť aj v našom prípade, keď je cielené rozdelenie uniformné. V triede Metropolis--Hastings metód sa špecificky zameriame na Hit--and--Run generátor a Gibbsov generátor, ktoré možno jednoducho implementovať práve pre generovanie na mnohorozmerných polyédroch.
+V prvej kapitole sa budeme zaoberať známymi metódami, ktoré možno použiť na generovanie na polyédroch. Medzi ne patria Metropolis--Hastings metódy (z triedy Markov Chain Monte Carlo), ktoré sa snažia simulovať realizácie z komplexných rozdelení vhodne konštruovanou ``náhodnou prechádzkou''. To možno použiť aj v našom prípade, keď je cielené rozdelenie uniformné. V triede Metropolis--Hastings metód sa špecificky zameriame na Hit--and--Run generátor a Gibbsov generátor, ktoré možno jednoducho implementovať práve pre generovanie na mnohorozmerných polyédroch.
 Okrem toho sa budeme zaoberať aj zamietacími metódami, ktoré namiesto generovania bodov priamo v polyédri vygeneruju bod na jednoduchšej nadmnožine polyédra rovnomerne náhodne. Po vygenerovaní bodu overia, či leží v polyédre. Ak nie, tak generujú znovu.
 
 Druhá kapitola je venovaná problému optimálneho návrhu experimentov (optimal design problem), pomocou ktorého predstavíme algoritmus Randomized Exchange Algorithm. Daný algoritmus vieme použiť aj na nájdenie elipsoidu s minimálnym objemom obaľujúci zadaný polyéder. Tento elipsoid možno jednak priamo použiť ako nadmnožinu pri zamietacej metóde, no taktiež možno použiť jeho vlastnosti využiť na zistenie natočenia polyédra v priestore a obalenie polyédra kvádrom s malým objemom.
 
-Tretia kapitola bude obsahovať porovnania algoritmov spomenutých v prvej kapitole a zdrojový kód čo najrýchlejšieho algoritmu na generovanie bodov vnútri polyédru. \\
-
-\textbf{TODO doplniť po dopísaní porovnania}
+Tretia kapitola obsahuje technické podrobnosti implementácie, výsledky porovnaní algoritmov spomenutých v prvej kapitole a zdrojový kód čo najrýchlejšieho algoritmu na generovanie bodov vnútri polyédru.
