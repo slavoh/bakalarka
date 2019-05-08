@@ -20,7 +20,7 @@ Gibbsov generátor funguje nasledovne:
 			\For {$j=0,1,\dots,n$}
 				\State $x^{(i)}_j \sim q(x^{(i+1)}_j|x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$
 			\EndFor
-			\State $\mathbf x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2 \dots, x^{(i+1)}_d)$
+			\State $\mathbf x^{(i+1)}= (x^{(i+1)}_1, x^{(i+1)}_2, \dots, x^{(i+1)}_d)$
 		\EndFor
 		\State Vráť ${\mathbf x^{(1)},\mathbf x^{(2)},\dots,\mathbf x^{(N)}}$.
 	\end{algorithmic}
@@ -28,4 +28,4 @@ Gibbsov generátor funguje nasledovne:
 
 Gibbsov generátor predpokladá, že možno rýchlo generovať jednotlivé súradnice z rozdelenia $q(x^{(i+1)}_j|x^{(i+1)}_1, \dots, x^{(i+1)}_{j-1}, x^{(i)}_{j+1}, \dots, x^{(i)}_d)$. V prípade rovnomerného generovania v polyédri je daný predpoklad splnený, vďaka linearite nerovníc pri H--reprezentácii polyédra možno ľahko generovať na úsečke $\mathbf d_{i,j} \cap S$. Hraničné body úsečky vieme zo systému nerovností $Ax \geq b$ vypočítať priamo bez lineárneho programovania, čiže generovať z týchto rozdelení je obzvlášť jednoduché.
 
-Ako špeciálny prípad Metropolis--Hastings algoritmu má Gibbsov generátor podobné vlastnosti ako Metropolis--Hastings algoritmus. Jeho hlavnou výhodou je, že je jednoduchý a neobsahuje žiadne parametre. Môžeme si všimnúť, že generovanie bodu z $q(\cdot|\mathbf x)$ trvá lineárne dlho od rozmeru priestoru, preto pri zväčšovaní počtu rozmerov priestoru rastie čas potrebný na vygenerovanie bodu asymptoticky kvadraticky. Preto očakávame, že v porovnaní s Hit--and--Run generátorom bude Gibbsov generátor pri vyššom počte rozmerov pomalší.
+Ako špeciálny prípad Metropolis--Hastings algoritmu má Gibbsov generátor podobné vlastnosti ako Hit--and--Run generátor. Jeho hlavnou výhodou je, že je jednoduchý a neobsahuje žiadne parametre. Môžeme si všimnúť, že generovanie bodu z $q(\cdot|\mathbf x)$ trvá lineárne dlho od rozmeru priestoru, preto pri zväčšovaní počtu rozmerov priestoru rastie čas potrebný na vygenerovanie bodu asymptoticky kvadraticky. Preto očakávame, že v porovnaní s Hit--and--Run generátorom bude Gibbsov generátor pri vyššom počte rozmerov pomalší.

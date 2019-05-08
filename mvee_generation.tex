@@ -1,8 +1,8 @@
 \section {Rovnomerné generovanie bodov v polyédri pomocou MVEE elipsoidu}
 
-V tejto podkapitole sa budeme bližšie zaoberať MVEE metódou, ako pomocou už vypočítaného MVEE elipsoidu možno rovnomerne generovať body vnútri zadaného polyédra. Budeme používať zamietaciu metódu, vygerujeme bod v elipsoide a overíme, či je daný bod tiež v polyédre.
+V tejto podkapitole sa budeme bližšie zaoberať MVEE metódou, ako pomocou už vypočítaného MVEE elipsoidu možno rovnomerne generovať body vnútri zadaného polyédra. Budeme používať zamietaciu metódu, vygerujeme bod v elipsoide a overíme, či je daný bod tiež v polyédri.
 
-Nakoľko každý elipsoid je jednotková guľa zobrazená lineárnym zobrazením, na rovnomerné generovanie v MVEE elipsoide najprv rovnomerne vygenerujeme bod v jednotkovej guli a následne ho zobrazíme daným lineárnym zobrazením do bodu v MVEE elipsoide. Kedže zobrazenie je lineárne, jeho jakobián je konštantný, preto rovnomernosť hustoty generovania nezávisí od $x$. A teda rovnomernosť generovania sa zachová.\\
+Nakoľko každý elipsoid je jednotková guľa zobrazená lineárnym zobrazením, na rovnomerné generovanie v MVEE elipsoide najprv rovnomerne vygenerujeme bod v jednotkovej guli a následne ho zobrazíme daným lineárnym zobrazením do bodu v MVEE elipsoide. Kedže zobrazenie je lineárne, jeho jakobián je konštantný, preto rovnomernosť hustoty generovania nezávisí od $\mathbf x$. A teda rovnomernosť generovania sa zachová.\\
 \label{generovanie_v_mvee}
 
 Na rovnomerné generovanie bodu $\mathbf x$ v $d$--rozmernej jednotkovej guli so stredom v nule najprv vygenerujeme $d$--rozmerný smerový vektor rovnomerne náhodne a následne vygenerujeme vzdialenosť bodu $\mathbf x$ od nuly tak, aby mali oblasti rôzne vzdialené od $0$ rovnakú pravdepodobnosť na vygenerovanie.
@@ -17,13 +17,13 @@ Elipsoid $E(\mathbf{\overline H, \overline z})$ je definovaný ako
 $$E(\mathbf{\overline H, \overline z})= \{ \mathbf{z} \in \mathbb{R}^d \; | \: (\mathbf{z-\overline z)'\overline H(z-\overline z}) \le 1 \}, $$
 pričom matica $\mathbf{\overline H}$ je pozitívne semidefinitná.
 
-Parametre $\mathbf{\overline H}$ a $\mathbf{\overline z}$ získame pomocou REX algoritmu. Vygenerovať bod $\mathbf x_{MVEE}$ z rovnomerného rozdelenia v MVEE možno pomocou bodu $\mathbf x_G$ z rovnomerného rozdelenia v jednotkovej $d$--rozmernej guli pomocou transformácie $\mathbf x_{MVEE} \leftarrow C \mathbf x_G+ \mathbf{\overline z}$, kde $C$ je matica z Cholského rozkladu matice $\mathbf{\overline H}^{-1}$, t.j. $\mathbf{\overline H}=(CC^T)^{-1}$. Na overenie, ozaj platí 
+Parametre $\mathbf{\overline H}$ a $\mathbf{\overline z}$ získame pomocou REX algoritmu. Vygenerovať bod $\mathbf x_{MVEE}$ z rovnomerného rozdelenia v MVEE možno pomocou bodu $\mathbf x_G$ z rovnomerného rozdelenia v jednotkovej $d$--rozmernej guli pomocou transformácie $\mathbf x_{MVEE} \leftarrow C \mathbf x_G+ \mathbf{\overline z}$, kde $C$ je matica z Cholského rozkladu matice $\mathbf{\overline H}^{-1}$, t.j. $\mathbf{\overline H}=(CC^T)^{-1}$. Na overenie, naozaj platí 
 $$E(\mathbf{\overline H, \overline z})
 =\{ \mathbf x_{MVEE} | (\mathbf x_{MVEE} - \mathbf{\overline z})^T \mathbf{\overline H} (\mathbf x_{MVEE}-\mathbf{\overline z}) \leq 1\}
 =\{ \mathbf x_{MVEE} | (C \mathbf x_G)^T (CC^T)^{-1} (C \mathbf x_G) \leq 1 \}$$
 $$E(\mathbf{\overline H, \overline z})
 = \{ \mathbf x_{MVEE} \; | \; \mathbf x_G^T \mathbf x_G \leq 1 \} = \{ \mathbf x_{MVEE} \; | \;\Vert \mathbf x_G \Vert \leq 1 \},$$
-preto je množina bodov $\{ \mathbf x_{MVEE} \; | \; \mathbf x_{MVEE} = C \mathbf x_G+ \mathbf{\overline z} \text{ pre } \mathbf x_G \text{ z jednotkovej $d$-rozmernej gule} \}$ ozaj množina bodov elipsoidu $E(\mathbf{\overline H, \overline z})$.
+preto je množina bodov $\{ \mathbf x_{MVEE} \; | \; \mathbf x_{MVEE} = C \mathbf x_G+ \mathbf{\overline z} \text{ pre } \mathbf x_G \text{ z jednotkovej $d$-rozmernej gule} \}$ množina bodov elipsoidu $E(\mathbf{\overline H, \overline z})$.
 
 MVEE metóda funguje nasledovne:
 

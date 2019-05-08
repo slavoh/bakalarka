@@ -9,7 +9,7 @@ Po prvé, nie je jasné, koľko bodov polyédru je potrebné vygenerovať. Ak sa
 Ako druhý, závažnejší problém je, že nemožno generovať body v celom priestore rovnomerne náhodne. Už jednorozmerný prípad je problematický --- nemožno rovnomerne náhodne generovať reálne čísla. To súvisí s tým, že pri rovnomernom generovaní reálnych čísel na $(-\infty, \infty)$ majú sú všetky intervaly $(a,b)$ nulovú hustotu.\\
 
 Ako iný spôsob, možno definovať náhodný polyéder pomocou H--reprezentácie, ako množinu bodov $x$ splňujúcu množinu náhodných lineárnych obmedzení (nadrovín), pomocou náhodnej matice $A$ a náhodného vektoru $b$. Táto definícia nám tiež dáva návod, ako generovať polyédre. Stačí náhodne vygenerovať lineárne nerovnosti --- maticu $A$ a vektor $b$, polyéder bude množina bodov splňujúce nerovnosť $Ax\geq b$. Podobne ako pri predcházajúcom pokuse o definovanie náhodných polyédrov, aj tu nepresnosti definície spôsobujú problémy. Prvý problém je, že nie je jasné, koľko nerovností je potrebné vygenerovať. Analogický problému predchádzajúcej definície, ak sa obmedzíme na vygenerovanie $h$ nadrovín, tak potom takto nemožno vygenerovať polyédre s viac ako $h$ stenami.
-Ďalší netriviálny problém je, ako náhodne zvoliť nadroviny. Nadrovina je definovaná otočením (prislúchajúcim riadkom matice $A$) a posunutímod počiatku sústavy (daným prislúchajúcim prvkom vektoru $b$). Na to, aby sme dostali náhodné otočenie nadroviny s rovnakou pravdepodobnosťou, stačí vygenerovať prvky matice $A$ z nezávislých normálnych rozdelení s priemerom $0$ a výchilkou $1$, vďaka rotačnej symetrii normálneho rozdelenia bude každá nadrovina cez počiatok sústavy rovnako pravdepodobná. Avšak náhodne vygenerovať posunutie nadroviny od počiatku sústavy je úloha ekvivalentná rovnomernému vygenerovaniu reálneho čísla. To tiež nejde spraviť. Ako ďalší problém tohoto prístupe je, že takto možno vygenerovať prázdny polyéder (množina bodov splňujúcich $Ax \geq b$ vie byť ľahko prázdna).
+Ďalší netriviálny problém je, ako náhodne zvoliť nadroviny. Nadrovina je definovaná otočením (prislúchajúcim riadkom matice $A$) a posunutím od počiatku sústavy (daným prislúchajúcim prvkom vektoru $b$). Na to, aby sme dostali náhodné otočenie nadroviny s rovnakou pravdepodobnosťou, stačí vygenerovať prvky matice $A$ z nezávislých normálnych rozdelení s priemerom $0$ a výchilkou $1$, vďaka rotačnej symetrii normálneho rozdelenia bude každá nadrovina cez počiatok sústavy rovnako pravdepodobná. Avšak náhodne vygenerovať posunutie nadroviny od počiatku sústavy je úloha ekvivalentná rovnomernému vygenerovaniu reálneho čísla. To tiež nejde spraviť. Ako ďalší problém tohoto prístupe je, že takto možno vygenerovať prázdny polyéder (množina bodov splňujúcich $Ax \geq b$ môže byť prázdna).
 
 Keďže zameranie práce nie na generovanie polyédrov ako také, ďalej v práci upustíme od formálne presnej definície náhodneho polyédra, uspokojíme sa s menšími nepresnosťami.\\
 
@@ -34,7 +34,7 @@ Pre vyšší počet rozmerov sa nám nič podobné nepodarilo ukázať. Navyše,
 Ak máme danú aj stenovú aj vrcholovú reprezentáciu polyédra, ktoré nie sú nutne minimálne (vzhľadom na počet stien v H--reprezentácii a počet vrcholov vo V--reprezentácii), môžeme jednoducho dané reprezentácie minimalizovať odstránením prebytočných nadrovín a vrcholov. Z H--reprezentácie možno odstrániť tie nadroviny, ktoré neprechádzajú aspoň tromi vrcholmi V--reprezentácie. Z V--reprezentácie možno odstrániť tie vrcholy, ktoré neležia na aspoň troch nadrovinách z H--reprezentácie. Takto získané reprezentácie sú s pravdepodobnosťou $1$ minimálne. Všimnime si, že pravdepodobnosť, že náhodná nadrovina, ktorá nie je stena polyédru, prechádza aspoň jedným vrcholom V--reprezentácie je $0$. Preto v rámci implementácie budeme odstráňovať nadroviny, ktoré neprechádzajú žiadnym vrcholom V--reprezentácie.
 Overiť, či bod $x$ leží na nadrovine danej vektorom $a$ a konštantou $c$ je triviálne, stačí overiť rovnosť $a^Tx=c$.
 
-\subsubsection{Generovanie polyédru vo H--reprezentácii}
+\subsubsection{Generovanie polyédru v H--reprezentácii}
 
 V rámci tejto práce je použitý mierne upravený algoritmus na generovanie náhodných polyédrov popísaný v \cite{random_may}. Výstupom algoritmu je polyéder v H--reprezentácii, taký, že každý bod z jednotkovej hyperkocky má rovnakú pravdepodobnosť byť vnútri. 
 
@@ -85,7 +85,7 @@ Na záver algoritmus overí, či je vygenerovaný polyéder $P_c$ ohraničený v
 	\end{algorithmic}
 \end{algorithm}
 
-Všimnime si, že $c$ leží v polyédri, teda polyéder je neprázdny. Navyše, bod $c$ je vygerovaný z rovnomerného rozdelenia na prieniku polyédra a jednotkovej hyperkocky. Tento bod použijeme na inicializáciu Hit--and--Run generátora a Gibbsovho generátora.\\
+Všimnime si, že $c$ leží v polyédri, teda polyéder je neprázdny. Navyše, bod $c$ je vygerovaný z rovnomerného rozdelenia na prieniku polyédra a jednotkovej hyperkocky. Tento bod použijeme na inicializáciu Hit--and--Run generátora a Gibbsovho generátora (MVEE metóda inicializačný bod nepotrebuje)\\
 
 Pri takomto generovaní v rámci $P_c$ môžeme získať aj nadroviny $p_i$, ktoré neobsahujú žiadnu stenu polyédra. Tieto nadroviny sú zrejme nadbytočné, preto ich môžeme odtiaľ odstrániť postupom popísaným vyššie.\\
 

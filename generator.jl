@@ -194,8 +194,8 @@ end
 
 burn=100
 no_setups = 9
-no_polyhedras = 1
-no_generated_points = 10^4#5
+no_polyhedras = 25
+no_generated_points = 10^5
 beg=4
 
 times = zeros(no_setups,5)
@@ -308,37 +308,45 @@ end
 
 # ukladanie vysledkov
 
-# scatter(beg:no_setups, size_Hrep[beg:end], label="H-reprezentácia")
-# scatter(beg:no_setups, size_Vrep[beg:end], label="V-reprezentácia")
-# xlabel("rozmer priestoru")
-# ylabel("priemerná veľkosť reprezentácii")
-# legend()
-# savefig("images/velkost_rep")
-# close()
+scatter(beg:no_setups, size_Hrep[beg:end], label="H-reprezentácia")
+scatter(beg:no_setups, size_Vrep[beg:end], label="V-reprezentácia")
+xlabel("rozmer polyédrov")
+ylabel("priemerná veľkosť reprezentácii")
+legend()
+savefig("images/velkost_rep")
+close()
 
-# scatter(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end], label="pomer veľkostí reprezentácií")
-# xlabel("rozmer priestoru")
-# ylabel("priemerná veľkosti H-reprezentacie ku V reprezentácie")
-# legend()
-# savefig("images/pomer_rep")
-# close()
+scatter(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end], label="pomer veľkostí reprezentácií")
+xlabel("rozmer polyédrov")
+ylabel("priemerná veľkosti H-reprezentacie ku V reprezentácie")
+legend()
+savefig("images/pomer_rep")
+close()
 
-# scatter(beg:no_setups, no_generations[beg:end], label="MVEE metóda")
-# xlabel("rozmer priestoru")
-# ylabel("pocet pokusov")
-# legend()
-# savefig("images/mvee_pokusy")
-# close()
+scatter(beg:no_setups, no_generations[beg:end], label="MVEE metóda")
+xlabel("rozmer polyédrov")
+ylabel("pocet pokusov")
+legend()
+savefig("images/mvee_pokusy")
+close()
 
+scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
+scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
+xlabel("rozmer polyédrov")
+ylabel("priemerný čas vygenerovania bodu [ns]")
+legend()
+savefig("images/mh")
 scatter(beg:no_setups, times[beg:end,1], label="MVEE metóda")
-scatter(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")
+legend()
+savefig("images/vsetky")
+close()
+
 scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
 scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
 scatter(beg:no_setups, times[beg:end,4], label="beh REX algoritmu (jednorázový)")
-xlabel("rozmer priestoru")
+xlabel("rozmer polyédrov")
 ylabel("priemerný čas vygenerovania bodu [ns]")
 legend()
-# savefig("images/vsetky")
-# savefig("images/mh")
-# savefig("images/mh_rex")
-# close()
+savefig("images/mh_rex")
+close()
+# scatter(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")
