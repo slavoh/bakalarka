@@ -8,31 +8,31 @@ Na inicializáciu zamietacej metódy pomocou MVEE elipsoidu je potrebné vypoč�
 
 V rámci testovania boli metódy porovnávané na rozmeroch $d=1, \dots, 9$, v každom rozmere bolo vygenerovaných $100$ náhodných polyédrov. Na každom z daných polyédrov boli spustené všetky metódy, každá z nich vygenerovala $10^5$ bodov vnútri polyédru. Ako výstup testovania boli pre každú metódu zobrazené priemerné rýchlosti generovaní bodov v jednotlivých rozmeroch.\\
 
-\begin{figure} 
+\begin{figure} [H]
 	\includegraphics[width=\linewidth]{images/velkost_rep.png}
 	\caption{Priemerná veľkosť reprezentácií polyédrov vzhľadom na počet rozmerov priestoru}
 	\label{fig:velkost_rep}
 \end{figure}
 
-\begin{figure} 
+\begin{figure} [H]
 	\includegraphics[width=\linewidth]{images/pomer_rep.png}
 	\caption{Pomer veľkostí reprezentácii polyédrov vzhľadom na počet rozmerov priestoru}
 	\label{fig:pomer_rep}
 \end{figure}
 
-Pozrime sa najprv na nami vygenerované ``náhodné'' polyédre. Pozrime sa na priemerné veľkosti reprezentácii nami ``náhodne'' vygenenerovaných polyédrov (viď \ref{velkost_rep}). Očividne očakávaný rozdiel veľkostí reprezentácii so zvyšujúcim sa rozmerom priestoru rastie. Taktiež pomer $\frac{\text{veľkosť V--reprezentácie}}{\text{veľkosť H--reprezentácie}}$ so zvyšujúcim sa rozmerom priestoru rastie (viď \ref{pomer_rep}).
+Pozrime sa najprv na nami vygenerované ``náhodné'' polyédre. Pozrime sa na priemerné veľkosti reprezentácii nami ``náhodne'' vygenenerovaných polyédrov (viď \ref{fig:velkost_rep}). Očividne očakávaný rozdiel veľkostí reprezentácii so zvyšujúcim sa rozmerom priestoru rastie. Taktiež pomer $\frac{\text{veľkosť V--reprezentácie}}{\text{veľkosť H--reprezentácie}}$ so zvyšujúcim sa rozmerom priestoru rastie (viď \ref{fig:pomer_rep}).
 
 Zväčšenie V--reprezentácie zjavne spomalý nájdenie MVEE (REX algoritmu). Okrem toho nám veľká V--reprezentácia pri porovnávaní algoritmov nerobí žiaden iný problém. Pri vypočítanom MVEE je už beh MVEE metódy nezávislý od veľkosti V--reprezentácie (je závislý jedine od matíc $A$, $C$ a vektorov $b$ a $\mathbf{\overline z}$).\\
 
-\begin{figure} 
+\begin{figure} [H]
 	\includegraphics[width=\linewidth]{images/mh_rex.png}
 	\caption{Porovnanie priemerného vygenerovania bodu Metropolis--Hasting metódou s výpočtom MVEE pomocou REX algoritmu vzhľadom na počet rozmerov priestoru}
 	\label{fig:mh_rex}
 \end{figure}
 
-Keď sa pozrieme na priemerný čas výpočtu REX algoritmu (viď \ref{mh_rex}), je porovnateľný s očakávaným časom trvania vygenerovania jedného bodu pomocou Metropolis--Hastings metód. Nakoľko pri danom polyédri je REX použitý práve raz, očakávaný čas trvania REXu je pri porovnávaní metód zanedbateľný.\\
+Keď sa pozrieme na priemerný čas výpočtu REX algoritmu (viď \ref{fig:mh_rex}), je porovnateľný s očakávaným časom trvania vygenerovania jedného bodu pomocou Metropolis--Hastings metód. Nakoľko pri danom polyédri je REX použitý práve raz, očakávaný čas trvania REXu je pri porovnávaní metód zanedbateľný.\\
 
-\begin{figure} 
+\begin{figure} [H]
   \includegraphics[width=\linewidth]{images/vsetky.png}
   \caption{Priemerný čas trvania všetkých metód}
   \label{fig:vsetky}
@@ -41,15 +41,15 @@ Keď sa pozrieme na priemerný čas výpočtu REX algoritmu (viď \ref{mh_rex}),
 Metóda MVEE pri vyššom počte rozmerov generuje body výrazne pomalšie ako Metropolis--Hastings metódy (viď \ref{fig:vsetky}).
 To musí byť spôsobené zväčšením pomeru objemov $\frac{\lambda(T_{MVEE})}{\lambda(S)}$. Preto náš horný odhad $d^d$ očakávaného počtu generovaní (kde $d$ je počet rozmerov priestoru) podľa Johnovho elipsoidu nemusí byť tak voľný, ako sa na prvý pohľad zdá.\\
 
-\begin{figure} 
+\begin{figure} [H]
 	\includegraphics[width=\linewidth]{images/mvee_pokusy.png}
 	\caption{Priemerný počet pokusov na nájdenie bodu v polyédri pomocou MVEE vzhľadom na počet rozmerov priestoru}
 	\label{fig:mvee_pokusy}
 \end{figure}
 
-Odhadnime, ako dobre MVEE obaľuje polyéder $S$ v $d$--rozmernom priestore. Kedže pre očakávaný počet pokusov $E$ platí $E=\frac{\lambda(T_{MVEE})}{\lambda(S)}$, možno odhadnúť $\frac{\lambda(T_{MVEE})}{\lambda(S)}$ ako priemerný počet generovaní bodov v $d$--rozmernom priestore. Z grafu \ref{mvee_pokusy} vidno, že počet pokusov na vygenerovanie bodu v polyédri pomocou MVEE metódy s rastúcim počtom rozmerov rastie, preto ``tesnosť'' obalu MVEE polyédra $S$ s rastúcim počtom rozmerov klesá.
+Odhadnime, ako dobre MVEE obaľuje polyéder $S$ v $d$--rozmernom priestore. Kedže pre očakávaný počet pokusov $E$ platí $E=\frac{\lambda(T_{MVEE})}{\lambda(S)}$, možno odhadnúť $\frac{\lambda(T_{MVEE})}{\lambda(S)}$ ako priemerný počet generovaní bodov v $d$--rozmernom priestore. Z grafu \ref{fig:mvee_pokusy} vidno, že počet pokusov na vygenerovanie bodu v polyédri pomocou MVEE metódy s rastúcim počtom rozmerov rastie, preto ``tesnosť'' obalu MVEE polyédra $S$ s rastúcim počtom rozmerov klesá.
 
-\begin{figure} 
+\begin{figure} [H]
   \includegraphics[width=\linewidth]{images/mh.png}
   \caption{Priemerný čas trvania generovania bodov Metropolis--Hastings metód}
   \label{fig:mh}
@@ -57,7 +57,7 @@ Odhadnime, ako dobre MVEE obaľuje polyéder $S$ v $d$--rozmernom priestore. Ked
 
 Porovnanie Metropolis--Hastings metód dopadlo podľa očakávaní. Čas potrebný na vygenerovanie bodu pomocou Gibbsovho generátor rástol asymptoticky kvadraticky a čas potrebný na vygenerovanie bodu pomocou Hit--and--Run generátora rástol asymptoticky lineárne (viď \ref{fig:mh}).\\
 
-\section{Výsledok porovnania}
+\section{Výsledky porovnania}
 
 Z daných porovnaní vyplýva, že najrýchlejší algoritmus na generovanie veľkého počtu bodov z rovnomerného rozdelenia vo veľarozmernom polyédri je generátor Hit--and--Run.
 
