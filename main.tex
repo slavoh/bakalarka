@@ -19,6 +19,35 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{beramono}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{xcolor}
+
+%%
+%% Julia definition (c) 2014 Jubobs
+%%
+\lstdefinelanguage{Julia}%
+{morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+		end,export,false,for,function,immutable,import,importall,if,in,%
+		macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+		using,while},%
+	sensitive=true,%
+	alsoother={$},%
+	morecomment=[l]\#,%
+	morecomment=[n]{\#=}{=\#},%
+	morestring=[s]{"}{"},%
+	morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+	language         = Julia,
+	basicstyle       = \ttfamily,
+	keywordstyle     = \bfseries\color{blue},
+	stringstyle      = \color{magenta},
+	commentstyle     = \color{ForestGreen},
+	showstringspaces = false,
+}
+
 
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
@@ -162,8 +191,11 @@ Fakulta matematiky, fyziky a informatiky
 \newpage 
 \section*{Abstrakt}
 
+Spravili sme prehľad existujúcich metód na generovanie bodov z rovnomerného rozdelenia na polyédri, spolu s ich praktickým porovnaním na ``náhodných'' polyédroch. 
+Ako prípustné metódy sme porovnávali Gibbsov generátor a Hit--and--Run generátor z triedy Metropolis--Hastings a zamietaciu metódu pomocou nadmnožiny elipsoidu najmenšieho objemu. Ako testovacie skóre sme použili rýchlosť generovania veľkého počtu bodov v polyédri vzhľadom na rozmer priestoru. Ukázali sme, že najrýchlejší algoritmus na generovanie bodov z rovnomerného rozdelenia na polyédri Hit--and--Run generátor. Taktiež sme predstavili problém optimálneho návrhu spolu s algoritmami Vertex Exchange Method a Randomized Exchange Algorithm na jeho riešenie. Popísali sme, ako možno použiť ekvivalenciu problému D--optimálneho návrhu a elispoidu najmenšieho objemu na nájdenie elipsoidu najmenšieho objemu obaľujúceho cielený polyéder. Okrem toho sme sa venovali problému generovania náhodných polyédrov. Ukázali sme, že samotné definovanie ``náhodného polyédru'' je netriviálny problém.
+% Overili sme, že so zvyšujúcim sa rozmerom priestoru očakávaný čas potrebný na vygenerovanie bodu rastie pri Hit--and--Run generátore asymptoticky lineárne, pri Gibbsovom generátore asymptoticky kvadraticky a ukázali sme, že pri zamietacej metóde s nadmnožinou elipsoidu najmenšieho objemu bude očakávaný čas rásť pravdepodobne asymptoticky exponenciálne.
 
-\paragraph*{Kľúčové slová:}
+\paragraph*{Kľúčové slová: Metropolis--Hastings, Hit--and--Run, Gibbs, zamietacie metódy, elipsoid najmenšieho objemu, problém optimálneho návrhu, náhodný polyéder}
 % --- Koniec Abstrakt - Slovensky
 
 
@@ -173,10 +205,10 @@ Fakulta matematiky, fyziky a informatiky
 \newpage 
 \section*{Abstract}
 
+We have created a compilation of existing algorithms for generating from a uniform distribution on a polyhedron with a comparison on random polyhedra. As possible algorithms, we have considered Gibbs sampler and Hit--and--Run sampler from Metropolis--Hastings class and the rejection method using the minimum volume enclosing ellipsoid as a superset. As a score function, we have used the expected generation time of a large number of points for a fixed dimension of space. We have shown that the quickest algorithm for doing so was Hit--and--Run generator. In addition, we have introduced optimal design problem with algorithms Vertex Exchange Method and Randomized Exchange Algorithm as its solvers. We have shown, how could equivalence of optimal design problem and minimum volume enclosing ellipsoid problem be used for finding minimum volume enclosing ellipsoid for given polyhedra. Moreover, we have discussed random polyhedra generation. We have shown that just defining ``a random polyhedron'' is non--trivial problem.
 
 
-
-\paragraph*{Keywords:} 
+\paragraph*{Keywords: Metropolis--Hastings, Hit--and--Run, Gibbs, rejection methods, minimume volume enclosing ellipsoid, optimal design problem, random polyhedra} 
 
 % --- Koniec Abstrakt - Anglicky
 

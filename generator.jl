@@ -166,13 +166,13 @@ function find_MVEE(Fx, γ=4, eff=1-1e-9, it_max=10^12, t_max=30) # pouzitim REX 
     return (H,Z)
 end
 
-function generate_on_sphere( dim )
-    x_sym = randn( dim )
+function generate_on_sphere( d )
+    x_sym = randn( d )
     return (x_sym/norm(x_sym))
 end
 
-function generate_in_MVEE(C)
-    return C*( generate_on_sphere(size(C,1))*rand(Uniform(0,1))^(1/size(C,1) ) )
+function generate_in_ball(d)
+    return generate_on_sphere(d)*rand(Uniform(0,1))^(1/d)
 end
 
 function gibbs(x, A, b)
@@ -194,11 +194,11 @@ end
 
 burn=100
 no_setups = 9
-no_polyhedras = 25
-no_generated_points = 10^5
+no_polyhedras = 1
+no_generated_points = 10^4#5
 beg=4
 
-times = zeros(no_setups,4)
+times = zeros(no_setups,5)
 size_Hrep = zeros(no_setups)
 size_Vrep = zeros(no_setups)
 no_generations = zeros(no_setups)
@@ -222,13 +222,13 @@ for setup = beg:no_setups  # inicializacia testu
         endtime = time()
         times[setup,4] += endtime - starttime
 
-        # REX generator
+        # MVEE metoda
         starttime = time()
         for i=1:no_generated_points
-            X[i,:] = generate_in_MVEE(C)+Z
+            X[i,:] = C*generate_in_ball(dimension)+Z
             count=1
-            while any(λ ->(λ<0), A*X[i,:]-b)
-                X[i,:]=generate_in_MVEE(C)+Z
+            while any(λ ->(λ< -δ), A*X[i,:]-b)
+                X[i,:]=C*generate_in_ball(dimension)+Z
                 count += 1
             end
             no_generations[setup] += count
@@ -236,6 +236,23 @@ for setup = beg:no_setups  # inicializacia testu
         endtime=time()
         times[setup,1] += endtime-starttime
         no_generations[setup] /= no_generated_points
+
+        # # zrychlena MVEE metoda
+        # A2=A*C
+        # b2=A*Z-b
+        # @show A2
+        # @show b2
+        # starttime = time()
+        # for i=1:no_generated_points
+        #     x_G = generate_in_ball(dimension)
+        #     while any(λ ->(λ< -δ), A2*x_G-b2)
+        #         # @show A2*x_G-b2
+        #         x_G = generate_in_ball(dimension)
+        #     end
+        #     X[i,:] = C*x_G+Z
+        # end
+        # endtime=time()
+        # times[setup,5] += endtime-starttime
 
         # Hit-and-Run generator
         starttime=time()
@@ -313,10 +330,11 @@ end
 # savefig("images/mvee_pokusy")
 # close()
 
-scatter(beg:no_setups, times[beg:end,4], label="výpočet MVEE - REX")
 scatter(beg:no_setups, times[beg:end,1], label="MVEE metóda")
+scatter(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")
 scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
 scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
+scatter(beg:no_setups, times[beg:end,4], label="beh REX algoritmu (jednorázový)")
 xlabel("rozmer priestoru")
 ylabel("priemerný čas vygenerovania bodu [ns]")
 legend()
