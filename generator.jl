@@ -194,7 +194,7 @@ end
 
 burn=100
 no_setups = 9
-no_polyhedras = 25
+no_polyhedras = 100
 no_generated_points = 10^5
 beg=4
 
@@ -222,37 +222,38 @@ for setup = beg:no_setups  # inicializacia testu
         endtime = time()
         times[setup,4] += endtime - starttime
 
+        print("Start: ")
         # MVEE metoda
+        count=0
         starttime = time()
         for i=1:no_generated_points
+            count += 1
             X[i,:] = C*generate_in_ball(dimension)+Z
-            count=1
             while any(λ ->(λ< -δ), A*X[i,:]-b)
                 X[i,:]=C*generate_in_ball(dimension)+Z
                 count += 1
             end
-            no_generations[setup] += count
         end
+        no_generations[setup] += count
         endtime=time()
         times[setup,1] += endtime-starttime
         no_generations[setup] /= no_generated_points
+        print("mvee| ")
 
-        # # zrychlena MVEE metoda
-        # A2=A*C
-        # b2=A*Z-b
-        # @show A2
-        # @show b2
-        # starttime = time()
-        # for i=1:no_generated_points
-        #     x_G = generate_in_ball(dimension)
-        #     while any(λ ->(λ< -δ), A2*x_G-b2)
-        #         # @show A2*x_G-b2
-        #         x_G = generate_in_ball(dimension)
-        #     end
-        #     X[i,:] = C*x_G+Z
-        # end
-        # endtime=time()
-        # times[setup,5] += endtime-starttime
+        # zrychlena MVEE metoda
+        AA=A*C
+        bb=A*Z-b
+        starttime = time()
+        for i=1:no_generated_points
+            x_G = generate_in_ball(dimension)
+            while any(λ ->(λ< -δ), AA*x_G+bb)
+                x_G = generate_in_ball(dimension)
+            end
+            X[i,:] = C*x_G+Z
+        end
+        endtime=time()
+        times[setup,5] += endtime-starttime
+        print("zrychlena| ")
 
         # Hit-and-Run generator
         starttime=time()
@@ -300,53 +301,75 @@ for setup = beg:no_setups  # inicializacia testu
         endtime = time()
         times[setup,3] += endtime-starttime
 
-        print("Polyhedra tested\n")
+        print("mh||\n")
     end
     times[setup,:] /= no_polyhedras
     print("Dimension done\n")
 end
 
 # ukladanie vysledkov
-
-scatter(beg:no_setups, size_Hrep[beg:end], label="H-reprezentácia")
-scatter(beg:no_setups, size_Vrep[beg:end], label="V-reprezentácia")
+scatter(beg:no_setups, size_Hrep[beg:end])
+plot(beg:no_setups, size_Hrep[beg:end], label="H-reprezentácia")
+scatter(beg:no_setups, size_Vrep[beg:end])
+plot(beg:no_setups, size_Vrep[beg:end], label="V-reprezentácia")
 xlabel("rozmer polyédrov")
 ylabel("priemerná veľkosť reprezentácii")
 legend()
-savefig("images/velkost_rep")
+savefig("images/mozno/velkost_rep")
 close()
 
-scatter(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end], label="pomer veľkostí reprezentácií")
+scatter(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end])
+plot(beg:no_setups, size_Vrep[beg:end] ./ size_Hrep[beg:end], label="pomer veľkostí reprezentácií")
 xlabel("rozmer polyédrov")
 ylabel("priemerná veľkosti H-reprezentacie ku V reprezentácie")
 legend()
-savefig("images/pomer_rep")
+savefig("images/mozno/pomer_rep")
 close()
 
-scatter(beg:no_setups, no_generations[beg:end], label="MVEE metóda")
+scatter(beg:no_setups, no_generations[beg:end])
+plot(beg:no_setups, no_generations[beg:end], label="MVEE metóda")
 xlabel("rozmer polyédrov")
 ylabel("pocet pokusov")
 legend()
-savefig("images/mvee_pokusy")
+savefig("images/mozno/mvee_pokusy")
 close()
 
-scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
-scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
+scatter(beg:no_setups, times[beg:end,2])
+plot(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
+scatter(beg:no_setups, times[beg:end,3])
+plot(beg:no_setups, times[beg:end,3], label="Gibbs")
 xlabel("rozmer polyédrov")
 ylabel("priemerný čas vygenerovania bodu [ns]")
 legend()
-savefig("images/mh")
-scatter(beg:no_setups, times[beg:end,1], label="MVEE metóda")
+savefig("images/mozno/mh")
+scatter(beg:no_setups, times[beg:end,1])
+plot(beg:no_setups, times[beg:end,1], label="MVEE metóda")
 legend()
-savefig("images/vsetky")
+savefig("images/mozno/vsetky")
+scatter(beg:no_setups, times[beg:end,5])
+plot(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")
+legend()
+savefig("images/mozno/aj_zrychlena")
 close()
 
-scatter(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
-scatter(beg:no_setups, times[beg:end,3], label="Gibbs")
-scatter(beg:no_setups, times[beg:end,4], label="beh REX algoritmu (jednorázový)")
+# scatter(beg:no_setups, times[beg:end,1])
+# plot(beg:no_setups, times[beg:end,1], label="MVEE metóda")
+# scatter(beg:no_setups, times[beg:end,5])
+# plot(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")
+# scatter(beg:no_setups, 1.42*times[beg:end,5])
+# plot(beg:no_setups, 1.42*times[beg:end,5], label="zrýchlená MVEE metóda")
+# legend()
+# savefig("images/mozno/aj_zrychlena")
+# close()
+
+scatter(beg:no_setups, times[beg:end,2])
+plot(beg:no_setups, times[beg:end,2], label="Hit-and-Run")
+scatter(beg:no_setups, times[beg:end,3])
+plot(beg:no_setups, times[beg:end,3], label="Gibbs")
+scatter(beg:no_setups, times[beg:end,4])
+plot(beg:no_setups, times[beg:end,4], label="beh REX algoritmu (jednorázový)")
 xlabel("rozmer polyédrov")
 ylabel("priemerný čas vygenerovania bodu [ns]")
 legend()
-savefig("images/mh_rex")
+savefig("images/mozno/mh_rex")
 close()
-# scatter(beg:no_setups, times[beg:end,5], label="zrýchlená MVEE metóda")

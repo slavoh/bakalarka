@@ -23,6 +23,9 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{subcaption}
+%\usepackage{cm-super}
+%\usepackage{cmap}
+\usepackage{lmodern}
 \usepackage[usenames,dvipsnames]{xcolor}
 
 %%
@@ -70,7 +73,7 @@
 % --- Definicia zakladnych pojmov
 % --- Vyplnte podla vasho zadania
 % -------------------
-\def\mfrok{2018}
+\def\mfrok{2019}
 \def\mfnazov{Generovanie realizácií rovnomerného rozdelenia pravdepodobnosti
 	na mnohorozmerných polyédroch}
 \def\mftyp{Bakalárska práca}
@@ -184,6 +187,7 @@ Fakulta matematiky, fyziky a informatiky
 
 \vfill
 {\bf Poďakovanie:} 
+Rád by som sa poďakoval môjmu školiteľovi doc. Mgr. Radoslavovi Harmanovi, PhD., za poskytnutie zaujímavej témy na bakalársku prácu a v neposlednom rade za podporu, cenné rady a usmernenie počas práce na nej.
 
 % --- Koniec poďakovania
 
@@ -194,7 +198,7 @@ Fakulta matematiky, fyziky a informatiky
 \section*{Abstrakt}
 
 Spravili sme prehľad existujúcich metód na generovanie bodov z rovnomerného rozdelenia na polyédri, spolu s ich praktickým porovnaním na ``náhodných'' polyédroch. 
-Ako prípustné metódy sme porovnávali Gibbsov generátor a Hit--and--Run generátor z triedy Metropolis--Hastings a zamietaciu metódu pomocou nadmnožiny elipsoidu najmenšieho objemu. Ako testovacie skóre sme použili rýchlosť generovania veľkého počtu bodov v polyédri vzhľadom na rozmer priestoru. Ukázali sme, že najrýchlejší algoritmus na generovanie bodov z rovnomerného rozdelenia na polyédri je Hit--and--Run generátor. Praktiké testovanie ukázalo, že prístup ku generovaniu pomocou elipsoidu najmenšieho objemu je pomalší čo sa týka počtu realizácií za jedntoku času, avšak jeho výhodou je generovanie z presného rovnomerného rozdelenia, kým algoritmy z tried Metropolis-Hastings generujú rovnomerne len limitne. Taktiež sme predstavili problém optimálneho návrhu spolu s algoritmami Vertex Exchange Method a Randomized Exchange Algorithm na jeho riešenie. Popísali sme, ako možno použiť ekvivalenciu problému D--optimálneho návrhu experimentu a elispoidu najmenšieho objemu na nájdenie elipsoidu najmenšieho objemu obaľujúceho cielený polyéder. Okrem toho sme sa venovali problému generovania náhodných polyédrov. Ukázali sme, že samotné definovanie ``náhodného polyédru'' je netriviálny problém.
+Ako prípustné metódy sme porovnávali Gibbsov generátor a Hit--and--Run generátor z triedy Metropolis--Hastings a zamietaciu metódu pomocou nadmnožiny elipsoidu najmenšieho objemu. Ako testovacie skóre sme použili rýchlosť generovania veľkého počtu bodov v polyédri vzhľadom na rozmer priestoru. Ukázali sme, že najrýchlejší algoritmus na generovanie bodov z rovnomerného rozdelenia na polyédri je Hit--and--Run generátor. Praktiké testovanie ukázalo, že prístup ku generovaniu pomocou elipsoidu najmenšieho objemu je pomalší, čo sa týka počtu realizácií za jedntoku času, avšak jeho výhodou je generovanie z presného rovnomerného rozdelenia, kým algoritmy z tried Metropolis-Hastings generujú rovnomerne len limitne. Taktiež sme predstavili problém optimálneho návrhu spolu s algoritmami Vertex Exchange Method a Randomized Exchange Algorithm na jeho riešenie. Popísali sme, ako možno použiť ekvivalenciu problému D--optimálneho návrhu experimentu a elispoidu najmenšieho objemu na nájdenie elipsoidu najmenšieho objemu obaľujúceho cielený polyéder. Okrem toho sme sa venovali problému generovania náhodných polyédrov. Ukázali sme, že samotné definovanie ``náhodného polyédru'' je netriviálny problém.
 % Overili sme, že so zvyšujúcim sa rozmerom priestoru očakávaný čas potrebný na vygenerovanie bodu rastie pri Hit--and--Run generátore asymptoticky lineárne, pri Gibbsovom generátore asymptoticky kvadraticky a ukázali sme, že pri zamietacej metóde s nadmnožinou elipsoidu najmenšieho objemu bude očakávaný čas rásť pravdepodobne asymptoticky exponenciálne.
 
 \paragraph*{Kľúčové slová: Metropolis--Hastings, Hit--and--Run, Gibbs, zamietacie metódy, elipsoid najmenšieho objemu, problém optimálneho návrhu, náhodný polyéder}
@@ -207,10 +211,10 @@ Ako prípustné metódy sme porovnávali Gibbsov generátor a Hit--and--Run gene
 \newpage 
 \section*{Abstract}
 
-We provide a survey of existing algorithms for generating from the uniform distribution on a polyhedron with a comparison on random polyhedra. As possible algorithms, we consider a Gibbs sampler and a Hit--and--Run sampler from the Metropolis--Hastings class, as well as and the rejection method using the minimum volume enclosing ellipsoid as a superset. As a score function, we use the expected generation time of a large number of points for a fixed dimension of the polyhedron. We demonstrate that the most rapid algorithm is the Hit--and--Run generator. In addition, we introduce optimal experimental design problem with algorithms Vertex Exchange Method and Randomized Exchange Algorithm as its solvers. We show how can the equivalence of the optimal design problem and the minimum volume enclosing ellipsoid problem be used for finding minimum volume enclosing ellipsoid for given polyhedra. Moreover, we discuss random polyhedra generation. We show that just defining ``a random polyhedron'' is non--trivial problem.
+We provide a survey of existing algorithms for generating from the uniform distribution on a polyhedron with a comparison on random polyhedra. As possible algorithms, we consider a Gibbs sampler and a Hit--and--Run sampler from the Metropolis--Hastings class, as well as the rejection method using the minimum volume enclosing ellipsoid as a superset. As a score function, we use the expected generation time of a large number of points for a fixed dimension of the polyhedron. We demonstrate that the most rapid algorithm is the Hit--and--Run generator. In addition, we introduce optimal experimental design problem with algorithms Vertex Exchange Method and Randomized Exchange Algorithm as its solvers. We show how can the equivalence of the optimal design problem and the minimum volume enclosing ellipsoid problem be used for finding minimum volume enclosing ellipsoid for given polyhedra. Moreover, we discuss random polyhedra generation. We show that just defining ``a random polyhedron'' is non--trivial problem.
 
 
-\paragraph*{Keywords: Metropolis--Hastings, Hit--and--Run, Gibbs, rejection methods, minimume volume enclosing ellipsoid, optimal design problem, random polyhedra} 
+\paragraph*{Keywords: Metropolis--Hastings, Hit--and--Run, Gibbs, rejection methods, minimum volume enclosing ellipsoid, optimal design problem, random polyhedra} 
 
 % --- Koniec Abstrakt - Anglicky
 

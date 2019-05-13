@@ -2,7 +2,7 @@
 
 Ako jedna z možností na realizáciu Metropolis--Hastings algoritmu prichádza do úvahy Hit--and--Run generátor. Algoritmus je analogický s algoritmom Metropolis--Hasting.
 
-Označme si $S$ zadaný polyéder. Kandidátska hustota $q(\cdot|\mathbf x^{(i)})$ je určená priamkou $\mathbf d_i$ s náhodným smerom cez bod $\mathbf x^{(i)}$. Hustota $q(\cdot|\mathbf x^{(i)})$ je konštantná na úsečke $S \cap \mathbf d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $q(\mathbf x^{(i+1)}|\mathbf x^{(i)})=q(\mathbf x^{(i)}|\mathbf x^{(i+1)}),$ \cite{hit-and-run_chen}, preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do ďalšieho bodu.
+Označme si $S$ zadaný polyéder. Kandidátska hustota $q(\cdot|\mathbf x^{(i)})$ je určená priamkou $\mathbf d_i$ s náhodným smerom cez bod $\mathbf x^{(i)}$. Hustota $q(\cdot|\mathbf x^{(i)})$ je konštantná na úsečke \newline $S \cap \mathbf d_i$ a nulová inde. Pri danej hustote je markovovský reťazec časovo reverzibilný, t.j. $q(\mathbf x^{(i+1)}|\mathbf x^{(i)})=q(\mathbf x^{(i)}|\mathbf x^{(i+1)}),$ \cite{hit-and-run_chen}, preto je funkcia $\alpha$ konštantne $1$. Algoritmus sa teda každým krokom pohne do ďalšieho bodu.
 
 Hit--and--Run generátor funguje nasledovne:
 
